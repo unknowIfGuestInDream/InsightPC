@@ -10,6 +10,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material.Material;
 import oshi.hardware.*;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
@@ -22,6 +24,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Main controller for the InsightPC application.
@@ -32,9 +35,6 @@ public class MainController {
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
 
     @FXML
-    private Label statusLabel;
-
-    @FXML
     private TabPane tabPane;
 
     private Stage primaryStage;
@@ -43,7 +43,6 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        statusLabel.setText(I18N.get("status.ready"));
         systemInfoService = new SystemInfoService();
         scheduler = Executors.newScheduledThreadPool(2, r -> {
             Thread t = new Thread(r, "insightpc-refresh");
@@ -62,7 +61,6 @@ public class MainController {
         buildUsbDevicesTab();
         buildPowerTab();
 
-        statusLabel.setText(I18N.get("status.loaded"));
         LOG.info("All tabs initialized");
     }
 
@@ -101,6 +99,12 @@ public class MainController {
         alert.setTitle(I18N.get("menu.about"));
         alert.setHeaderText(I18N.get("app.title"));
         alert.setContentText(I18N.get("about.description"));
+        FontIcon icon = new FontIcon(Material.COMPUTER);
+        icon.setIconSize(48);
+        alert.setGraphic(icon);
+        if (primaryStage != null) {
+            alert.initOwner(primaryStage);
+        }
         alert.showAndWait();
     }
 
@@ -119,49 +123,96 @@ public class MainController {
     private void buildOverviewTab() {
         Tab tab = new Tab(I18N.get("tab.overview"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.DASHBOARD));
 
-        VBox content = new VBox(10);
+        VBox content = new VBox(8);
         content.setPadding(new Insets(15));
 
-        OperatingSystem os = systemInfoService.getOperatingSystem();
-        ComputerSystem cs = systemInfoService.getComputerSystem();
         CentralProcessor cpu = systemInfoService.getProcessor();
         GlobalMemory memory = systemInfoService.getMemory();
+        ComputerSystem cs = systemInfoService.getComputerSystem();
+        Baseboard baseboard = cs.getBaseboard();
+        Firmware firmware = cs.getFirmware();
+        List<GraphicsCard> graphicsCards = systemInfoService.getGraphicsCards();
+        List<HWDiskStore> diskStores = systemInfoService.getDiskStores();
+        List<Display> displays = systemInfoService.getDisplays();
+        List<SoundCard> soundCards = systemInfoService.getSoundCards();
+        List<PowerSource> powerSources = systemInfoService.getPowerSources();
 
-        // System overview section
-        content.getChildren().add(createSectionLabel(I18N.get("overview.system")));
-        GridPane sysGrid = createInfoGrid();
-        int row = 0;
-        addGridRow(sysGrid, row++, I18N.get("overview.os"), os.toString());
-        addGridRow(sysGrid, row++, I18N.get("overview.manufacturer"), cs.getManufacturer());
-        addGridRow(sysGrid, row++, I18N.get("overview.model"), cs.getModel());
-        addGridRow(sysGrid, row++, I18N.get("overview.uptime"),
-            SystemInfoService.formatUptime(systemInfoService.getSystemUptime()));
-        content.getChildren().add(sysGrid);
+        // CPU
+        content.getChildren().add(createOverviewRow(Material.DEVELOPER_BOARD,
+            I18N.get("overview.cpu.label"),
+            cpu.getProcessorIdentifier().getName()));
 
-        // CPU overview section
-        content.getChildren().add(createSectionLabel(I18N.get("overview.cpu")));
-        GridPane cpuGrid = createInfoGrid();
-        row = 0;
-        addGridRow(cpuGrid, row++, I18N.get("cpu.name"),
-            cpu.getProcessorIdentifier().getName());
-        addGridRow(cpuGrid, row++, I18N.get("cpu.physicalCores"),
-            String.valueOf(cpu.getPhysicalProcessorCount()));
-        addGridRow(cpuGrid, row++, I18N.get("cpu.logicalCores"),
-            String.valueOf(cpu.getLogicalProcessorCount()));
-        content.getChildren().add(cpuGrid);
+        // Memory
+        List<PhysicalMemory> physMems = memory.getPhysicalMemory();
+        String memoryInfo;
+        if (!physMems.isEmpty()) {
+            memoryInfo = SystemInfoService.formatBytes(memory.getTotal()) + " ("
+                + physMems.stream()
+                .map(pm -> SystemInfoService.formatBytes(pm.getCapacity())
+                    + " " + pm.getMemoryType()
+                    + (pm.getClockSpeed() > 0 ? " " + (pm.getClockSpeed() / 1_000_000) + "MHz" : ""))
+                .collect(Collectors.joining(" + "))
+                + ")";
+        } else {
+            memoryInfo = SystemInfoService.formatBytes(memory.getTotal());
+        }
+        content.getChildren().add(createOverviewRow(Material.MEMORY,
+            I18N.get("overview.memory.label"), memoryInfo));
 
-        // Memory overview section
-        content.getChildren().add(createSectionLabel(I18N.get("overview.memory")));
-        GridPane memGrid = createInfoGrid();
-        row = 0;
-        addGridRow(memGrid, row++, I18N.get("memory.total"),
-            SystemInfoService.formatBytes(memory.getTotal()));
-        addGridRow(memGrid, row++, I18N.get("memory.available"),
-            SystemInfoService.formatBytes(memory.getAvailable()));
-        addGridRow(memGrid, row++, I18N.get("memory.used"),
-            SystemInfoService.formatBytes(memory.getTotal() - memory.getAvailable()));
-        content.getChildren().add(memGrid);
+        // Graphics Card
+        String gpuInfo = graphicsCards.isEmpty() ? "N/A"
+            : graphicsCards.stream()
+            .map(gc -> gc.getName()
+                + (gc.getVRam() > 0 ? " " + SystemInfoService.formatBytes(gc.getVRam()) : ""))
+            .collect(Collectors.joining(", "));
+        content.getChildren().add(createOverviewRow(Material.GRAPHIC_EQ,
+            I18N.get("overview.graphicsCard"), gpuInfo));
+
+        // BaseBoard
+        String baseboardInfo = baseboard.getManufacturer() + " " + baseboard.getModel()
+            + " " + baseboard.getVersion();
+        content.getChildren().add(createOverviewRow(Material.DEVELOPER_BOARD,
+            I18N.get("overview.baseboard"), baseboardInfo.trim()));
+
+        // Disk Storage
+        String diskInfo = diskStores.isEmpty() ? "N/A"
+            : diskStores.stream()
+            .map(d -> d.getModel().trim() + " " + SystemInfoService.formatBytes(d.getSize()))
+            .collect(Collectors.joining(" + "));
+        content.getChildren().add(createOverviewRow(Material.SD_STORAGE,
+            I18N.get("overview.diskStorage"), diskInfo));
+
+        // Display
+        String displayInfo = displays.isEmpty() ? "N/A"
+            : displays.size() + " " + I18N.get("overview.displaysConnected");
+        content.getChildren().add(createOverviewRow(Material.DESKTOP_WINDOWS,
+            I18N.get("overview.display"), displayInfo));
+
+        // Sound Card
+        String soundInfo = soundCards.isEmpty() ? "N/A"
+            : soundCards.stream()
+            .map(SoundCard::getName)
+            .collect(Collectors.joining(", "));
+        content.getChildren().add(createOverviewRow(Material.SPEAKER,
+            I18N.get("overview.soundCard"), soundInfo));
+
+        // Power Source
+        String powerInfo = powerSources.isEmpty() ? "N/A"
+            : powerSources.stream()
+            .map(ps -> ps.getName() + " " + ps.getDeviceName()
+                + " " + ps.getCurrentCapacity() + "/" + ps.getMaxCapacity()
+                + "(" + ps.getChemistry() + ")")
+            .collect(Collectors.joining(", "));
+        content.getChildren().add(createOverviewRow(Material.BATTERY_STD,
+            I18N.get("overview.powerSource"), powerInfo));
+
+        // Firmware
+        String firmwareInfo = firmware.getManufacturer() + " " + firmware.getName()
+            + " " + firmware.getVersion() + " " + firmware.getReleaseDate();
+        content.getChildren().add(createOverviewRow(Material.SECURITY,
+            I18N.get("overview.firmware"), firmwareInfo.trim()));
 
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
@@ -172,6 +223,7 @@ public class MainController {
     private void buildDetailTab() {
         Tab tab = new Tab(I18N.get("tab.detail"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.INFO));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -220,6 +272,7 @@ public class MainController {
     private void buildMemoryTab() {
         Tab tab = new Tab(I18N.get("tab.memory"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.MEMORY));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -306,6 +359,7 @@ public class MainController {
     private void buildCpuTab() {
         Tab tab = new Tab(I18N.get("tab.cpu"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.DEVELOPER_BOARD));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -364,6 +418,7 @@ public class MainController {
     private void buildStorageTab() {
         Tab tab = new Tab(I18N.get("tab.storage"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.SD_STORAGE));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -423,6 +478,7 @@ public class MainController {
     private void buildNetworkTab() {
         Tab tab = new Tab(I18N.get("tab.network"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.NETWORK_WIFI));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -462,6 +518,7 @@ public class MainController {
     private void buildVariablesTab() {
         Tab tab = new Tab(I18N.get("tab.variables"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.CODE));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -497,6 +554,7 @@ public class MainController {
     private void buildProcessTab() {
         Tab tab = new Tab(I18N.get("tab.processes"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.APPS));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -575,6 +633,7 @@ public class MainController {
     private void buildUsbDevicesTab() {
         Tab tab = new Tab(I18N.get("tab.usbDevices"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.USB));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -618,6 +677,7 @@ public class MainController {
     private void buildPowerTab() {
         Tab tab = new Tab(I18N.get("tab.power"));
         tab.setClosable(false);
+        tab.setGraphic(createTabIcon(Material.BATTERY_STD));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -712,5 +772,30 @@ public class MainController {
         valLabel.setWrapText(true);
         grid.add(keyLabel, 0, row);
         grid.add(valLabel, 1, row);
+    }
+
+    private FontIcon createTabIcon(Material icon) {
+        FontIcon fontIcon = new FontIcon(icon);
+        fontIcon.setIconSize(16);
+        return fontIcon;
+    }
+
+    private HBox createOverviewRow(Material icon, String label, String value) {
+        FontIcon fontIcon = new FontIcon(icon);
+        fontIcon.setIconSize(18);
+
+        Label nameLabel = new Label(label);
+        nameLabel.setStyle("-fx-font-weight: bold;");
+        nameLabel.setMinWidth(120);
+        nameLabel.setPrefWidth(120);
+
+        Label valueLabel = new Label(value != null ? value : "N/A");
+        valueLabel.setWrapText(true);
+
+        HBox row = new HBox(10, fontIcon, nameLabel, valueLabel);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(5, 10, 5, 10));
+        row.setStyle("-fx-background-color: -color-bg-subtle; -fx-background-radius: 4;");
+        return row;
     }
 }
