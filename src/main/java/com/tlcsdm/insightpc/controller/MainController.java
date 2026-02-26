@@ -6,9 +6,9 @@ import com.tlcsdm.insightpc.controller.tab.*;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material.Material;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,12 +90,13 @@ public class MainController {
         alert.setTitle(I18N.get("menu.about"));
         alert.setHeaderText(I18N.get("app.title"));
         alert.setContentText(I18N.get("about.description"));
-        FontIcon icon = new FontIcon(Material.COMPUTER);
-        icon.setIconSize(48);
-        alert.setGraphic(icon);
+        Image logoImage = new Image(getClass().getResourceAsStream("/com/tlcsdm/insightpc/logo.png"));
+        alert.setGraphic(new ImageView(logoImage));
         if (primaryStage != null) {
             alert.initOwner(primaryStage);
         }
+        Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+        alertStage.getIcons().add(logoImage);
         alert.showAndWait();
     }
 

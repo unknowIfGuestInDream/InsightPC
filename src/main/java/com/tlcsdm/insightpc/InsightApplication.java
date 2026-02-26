@@ -8,12 +8,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material.Material;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,13 +72,8 @@ public class InsightApplication extends Application {
 
     private void setStageIcon(Stage stage) {
         try {
-            FontIcon icon = new FontIcon(Material.COMPUTER);
-            icon.setIconSize(32);
-            icon.setIconColor(Color.web("#1976D2"));
-            SnapshotParameters params = new SnapshotParameters();
-            params.setFill(Color.TRANSPARENT);
-            WritableImage image = icon.snapshot(params, null);
-            stage.getIcons().add(image);
+            Image icon = new Image(getClass().getResourceAsStream("logo.png"));
+            stage.getIcons().add(icon);
         } catch (Exception e) {
             LOG.warn("Could not set application icon", e);
         }

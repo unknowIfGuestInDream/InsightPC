@@ -21,7 +21,7 @@ module com.tlcsdm.insightpc {
     opens com.tlcsdm.insightpc to javafx.fxml, javafx.graphics;
     opens com.tlcsdm.insightpc.controller to javafx.fxml;
     opens com.tlcsdm.insightpc.config to com.dlsc.preferencesfx, javafx.base;
-    opens com.tlcsdm.insightpc.model to javafx.base, com.dlsc.preferencesfx;
+    opens com.tlcsdm.insightpc.model to javafx.base, com.dlsc.preferencesfx, com.google.gson;
 
     exports com.tlcsdm.insightpc;
     exports com.tlcsdm.insightpc.config;
