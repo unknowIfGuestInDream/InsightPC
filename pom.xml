@@ -40,6 +40,7 @@
         <controlsfx.version>11.2.3</controlsfx.version>
         <preferencesfx.version>11.17.0</preferencesfx.version>
         <atlantafx.version>2.1.0</atlantafx.version>
+        <ikonli.version>12.2.0</ikonli.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
         <logback-classic.version>1.5.32</logback-classic.version>
         <gson.version>2.13.2</gson.version>
@@ -129,6 +130,18 @@
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
             <version>${atlantafx.version}</version>
+        </dependency>
+
+        <!-- Ikonli Icons -->
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-javafx</artifactId>
+            <version>${ikonli.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-material-pack</artifactId>
+            <version>${ikonli.version}</version>
         </dependency>
 
         <!-- OSHI - Operating System and Hardware Information -->
