@@ -203,7 +203,7 @@ public class MainController {
             : powerSources.stream()
             .map(ps -> ps.getName() + " " + ps.getDeviceName()
                 + " " + ps.getCurrentCapacity() + "/" + ps.getMaxCapacity()
-                + "(" + ps.getChemistry() + ")")
+                + " (" + ps.getChemistry() + ")")
             .collect(Collectors.joining(", "));
         content.getChildren().add(createOverviewRow(Material.BATTERY_STD,
             I18N.get("overview.powerSource"), powerInfo));
