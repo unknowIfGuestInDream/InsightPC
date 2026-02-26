@@ -26,6 +26,7 @@ module com.tlcsdm.insightpc {
     exports com.tlcsdm.insightpc;
     exports com.tlcsdm.insightpc.config;
     exports com.tlcsdm.insightpc.controller;
+    exports com.tlcsdm.insightpc.controller.tab;
     exports com.tlcsdm.insightpc.model;
     exports com.tlcsdm.insightpc.service;
 }
