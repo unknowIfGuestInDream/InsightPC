@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,18 +45,22 @@ public class MainController {
     public void initialize() {
         statusLabel.setText(I18N.get("status.ready"));
         systemInfoService = new SystemInfoService();
-        scheduler = Executors.newScheduledThreadPool(1, r -> {
+        scheduler = Executors.newScheduledThreadPool(2, r -> {
             Thread t = new Thread(r, "insightpc-refresh");
             t.setDaemon(true);
             return t;
         });
 
         buildOverviewTab();
-        buildCpuTab();
+        buildDetailTab();
         buildMemoryTab();
-        buildDiskTab();
+        buildCpuTab();
+        buildStorageTab();
         buildNetworkTab();
+        buildVariablesTab();
         buildProcessTab();
+        buildUsbDevicesTab();
+        buildPowerTab();
 
         statusLabel.setText(I18N.get("status.loaded"));
         LOG.info("All tabs initialized");
@@ -163,57 +169,47 @@ public class MainController {
         tabPane.getTabs().add(tab);
     }
 
-    private void buildCpuTab() {
-        Tab tab = new Tab(I18N.get("tab.cpu"));
+    private void buildDetailTab() {
+        Tab tab = new Tab(I18N.get("tab.detail"));
         tab.setClosable(false);
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
 
-        CentralProcessor cpu = systemInfoService.getProcessor();
-        CentralProcessor.ProcessorIdentifier id = cpu.getProcessorIdentifier();
+        ComputerSystem cs = systemInfoService.getComputerSystem();
 
-        content.getChildren().add(createSectionLabel(I18N.get("cpu.info")));
-        GridPane grid = createInfoGrid();
+        // Computer System section
+        content.getChildren().add(createSectionLabel(I18N.get("detail.computerSystem")));
+        GridPane csGrid = createInfoGrid();
         int row = 0;
-        addGridRow(grid, row++, I18N.get("cpu.name"), id.getName());
-        addGridRow(grid, row++, I18N.get("cpu.vendor"), id.getVendor());
-        addGridRow(grid, row++, I18N.get("cpu.family"), id.getFamily());
-        addGridRow(grid, row++, I18N.get("cpu.model"), id.getModel());
-        addGridRow(grid, row++, I18N.get("cpu.stepping"), id.getStepping());
-        addGridRow(grid, row++, I18N.get("cpu.identifier"), id.getIdentifier());
-        addGridRow(grid, row++, I18N.get("cpu.microarchitecture"), id.getMicroarchitecture());
-        addGridRow(grid, row++, I18N.get("cpu.physicalCores"),
-            String.valueOf(cpu.getPhysicalProcessorCount()));
-        addGridRow(grid, row++, I18N.get("cpu.logicalCores"),
-            String.valueOf(cpu.getLogicalProcessorCount()));
-        addGridRow(grid, row++, I18N.get("cpu.maxFreq"),
-            String.format("%.2f GHz", cpu.getMaxFreq() / 1_000_000_000.0));
-        content.getChildren().add(grid);
+        addGridRow(csGrid, row++, I18N.get("detail.manufacturer"), cs.getManufacturer());
+        addGridRow(csGrid, row++, I18N.get("detail.model"), cs.getModel());
+        addGridRow(csGrid, row++, I18N.get("detail.serialNumber"), cs.getSerialNumber());
+        addGridRow(csGrid, row++, I18N.get("detail.hardwareUUID"), cs.getHardwareUUID());
+        content.getChildren().add(csGrid);
 
-        // CPU usage progress bar
-        content.getChildren().add(createSectionLabel(I18N.get("cpu.usage")));
-        ProgressBar cpuBar = new ProgressBar(0);
-        cpuBar.setMaxWidth(Double.MAX_VALUE);
-        cpuBar.setPrefHeight(25);
-        Label cpuUsageLabel = new Label("0%");
-        cpuUsageLabel.setAlignment(Pos.CENTER);
+        // Baseboard section
+        Baseboard baseboard = cs.getBaseboard();
+        content.getChildren().add(createSectionLabel(I18N.get("detail.baseboard")));
+        GridPane bbGrid = createInfoGrid();
+        row = 0;
+        addGridRow(bbGrid, row++, I18N.get("detail.baseboardManufacturer"), baseboard.getManufacturer());
+        addGridRow(bbGrid, row++, I18N.get("detail.baseboardModel"), baseboard.getModel());
+        addGridRow(bbGrid, row++, I18N.get("detail.baseboardVersion"), baseboard.getVersion());
+        addGridRow(bbGrid, row++, I18N.get("detail.baseboardSerialNumber"), baseboard.getSerialNumber());
+        content.getChildren().add(bbGrid);
 
-        HBox usageBox = new HBox(10, cpuBar, cpuUsageLabel);
-        usageBox.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(cpuBar, Priority.ALWAYS);
-        content.getChildren().add(usageBox);
-
-        // Schedule CPU usage updates
-        final long[][] prevTicksHolder = {cpu.getSystemCpuLoadTicks()};
-        scheduler.scheduleAtFixedRate(() -> {
-            double cpuLoad = cpu.getSystemCpuLoadBetweenTicks(prevTicksHolder[0]);
-            prevTicksHolder[0] = cpu.getSystemCpuLoadTicks();
-            Platform.runLater(() -> {
-                cpuBar.setProgress(cpuLoad);
-                cpuUsageLabel.setText(String.format("%.1f%%", cpuLoad * 100));
-            });
-        }, 1, 2, TimeUnit.SECONDS);
+        // Firmware section
+        Firmware firmware = cs.getFirmware();
+        content.getChildren().add(createSectionLabel(I18N.get("detail.firmware")));
+        GridPane fwGrid = createInfoGrid();
+        row = 0;
+        addGridRow(fwGrid, row++, I18N.get("detail.firmwareManufacturer"), firmware.getManufacturer());
+        addGridRow(fwGrid, row++, I18N.get("detail.firmwareName"), firmware.getName());
+        addGridRow(fwGrid, row++, I18N.get("detail.firmwareVersion"), firmware.getVersion());
+        addGridRow(fwGrid, row++, I18N.get("detail.firmwareReleaseDate"), firmware.getReleaseDate());
+        addGridRow(fwGrid, row++, I18N.get("detail.firmwareDescription"), firmware.getDescription());
+        content.getChildren().add(fwGrid);
 
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
@@ -307,8 +303,66 @@ public class MainController {
         tabPane.getTabs().add(tab);
     }
 
-    private void buildDiskTab() {
-        Tab tab = new Tab(I18N.get("tab.disk"));
+    private void buildCpuTab() {
+        Tab tab = new Tab(I18N.get("tab.cpu"));
+        tab.setClosable(false);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(15));
+
+        CentralProcessor cpu = systemInfoService.getProcessor();
+        CentralProcessor.ProcessorIdentifier id = cpu.getProcessorIdentifier();
+
+        content.getChildren().add(createSectionLabel(I18N.get("cpu.info")));
+        GridPane grid = createInfoGrid();
+        int row = 0;
+        addGridRow(grid, row++, I18N.get("cpu.name"), id.getName());
+        addGridRow(grid, row++, I18N.get("cpu.vendor"), id.getVendor());
+        addGridRow(grid, row++, I18N.get("cpu.family"), id.getFamily());
+        addGridRow(grid, row++, I18N.get("cpu.model"), id.getModel());
+        addGridRow(grid, row++, I18N.get("cpu.stepping"), id.getStepping());
+        addGridRow(grid, row++, I18N.get("cpu.identifier"), id.getIdentifier());
+        addGridRow(grid, row++, I18N.get("cpu.microarchitecture"), id.getMicroarchitecture());
+        addGridRow(grid, row++, I18N.get("cpu.physicalCores"),
+            String.valueOf(cpu.getPhysicalProcessorCount()));
+        addGridRow(grid, row++, I18N.get("cpu.logicalCores"),
+            String.valueOf(cpu.getLogicalProcessorCount()));
+        addGridRow(grid, row++, I18N.get("cpu.maxFreq"),
+            String.format("%.2f GHz", cpu.getMaxFreq() / 1_000_000_000.0));
+        content.getChildren().add(grid);
+
+        // CPU usage progress bar
+        content.getChildren().add(createSectionLabel(I18N.get("cpu.usage")));
+        ProgressBar cpuBar = new ProgressBar(0);
+        cpuBar.setMaxWidth(Double.MAX_VALUE);
+        cpuBar.setPrefHeight(25);
+        Label cpuUsageLabel = new Label("0%");
+        cpuUsageLabel.setAlignment(Pos.CENTER);
+
+        HBox usageBox = new HBox(10, cpuBar, cpuUsageLabel);
+        usageBox.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(cpuBar, Priority.ALWAYS);
+        content.getChildren().add(usageBox);
+
+        // Schedule CPU usage updates
+        final long[][] prevTicksHolder = {cpu.getSystemCpuLoadTicks()};
+        scheduler.scheduleAtFixedRate(() -> {
+            double cpuLoad = cpu.getSystemCpuLoadBetweenTicks(prevTicksHolder[0]);
+            prevTicksHolder[0] = cpu.getSystemCpuLoadTicks();
+            Platform.runLater(() -> {
+                cpuBar.setProgress(cpuLoad);
+                cpuUsageLabel.setText(String.format("%.1f%%", cpuLoad * 100));
+            });
+        }, 1, 2, TimeUnit.SECONDS);
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        tabPane.getTabs().add(tab);
+    }
+
+    private void buildStorageTab() {
+        Tab tab = new Tab(I18N.get("tab.storage"));
         tab.setClosable(false);
 
         VBox content = new VBox(10);
@@ -316,34 +370,34 @@ public class MainController {
 
         List<HWDiskStore> diskStores = systemInfoService.getDiskStores();
 
-        content.getChildren().add(createSectionLabel(I18N.get("disk.info")));
+        content.getChildren().add(createSectionLabel(I18N.get("storage.info")));
 
         for (HWDiskStore disk : diskStores) {
             GridPane grid = createInfoGrid();
             int row = 0;
-            addGridRow(grid, row++, I18N.get("disk.name"), disk.getName());
-            addGridRow(grid, row++, I18N.get("disk.model"), disk.getModel());
-            addGridRow(grid, row++, I18N.get("disk.serial"), disk.getSerial());
-            addGridRow(grid, row++, I18N.get("disk.size"),
+            addGridRow(grid, row++, I18N.get("storage.name"), disk.getName());
+            addGridRow(grid, row++, I18N.get("storage.model"), disk.getModel());
+            addGridRow(grid, row++, I18N.get("storage.serial"), disk.getSerial());
+            addGridRow(grid, row++, I18N.get("storage.size"),
                 SystemInfoService.formatBytes(disk.getSize()));
-            addGridRow(grid, row++, I18N.get("disk.reads"),
+            addGridRow(grid, row++, I18N.get("storage.reads"),
                 String.valueOf(disk.getReads()));
-            addGridRow(grid, row++, I18N.get("disk.writes"),
+            addGridRow(grid, row++, I18N.get("storage.writes"),
                 String.valueOf(disk.getWrites()));
             content.getChildren().add(grid);
             content.getChildren().add(new Separator());
         }
 
         // File system info
-        content.getChildren().add(createSectionLabel(I18N.get("disk.fileSystem")));
+        content.getChildren().add(createSectionLabel(I18N.get("storage.fileSystem")));
         systemInfoService.getOperatingSystem().getFileSystem().getFileStores().forEach(fs -> {
             GridPane fsGrid = createInfoGrid();
             int row = 0;
-            addGridRow(fsGrid, row++, I18N.get("disk.mount"), fs.getMount());
-            addGridRow(fsGrid, row++, I18N.get("disk.fsType"), fs.getType());
-            addGridRow(fsGrid, row++, I18N.get("disk.totalSpace"),
+            addGridRow(fsGrid, row++, I18N.get("storage.mount"), fs.getMount());
+            addGridRow(fsGrid, row++, I18N.get("storage.fsType"), fs.getType());
+            addGridRow(fsGrid, row++, I18N.get("storage.totalSpace"),
                 SystemInfoService.formatBytes(fs.getTotalSpace()));
-            addGridRow(fsGrid, row++, I18N.get("disk.usableSpace"),
+            addGridRow(fsGrid, row++, I18N.get("storage.usableSpace"),
                 SystemInfoService.formatBytes(fs.getUsableSpace()));
 
             long total = fs.getTotalSpace();
@@ -398,6 +452,41 @@ public class MainController {
             content.getChildren().add(grid);
             content.getChildren().add(new Separator());
         }
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        tabPane.getTabs().add(tab);
+    }
+
+    private void buildVariablesTab() {
+        Tab tab = new Tab(I18N.get("tab.variables"));
+        tab.setClosable(false);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(15));
+
+        content.getChildren().add(createSectionLabel(I18N.get("variables.info")));
+
+        TableView<Map.Entry<String, String>> envTable = new TableView<>();
+        envTable.setPrefHeight(500);
+
+        TableColumn<Map.Entry<String, String>, String> nameCol = new TableColumn<>(I18N.get("variables.name"));
+        nameCol.setCellValueFactory(p ->
+            new javafx.beans.property.SimpleStringProperty(p.getValue().getKey()));
+        nameCol.setPrefWidth(250);
+
+        TableColumn<Map.Entry<String, String>, String> valueCol = new TableColumn<>(I18N.get("variables.value"));
+        valueCol.setCellValueFactory(p ->
+            new javafx.beans.property.SimpleStringProperty(p.getValue().getValue()));
+        valueCol.setPrefWidth(600);
+
+        envTable.getColumns().addAll(nameCol, valueCol);
+
+        Map<String, String> sortedEnv = new TreeMap<>(System.getenv());
+        envTable.getItems().addAll(sortedEnv.entrySet());
+
+        content.getChildren().add(envTable);
 
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
@@ -476,6 +565,117 @@ public class MainController {
         });
 
         content.getChildren().addAll(processTable, refreshBtn);
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        tabPane.getTabs().add(tab);
+    }
+
+    private void buildUsbDevicesTab() {
+        Tab tab = new Tab(I18N.get("tab.usbDevices"));
+        tab.setClosable(false);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(15));
+
+        content.getChildren().add(createSectionLabel(I18N.get("usb.info")));
+
+        List<UsbDevice> usbDevices = systemInfoService.getUsbDevices();
+        TreeView<String> usbTree = new TreeView<>();
+        TreeItem<String> rootItem = new TreeItem<>(I18N.get("usb.info"));
+        rootItem.setExpanded(true);
+
+        for (UsbDevice device : usbDevices) {
+            buildUsbTreeItem(rootItem, device);
+        }
+
+        usbTree.setRoot(rootItem);
+        usbTree.setPrefHeight(500);
+        content.getChildren().add(usbTree);
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        tabPane.getTabs().add(tab);
+    }
+
+    private void buildUsbTreeItem(TreeItem<String> parent, UsbDevice device) {
+        String label = device.getName();
+        if (device.getVendor() != null && !device.getVendor().isEmpty()) {
+            label += " (" + device.getVendor() + ")";
+        }
+        TreeItem<String> item = new TreeItem<>(label);
+        item.setExpanded(true);
+
+        for (UsbDevice child : device.getConnectedDevices()) {
+            buildUsbTreeItem(item, child);
+        }
+
+        parent.getChildren().add(item);
+    }
+
+    private void buildPowerTab() {
+        Tab tab = new Tab(I18N.get("tab.power"));
+        tab.setClosable(false);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(15));
+
+        List<PowerSource> powerSources = systemInfoService.getPowerSources();
+
+        content.getChildren().add(createSectionLabel(I18N.get("power.info")));
+
+        if (powerSources.isEmpty()) {
+            content.getChildren().add(new Label(I18N.get("power.unknown")));
+        } else {
+            for (PowerSource ps : powerSources) {
+                GridPane grid = createInfoGrid();
+                int row = 0;
+                addGridRow(grid, row++, I18N.get("power.name"), ps.getName());
+                addGridRow(grid, row++, I18N.get("power.deviceName"), ps.getDeviceName());
+                addGridRow(grid, row++, I18N.get("power.remainingCapacityPercent"),
+                    String.format("%.1f%%", ps.getRemainingCapacityPercent() * 100));
+
+                double timeRemaining = ps.getTimeRemainingEstimated();
+                String timeStr;
+                if (timeRemaining < 0) {
+                    timeStr = ps.isPowerOnLine() ? I18N.get("power.unlimited") : I18N.get("power.calculating");
+                } else {
+                    timeStr = SystemInfoService.formatUptime((long) timeRemaining);
+                }
+                addGridRow(grid, row++, I18N.get("power.timeRemainingEstimated"), timeStr);
+
+                addGridRow(grid, row++, I18N.get("power.voltage"),
+                    String.format("%.1f V", ps.getVoltage()));
+                addGridRow(grid, row++, I18N.get("power.amperage"),
+                    String.format("%.1f mA", ps.getAmperage()));
+                addGridRow(grid, row++, I18N.get("power.powerUsageRate"),
+                    String.format("%.1f mW", ps.getPowerUsageRate()));
+                addGridRow(grid, row++, I18N.get("power.powerOnLine"),
+                    String.valueOf(ps.isPowerOnLine()));
+                addGridRow(grid, row++, I18N.get("power.charging"),
+                    String.valueOf(ps.isCharging()));
+                addGridRow(grid, row++, I18N.get("power.discharging"),
+                    String.valueOf(ps.isDischarging()));
+                addGridRow(grid, row++, I18N.get("power.currentCapacity"),
+                    String.valueOf(ps.getCurrentCapacity()));
+                addGridRow(grid, row++, I18N.get("power.maxCapacity"),
+                    String.valueOf(ps.getMaxCapacity()));
+                addGridRow(grid, row++, I18N.get("power.designCapacity"),
+                    String.valueOf(ps.getDesignCapacity()));
+                addGridRow(grid, row++, I18N.get("power.cycleCount"),
+                    String.valueOf(ps.getCycleCount()));
+                addGridRow(grid, row++, I18N.get("power.chemistry"), ps.getChemistry());
+                addGridRow(grid, row++, I18N.get("power.manufacturer"), ps.getManufacturer());
+                addGridRow(grid, row++, I18N.get("power.serialNumber"), ps.getSerialNumber());
+                addGridRow(grid, row++, I18N.get("power.temperature"),
+                    String.format("%.1f °C", ps.getTemperature()));
+
+                content.getChildren().add(grid);
+                content.getChildren().add(new Separator());
+            }
+        }
 
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);

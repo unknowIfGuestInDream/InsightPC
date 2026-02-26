@@ -78,6 +78,31 @@ class SystemInfoServiceTest {
     }
 
     @Test
+    void testGetPowerSources() {
+        assertNotNull(service.getPowerSources(), "Power sources should not be null");
+    }
+
+    @Test
+    void testGetUsbDevices() {
+        assertNotNull(service.getUsbDevices(), "USB devices should not be null");
+    }
+
+    @Test
+    void testGetSensors() {
+        assertNotNull(service.getSensors(), "Sensors should not be null");
+    }
+
+    @Test
+    void testGetGraphicsCards() {
+        assertNotNull(service.getGraphicsCards(), "Graphics cards should not be null");
+    }
+
+    @Test
+    void testGetSoundCards() {
+        assertNotNull(service.getSoundCards(), "Sound cards should not be null");
+    }
+
+    @Test
     void testFormatBytes() {
         assertEquals("N/A", SystemInfoService.formatBytes(-1));
         assertEquals("0 B", SystemInfoService.formatBytes(0));
