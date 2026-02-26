@@ -1,8 +1,8 @@
-package com.tlcsdm.fxtemplate;
+package com.tlcsdm.insightpc;
 
-import com.tlcsdm.fxtemplate.config.AppSettings;
-import com.tlcsdm.fxtemplate.config.I18N;
-import com.tlcsdm.fxtemplate.controller.MainController;
+import com.tlcsdm.insightpc.config.AppSettings;
+import com.tlcsdm.insightpc.config.I18N;
+import com.tlcsdm.insightpc.controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Main JavaFX Application for the template tool.
+ * Main JavaFX Application for InsightPC - OSHI system information visualizer.
  */
-public class TemplateApplication extends Application {
+public class InsightApplication extends Application {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TemplateApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InsightApplication.class);
 
     private MainController controller;
 
@@ -37,7 +37,7 @@ public class TemplateApplication extends Application {
         controller = loader.getController();
         controller.setPrimaryStage(primaryStage);
 
-        Scene scene = new Scene(root, 900, 700);
+        Scene scene = new Scene(root, 1000, 700);
 
         primaryStage.setTitle(I18N.get("app.title"));
         primaryStage.setScene(scene);
@@ -52,7 +52,7 @@ public class TemplateApplication extends Application {
         });
 
         primaryStage.show();
-        LOG.info("Application started");
+        LOG.info("InsightPC application started");
     }
 
     @Override
