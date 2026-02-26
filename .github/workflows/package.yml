@@ -48,7 +48,7 @@ jobs:
           $stagingDir = 'staging'
           if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir | Out-Null }
 
-          Copy-Item -Path 'target\javafx-tool-template.jar' -Destination $stagingDir
+          Copy-Item -Path 'target\insightpc.jar' -Destination $stagingDir
           Copy-Item -Path 'target\lib' -Destination $stagingDir -Recurse
           Copy-Item -Path 'README.md' -Destination $stagingDir
           Copy-Item -Path 'LICENSE' -Destination $stagingDir
@@ -72,7 +72,7 @@ jobs:
           echo "APP_VERSION=$version" >> $GITHUB_ENV
 
           mkdir -p staging
-          cp target/javafx-tool-template.jar staging/
+          cp target/insightpc.jar staging/
           cp -r target/lib staging/
           cp README.md LICENSE staging/
           cp scripts/linux/* staging/
@@ -95,7 +95,7 @@ jobs:
           echo "APP_VERSION=$version" >> $GITHUB_ENV
 
           mkdir -p staging
-          cp target/javafx-tool-template.jar staging/
+          cp target/insightpc.jar staging/
           cp -r target/lib staging/
           cp README.md LICENSE staging/
           cp scripts/mac/* staging/
@@ -111,6 +111,6 @@ jobs:
       - name: Upload packaged artifact
         uses: actions/upload-artifact@v6
         with:
-          name: javafx-tool-template-${{ matrix.os }}
+          name: insightpc-${{ matrix.os }}
           path: staging/
           retention-days: 7

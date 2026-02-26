@@ -1,4 +1,4 @@
-package com.tlcsdm.fxtemplate.config;
+package com.tlcsdm.insightpc.config;
 
 import org.junit.jupiter.api.Test;
 

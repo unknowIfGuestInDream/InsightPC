@@ -5,7 +5,7 @@
 # All rights reserved.
 #
 
-APP_NAME=javafx-tool-template.jar
+APP_NAME=insightpc.jar
 
 tpid=$(ps -ef|grep $APP_NAME|grep -v grep|grep -v kill|awk '{print $2}')
 if [ ${tpid} ]; then
