@@ -8,7 +8,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignW;
 import oshi.hardware.NetworkIF;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class NetworkTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.network"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.NETWORK_WIFI));
+        tab.setGraphic(createTabIcon(MaterialDesignW.WEB));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));

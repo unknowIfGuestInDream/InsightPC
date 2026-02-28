@@ -1,0 +1,294 @@
+/*
+ * InsightPC - Flat UI Style Sheet
+ * MooInfo-inspired clean, modern look for JavaFX components.
+ * Applied on top of AtlantaFX base themes.
+ */
+
+/* ============================================================
+   TabPane - Flat tabs with bottom highlight
+   ============================================================ */
+.tab-pane {
+    -fx-tab-min-height: 32px;
+    -fx-tab-max-height: 32px;
+}
+
+.tab-pane > .tab-header-area {
+    -fx-padding: 0;
+}
+
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 6 16 6 16;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-border-color: transparent transparent -color-accent-emphasis transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-background-color: transparent;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:hover:!selected {
+    -fx-background-color: -color-bg-subtle;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-font-size: 13px;
+}
+
+.tab-pane > .tab-content-area {
+    -fx-background-color: -color-bg-default;
+    -fx-padding: 0;
+}
+
+/* ============================================================
+   TableView - Clean, minimal borders
+   ============================================================ */
+.table-view {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-background-color: -color-bg-default;
+    -fx-background-insets: 0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #e0e0e0 transparent transparent;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 6 8 6 8;
+    -fx-font-size: 12px;
+}
+
+.table-view .column-header:last-visible {
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.table-row-cell {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: transparent transparent #f0f0f0 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-row-cell:even {
+    -fx-background-color: -color-bg-default;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: -color-bg-default;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: -color-accent-subtle;
+}
+
+.table-view .filler {
+    -fx-background-color: -color-bg-subtle;
+}
+
+/* ============================================================
+   ProgressBar - Flat, modern style
+   ============================================================ */
+.progress-bar {
+    -fx-indeterminate-bar-length: 60;
+    -fx-indeterminate-bar-escape: true;
+    -fx-indeterminate-bar-flip: true;
+    -fx-indeterminate-bar-animation-time: 2;
+}
+
+.progress-bar > .track {
+    -fx-background-color: #e8e8e8;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4;
+    -fx-padding: 0;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+    -fx-padding: 0;
+}
+
+/* ============================================================
+   ScrollPane - Clean, borderless
+   ============================================================ */
+.scroll-pane {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: -color-bg-default;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar > .thumb {
+    -fx-background-color: #c0c0c0;
+    -fx-background-radius: 4;
+    -fx-background-insets: 2;
+}
+
+.scroll-bar > .thumb:hover {
+    -fx-background-color: #a0a0a0;
+}
+
+.scroll-bar > .increment-button,
+.scroll-bar > .decrement-button {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-padding: 0;
+    -fx-shape: "";
+}
+
+/* ============================================================
+   TreeView - Clean borders
+   ============================================================ */
+.tree-view {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-background-color: -color-bg-default;
+}
+
+.tree-cell:selected {
+    -fx-background-color: -color-accent-subtle;
+}
+
+/* ============================================================
+   MenuBar - Flat style
+   ============================================================ */
+.menu-bar {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0;
+}
+
+/* ============================================================
+   Button - Flat style
+   ============================================================ */
+.button {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+}
+
+/* ============================================================
+   Charts - Clean, modern appearance
+   ============================================================ */
+.chart {
+    -fx-padding: 5;
+}
+
+.chart-plot-background {
+    -fx-background-color: -color-bg-default;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+
+.chart-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* LineChart */
+.chart-series-line {
+    -fx-stroke-width: 2px;
+}
+
+.chart-line-symbol {
+    -fx-background-radius: 3px;
+    -fx-padding: 3px;
+}
+
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines {
+    -fx-stroke: #f0f0f0;
+    -fx-stroke-dash-array: 4 4;
+}
+
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+}
+
+.chart-alternative-column-fill {
+    -fx-fill: transparent;
+}
+
+/* PieChart */
+.chart-pie {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.chart-pie-label-line {
+    -fx-stroke: #999999;
+}
+
+/* Axis styling */
+.axis {
+    -fx-tick-label-font-size: 11px;
+}
+
+.axis-label {
+    -fx-font-size: 12px;
+}
+
+/* ============================================================
+   Custom style classes
+   ============================================================ */
+.section-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 0 5 0;
+}
+
+.info-row {
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 4;
+    -fx-padding: 5 10 5 10;
+}
+
+.key-label {
+    -fx-font-weight: bold;
+}
+
+/* Separator */
+.separator > .line {
+    -fx-border-color: #e8e8e8;
+    -fx-border-width: 1 0 0 0;
+}
