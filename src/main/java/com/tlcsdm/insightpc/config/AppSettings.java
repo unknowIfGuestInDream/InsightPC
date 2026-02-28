@@ -98,7 +98,7 @@ public class AppSettings {
                             themeProperty)
                     )
                 )
-            ).persistWindowState(true)
+            ).persistWindowState(false)
                 .saveSettings(true)
                 .debugHistoryMode(false)
                 .buttonsVisibility(false)

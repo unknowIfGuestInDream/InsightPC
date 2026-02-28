@@ -40,17 +40,22 @@ public class PowerTabBuilder extends AbstractTabBuilder {
         if (powerSources.isEmpty()) {
             content.getChildren().add(new Label(I18N.get("power.unknown")));
         } else {
+            String na = I18N.get("power.notAvailable");
             for (PowerSource ps : powerSources) {
+                ps.updateAttributes();
                 GridPane grid = createInfoGrid();
                 int row = 0;
                 addGridRow(grid, row++, I18N.get("power.name"), ps.getName());
                 addGridRow(grid, row++, I18N.get("power.deviceName"), ps.getDeviceName());
                 addGridRow(grid, row++, I18N.get("power.remainingCapacityPercent"),
-                    String.format("%.1f%%", ps.getRemainingCapacityPercent() * 100));
+                    ps.getRemainingCapacityPercent() >= 0
+                        ? String.format("%.1f%%", ps.getRemainingCapacityPercent() * 100) : na);
 
                 double timeRemaining = ps.getTimeRemainingEstimated();
                 String timeStr;
-                if (timeRemaining < 0) {
+                if (timeRemaining < -1) {
+                    timeStr = I18N.get("power.unlimited");
+                } else if (timeRemaining < 0) {
                     timeStr = ps.isPowerOnLine() ? I18N.get("power.unlimited") : I18N.get("power.calculating");
                 } else {
                     timeStr = SystemInfoService.formatUptime((long) timeRemaining);
@@ -58,11 +63,11 @@ public class PowerTabBuilder extends AbstractTabBuilder {
                 addGridRow(grid, row++, I18N.get("power.timeRemainingEstimated"), timeStr);
 
                 addGridRow(grid, row++, I18N.get("power.voltage"),
-                    String.format("%.1f V", ps.getVoltage()));
+                    ps.getVoltage() >= 0 ? String.format("%.1f V", ps.getVoltage()) : na);
                 addGridRow(grid, row++, I18N.get("power.amperage"),
                     String.format("%.1f mA", ps.getAmperage()));
                 addGridRow(grid, row++, I18N.get("power.powerUsageRate"),
-                    String.format("%.1f mW", ps.getPowerUsageRate()));
+                    ps.getPowerUsageRate() >= 0 ? String.format("%.1f mW", ps.getPowerUsageRate()) : na);
                 addGridRow(grid, row++, I18N.get("power.powerOnLine"),
                     String.valueOf(ps.isPowerOnLine()));
                 addGridRow(grid, row++, I18N.get("power.charging"),
@@ -70,18 +75,18 @@ public class PowerTabBuilder extends AbstractTabBuilder {
                 addGridRow(grid, row++, I18N.get("power.discharging"),
                     String.valueOf(ps.isDischarging()));
                 addGridRow(grid, row++, I18N.get("power.currentCapacity"),
-                    String.valueOf(ps.getCurrentCapacity()));
+                    ps.getCurrentCapacity() > 0 ? String.valueOf(ps.getCurrentCapacity()) : na);
                 addGridRow(grid, row++, I18N.get("power.maxCapacity"),
-                    String.valueOf(ps.getMaxCapacity()));
+                    ps.getMaxCapacity() > 0 ? String.valueOf(ps.getMaxCapacity()) : na);
                 addGridRow(grid, row++, I18N.get("power.designCapacity"),
-                    String.valueOf(ps.getDesignCapacity()));
+                    ps.getDesignCapacity() > 0 ? String.valueOf(ps.getDesignCapacity()) : na);
                 addGridRow(grid, row++, I18N.get("power.cycleCount"),
-                    String.valueOf(ps.getCycleCount()));
+                    ps.getCycleCount() >= 0 ? String.valueOf(ps.getCycleCount()) : na);
                 addGridRow(grid, row++, I18N.get("power.chemistry"), ps.getChemistry());
                 addGridRow(grid, row++, I18N.get("power.manufacturer"), ps.getManufacturer());
                 addGridRow(grid, row++, I18N.get("power.serialNumber"), ps.getSerialNumber());
                 addGridRow(grid, row++, I18N.get("power.temperature"),
-                    String.format("%.1f °C", ps.getTemperature()));
+                    ps.getTemperature() > 0 ? String.format("%.1f °C", ps.getTemperature()) : na);
 
                 content.getChildren().add(grid);
                 content.getChildren().add(new Separator());
