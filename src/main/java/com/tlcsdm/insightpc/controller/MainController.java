@@ -91,7 +91,11 @@ public class MainController {
         alert.setHeaderText(I18N.get("app.title"));
         alert.setContentText(I18N.get("about.description"));
         Image logoImage = new Image(getClass().getResourceAsStream("/com/tlcsdm/insightpc/logo.png"));
-        alert.setGraphic(new ImageView(logoImage));
+        ImageView logoView = new ImageView(logoImage);
+        logoView.setFitWidth(64);
+        logoView.setFitHeight(64);
+        logoView.setPreserveRatio(true);
+        alert.setGraphic(logoView);
         if (primaryStage != null) {
             alert.initOwner(primaryStage);
         }
