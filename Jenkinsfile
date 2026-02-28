@@ -37,7 +37,6 @@ pipeline {
                             echo "no change, skip build"
                             currentBuild.getRawBuild().getExecutor().interrupt(Result.NOT_BUILT)
                             sleep(1)
-                            cleanWs()
                         }
                     }
                 }
@@ -54,11 +53,9 @@ pipeline {
             post {
                 failure {
                     echo 'Prepare JDK failed'
-                    cleanWs()
                 }
                 aborted {
                     echo 'Build aborted'
-                    cleanWs()
                 }
             }
         }
@@ -180,18 +177,12 @@ pipeline {
             }
         }
 
-        stage('Clean Workspace') {
-            steps {
-                script {
-                    sh "rm -f insightpc*.zip"
-                    sh "rm -f *linux*21*.tar.gz"
-                    sh "rm -f *mac*21*.tar.gz"
-                    sh "rm -f *windows*21*.zip"
-                    sh "rm -rf jdktemp jretemp"
-                }
-            }
-        }
+    }
 
+    post {
+        always {
+            cleanWs()
+        }
     }
 }
 
