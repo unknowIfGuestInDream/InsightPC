@@ -39,7 +39,7 @@
     -fx-background-color: transparent;
 }
 
-.tab-pane > .tab-header-area > .headers-region > .tab:hover:!selected {
+.tab-pane > .tab-header-area > .headers-region > .tab:hover:not(:selected) {
     -fx-background-color: -color-bg-subtle;
 }
 
