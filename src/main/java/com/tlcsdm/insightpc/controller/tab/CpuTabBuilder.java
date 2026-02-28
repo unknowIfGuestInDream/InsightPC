@@ -107,7 +107,6 @@ public class CpuTabBuilder extends AbstractTabBuilder {
             ProgressBar coreBar = new ProgressBar(0);
             coreBar.setMaxWidth(Double.MAX_VALUE);
             coreBar.setPrefHeight(18);
-            HBox.setHgrow(coreBar, Priority.ALWAYS);
             Label corePercent = new Label("0%");
             HBox coreRow = new HBox(5, coreBar, corePercent);
             coreRow.setAlignment(Pos.CENTER_LEFT);
@@ -154,7 +153,8 @@ public class CpuTabBuilder extends AbstractTabBuilder {
                 cpuBar.setProgress(cpuLoad);
                 cpuUsageLabel.setText(String.format("%.1f%%", cpuLoad * 100));
 
-                for (int i = 0; i < coreLoads.length && i < coreBars.length; i++) {
+                int updateCount = Math.min(coreLoads.length, coreBars.length);
+                for (int i = 0; i < updateCount; i++) {
                     coreBars[i].setProgress(coreLoads[i]);
                     coreLabels[i].setText(String.format("%.0f%%", coreLoads[i] * 100));
                 }
