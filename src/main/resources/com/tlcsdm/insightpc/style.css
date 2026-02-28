@@ -230,6 +230,15 @@
     -fx-stroke-width: 2px;
 }
 
+/* AreaChart */
+.chart-series-area-line {
+    -fx-stroke-width: 2px;
+}
+
+.chart-series-area-fill {
+    -fx-fill-opacity: 0.2;
+}
+
 .chart-line-symbol {
     -fx-background-radius: 3px;
     -fx-padding: 3px;
