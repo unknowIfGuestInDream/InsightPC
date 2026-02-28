@@ -7,7 +7,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignI;
 import oshi.hardware.Baseboard;
 import oshi.hardware.ComputerSystem;
 import oshi.hardware.Firmware;
@@ -27,7 +27,7 @@ public class DetailTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.detail"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.INFO));
+        tab.setGraphic(createTabIcon(MaterialDesignI.INFORMATION_OUTLINE));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));

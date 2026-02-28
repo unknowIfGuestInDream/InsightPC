@@ -9,6 +9,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material.Material;
 
@@ -32,7 +33,7 @@ public abstract class AbstractTabBuilder {
      */
     public abstract Tab build();
 
-    protected FontIcon createTabIcon(Material icon) {
+    protected FontIcon createTabIcon(Ikon icon) {
         FontIcon fontIcon = new FontIcon(icon);
         fontIcon.setIconSize(16);
         return fontIcon;
@@ -40,7 +41,7 @@ public abstract class AbstractTabBuilder {
 
     protected Label createSectionLabel(String text) {
         Label label = new Label(text);
-        label.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 10 0 5 0;");
+        label.getStyleClass().add("section-label");
         return label;
     }
 
@@ -60,19 +61,19 @@ public abstract class AbstractTabBuilder {
 
     protected void addGridRow(GridPane grid, int row, String key, String value) {
         Label keyLabel = new Label(key + ":");
-        keyLabel.setStyle("-fx-font-weight: bold;");
+        keyLabel.getStyleClass().add("key-label");
         Label valLabel = new Label(value != null ? value : "N/A");
         valLabel.setWrapText(true);
         grid.add(keyLabel, 0, row);
         grid.add(valLabel, 1, row);
     }
 
-    protected HBox createOverviewRow(Material icon, String label, String value) {
+    protected HBox createOverviewRow(Ikon icon, String label, String value) {
         FontIcon fontIcon = new FontIcon(icon);
         fontIcon.setIconSize(18);
 
         Label nameLabel = new Label(label);
-        nameLabel.setStyle("-fx-font-weight: bold;");
+        nameLabel.getStyleClass().add("key-label");
         nameLabel.setMinWidth(120);
         nameLabel.setPrefWidth(120);
 
@@ -81,8 +82,7 @@ public abstract class AbstractTabBuilder {
 
         HBox row = new HBox(10, fontIcon, nameLabel, valueLabel);
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setPadding(new Insets(5, 10, 5, 10));
-        row.setStyle("-fx-background-color: -color-bg-subtle; -fx-background-radius: 4;");
+        row.getStyleClass().add("info-row");
         return row;
     }
 }

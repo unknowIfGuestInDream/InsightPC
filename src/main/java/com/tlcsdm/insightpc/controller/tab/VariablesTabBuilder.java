@@ -9,7 +9,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,7 +29,7 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.variables"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.CODE));
+        tab.setGraphic(createTabIcon(MaterialDesignC.CODE_BRACES));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));

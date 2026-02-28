@@ -143,6 +143,11 @@
             <artifactId>ikonli-material-pack</artifactId>
             <version>${ikonli.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-materialdesign2-pack</artifactId>
+            <version>${ikonli.version}</version>
+        </dependency>
 
         <!-- OSHI - Operating System and Hardware Information -->
         <dependency>

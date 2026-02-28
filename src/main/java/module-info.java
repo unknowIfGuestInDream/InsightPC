@@ -17,6 +17,7 @@ module com.tlcsdm.insightpc {
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.material;
+    requires org.kordamp.ikonli.materialdesign2;
 
     opens com.tlcsdm.insightpc to javafx.fxml, javafx.graphics;
     opens com.tlcsdm.insightpc.controller to javafx.fxml;

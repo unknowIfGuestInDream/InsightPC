@@ -8,7 +8,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignU;
 import oshi.hardware.UsbDevice;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class UsbDevicesTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.usbDevices"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.USB));
+        tab.setGraphic(createTabIcon(MaterialDesignU.USB));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));

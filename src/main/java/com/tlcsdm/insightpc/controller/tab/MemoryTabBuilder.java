@@ -13,7 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.PhysicalMemory;
 import oshi.hardware.VirtualMemory;
@@ -35,7 +35,7 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.memory"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.MEMORY));
+        tab.setGraphic(createTabIcon(MaterialDesignM.MEMORY));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));

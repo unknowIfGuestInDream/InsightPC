@@ -3,8 +3,13 @@ package com.tlcsdm.insightpc.controller.tab;
 import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
@@ -13,16 +18,21 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import oshi.hardware.CentralProcessor;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Builds the CPU tab showing processor information and live usage.
+ * Builds the CPU tab showing processor information, live usage bar, and usage line chart.
  */
 public class CpuTabBuilder extends AbstractTabBuilder {
+
+    private static final int MAX_DATA_POINTS = 30;
+    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public CpuTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
         super(systemInfoService, scheduler);
@@ -32,7 +42,7 @@ public class CpuTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.cpu"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.DEVELOPER_BOARD));
+        tab.setGraphic(createTabIcon(MaterialDesignC.CPU_64_BIT));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -71,6 +81,29 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         HBox.setHgrow(cpuBar, Priority.ALWAYS);
         content.getChildren().add(usageBox);
 
+        // CPU usage line chart
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("");
+        xAxis.setAnimated(false);
+
+        NumberAxis yAxis = new NumberAxis(0, 100, 10);
+        yAxis.setLabel("%");
+        yAxis.setAnimated(false);
+
+        LineChart<String, Number> cpuChart = new LineChart<>(xAxis, yAxis);
+        cpuChart.setTitle(I18N.get("cpu.usage"));
+        cpuChart.setAnimated(false);
+        cpuChart.setCreateSymbols(false);
+        cpuChart.setLegendVisible(false);
+        cpuChart.setPrefHeight(250);
+        cpuChart.setMaxHeight(250);
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName(I18N.get("cpu.usage"));
+        cpuChart.setData(FXCollections.observableArrayList(series));
+
+        content.getChildren().add(cpuChart);
+
         // Schedule CPU usage updates
         final long[][] prevTicksHolder = {cpu.getSystemCpuLoadTicks()};
         scheduler.scheduleAtFixedRate(() -> {
@@ -79,6 +112,12 @@ public class CpuTabBuilder extends AbstractTabBuilder {
             Platform.runLater(() -> {
                 cpuBar.setProgress(cpuLoad);
                 cpuUsageLabel.setText(String.format("%.1f%%", cpuLoad * 100));
+
+                String timeLabel = LocalTime.now().format(TIME_FMT);
+                series.getData().add(new XYChart.Data<>(timeLabel, cpuLoad * 100));
+                if (series.getData().size() > MAX_DATA_POINTS) {
+                    series.getData().remove(0);
+                }
             });
         }, 1, 2, TimeUnit.SECONDS);
 

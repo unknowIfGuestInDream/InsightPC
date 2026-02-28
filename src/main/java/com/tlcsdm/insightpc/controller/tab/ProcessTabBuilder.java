@@ -12,7 +12,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
@@ -33,7 +33,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.processes"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.APPS));
+        tab.setGraphic(createTabIcon(MaterialDesignA.APPS));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));

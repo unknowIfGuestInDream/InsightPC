@@ -39,6 +39,7 @@ public class InsightApplication extends Application {
         controller.setPrimaryStage(primaryStage);
 
         Scene scene = new Scene(root, 1000, 700);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         primaryStage.setTitle(I18N.get("app.title"));
         primaryStage.setScene(scene);

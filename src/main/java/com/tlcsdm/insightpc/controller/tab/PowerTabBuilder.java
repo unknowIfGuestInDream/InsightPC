@@ -9,7 +9,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.material.Material;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignB;
 import oshi.hardware.PowerSource;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class PowerTabBuilder extends AbstractTabBuilder {
     public Tab build() {
         Tab tab = new Tab(I18N.get("tab.power"));
         tab.setClosable(false);
-        tab.setGraphic(createTabIcon(Material.BATTERY_STD));
+        tab.setGraphic(createTabIcon(MaterialDesignB.BATTERY));
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
