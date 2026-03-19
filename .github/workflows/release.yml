@@ -57,21 +57,15 @@ jobs:
           Copy-Item -Path 'LICENSE' -Destination $stagingDir
           Copy-Item -Path 'scripts\win\*' -Destination $stagingDir -Recurse
 
-      - name: Download JRE (Windows)
+      - name: Create custom JRE (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: |
-          Push-Location staging
-          & ..\scripts\jre.ps1
-          Pop-Location
+        run: & scripts\jre.ps1 -StagingDir staging
 
       - name: Package artifact (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: |
-          Compress-Archive -Path 'staging\*' -DestinationPath "dist/insightpc-windows-$env:APP_VERSION.zip" -Force
-          Write-Host "Created dist/insightpc-windows-$env:APP_VERSION.zip"
-          Remove-Item -Path 'staging' -Recurse -Force
+        run: & scripts\package.ps1
 
       - name: Resolve version & stage files (Linux)
         if: runner.os == 'Linux'
@@ -88,23 +82,15 @@ jobs:
           cp README.md LICENSE staging/
           cp scripts/linux/* staging/
 
-      - name: Download JRE (Linux)
+      - name: Create custom JRE (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: |
-          cd staging
-          bash ../scripts/jre.sh
-          cd ..
+        run: bash scripts/jre.sh staging
 
       - name: Package artifact (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: |
-          cd staging
-          zip -r "../dist/insightpc-linux-${APP_VERSION}.zip" .
-          cd ..
-          echo "Created dist/insightpc-linux-${APP_VERSION}.zip"
-          rm -rf staging
+        run: bash scripts/package.sh
 
       - name: Resolve version & stage files (macOS)
         if: runner.os == 'macOS'
@@ -121,23 +107,15 @@ jobs:
           cp README.md LICENSE staging/
           cp scripts/mac/* staging/
 
-      - name: Download JRE (macOS)
+      - name: Create custom JRE (macOS)
         if: runner.os == 'macOS'
         shell: bash
-        run: |
-          cd staging
-          bash ../scripts/jre_mac.sh
-          cd ..
+        run: bash scripts/jre_mac.sh staging
 
       - name: Package artifact (macOS)
         if: runner.os == 'macOS'
         shell: bash
-        run: |
-          cd staging
-          zip -r "../dist/insightpc-macos-${APP_VERSION}.zip" .
-          cd ..
-          echo "Created dist/insightpc-macos-${APP_VERSION}.zip"
-          rm -rf staging
+        run: bash scripts/package_mac.sh
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
