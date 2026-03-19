@@ -54,13 +54,10 @@ jobs:
           Copy-Item -Path 'LICENSE' -Destination $stagingDir
           Copy-Item -Path 'scripts\win\*' -Destination $stagingDir -Recurse
 
-      - name: Download JRE (Windows)
+      - name: Create custom JRE (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: |
-          Push-Location staging
-          & ..\scripts\jre.ps1
-          Pop-Location
+        run: & scripts\jre.ps1 -StagingDir staging
 
       - name: Resolve version & stage files (Linux)
         if: runner.os == 'Linux'
@@ -77,13 +74,10 @@ jobs:
           cp README.md LICENSE staging/
           cp scripts/linux/* staging/
 
-      - name: Download JRE (Linux)
+      - name: Create custom JRE (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: |
-          cd staging
-          bash ../scripts/jre.sh
-          cd ..
+        run: bash scripts/jre.sh staging
 
       - name: Resolve version & stage files (macOS)
         if: runner.os == 'macOS'
@@ -100,13 +94,10 @@ jobs:
           cp README.md LICENSE staging/
           cp scripts/mac/* staging/
 
-      - name: Download JRE (macOS)
+      - name: Create custom JRE (macOS)
         if: runner.os == 'macOS'
         shell: bash
-        run: |
-          cd staging
-          bash ../scripts/jre_mac.sh
-          cd ..
+        run: bash scripts/jre_mac.sh staging
 
       - name: Upload packaged artifact
         uses: actions/upload-artifact@v7
