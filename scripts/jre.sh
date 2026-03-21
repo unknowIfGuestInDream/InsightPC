@@ -128,15 +128,9 @@ echo ""
 echo "[2/4] Analyzing module dependencies..."
 echo "  Jar: $jar_name (${jar_size} MB)"
 
-# Use jdeps to determine required JDK modules
-# When a lib/ directory exists, include it on the module-path so jdeps can
-# resolve transitive dependencies from all library jars.
+# Use jdeps to determine required JDK modules from the fat jar
 modules=""
-jdeps_args="--ignore-missing-deps --multi-release 21 --print-module-deps"
-if [ -d "lib" ]; then
-    jdeps_args="$jdeps_args --module-path lib --add-modules ALL-MODULE-PATH"
-fi
-modules=$("$jdeps_cmd" $jdeps_args "$jar_name" 2>/dev/null | tail -1) || true
+modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 21 --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
 
 if [ -z "$modules" ] || [ "$(echo "$modules" | tr -d '[:space:]')" = "" ]; then
     # Fallback: conservative set covering JavaFX, OSHI system info,
