@@ -131,23 +131,13 @@ if ($null -eq $jar) { throw 'No jar file found in current directory' }
 Write-Host "`n[2/4] Analyzing module dependencies..." -ForegroundColor Cyan
 Write-Host "  Jar: $($jar.Name) ($([math]::Round($jar.Length / 1MB, 1)) MB)" -ForegroundColor Gray
 
-# Use jdeps to determine required JDK modules
-# When a lib/ directory exists, include it on the module-path so jdeps can
-# resolve transitive dependencies from all library jars.
+# Use jdeps to determine required JDK modules from the fat jar
 $modules = $null
 $jdepsErr = $null
 try {
     $savedEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
-    $jdepsArgs = @('--ignore-missing-deps', '--multi-release', '21', '--print-module-deps')
-    if (Test-Path 'lib') {
-        $jdepsArgs += '--module-path'
-        $jdepsArgs += 'lib'
-        $jdepsArgs += '--add-modules'
-        $jdepsArgs += 'ALL-MODULE-PATH'
-    }
-    $jdepsArgs += $jar.Name
-    $modules = & $jdepsCmd @jdepsArgs 2>&1 |
+    $modules = & $jdepsCmd --ignore-missing-deps --multi-release 21 --print-module-deps $jar.Name 2>&1 |
         Where-Object { $_ -is [string] } | Select-Object -Last 1
     $ErrorActionPreference = $savedEAP
     if ($LASTEXITCODE -ne 0) { $modules = $null }
