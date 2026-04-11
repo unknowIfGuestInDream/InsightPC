@@ -132,15 +132,23 @@ Write-Host "`n[2/4] Analyzing module dependencies..." -ForegroundColor Cyan
 Write-Host "  Jar: $($jar.Name) ($([math]::Round($jar.Length / 1MB, 1)) MB)" -ForegroundColor Gray
 
 # Use jdeps to determine required JDK modules from the fat jar
+# Include lib directory in module path for accurate dependency analysis
 $modules = $null
 $jdepsErr = $null
 try {
     $savedEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
-    $modules = & $jdepsCmd --ignore-missing-deps --multi-release 21 --print-module-deps $jar.Name 2>&1 |
-        Where-Object { $_ -is [string] } | Select-Object -Last 1
+    if (Test-Path 'lib') {
+        $modules = & $jdepsCmd --ignore-missing-deps --multi-release 21 --module-path lib --add-modules ALL-MODULE-PATH --print-module-deps $jar.Name 2>&1 |
+            Where-Object { $_ -is [string] } | Select-Object -Last 1
+        if ($LASTEXITCODE -ne 0) { $modules = $null }
+    }
+    if (-not $modules -or $modules.Trim() -eq '') {
+        $modules = & $jdepsCmd --ignore-missing-deps --multi-release 21 --print-module-deps $jar.Name 2>&1 |
+            Where-Object { $_ -is [string] } | Select-Object -Last 1
+        if ($LASTEXITCODE -ne 0) { $modules = $null }
+    }
     $ErrorActionPreference = $savedEAP
-    if ($LASTEXITCODE -ne 0) { $modules = $null }
 } catch {
     $jdepsErr = $_.Exception.Message
     $modules = $null

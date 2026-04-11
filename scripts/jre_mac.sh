@@ -139,8 +139,14 @@ echo "[2/4] Analyzing module dependencies..."
 echo "  Jar: $jar_name (${jar_size} MB)"
 
 # Use jdeps to determine required JDK modules from the fat jar
+# Include lib directory in module path for accurate dependency analysis
 modules=""
-modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 21 --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
+if [ -d "lib" ]; then
+    modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 21 --module-path lib --add-modules ALL-MODULE-PATH --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
+fi
+if [ -z "$modules" ] || [ "$(echo "$modules" | tr -d '[:space:]')" = "" ]; then
+    modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 21 --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
+fi
 
 if [ -z "$modules" ] || [ "$(echo "$modules" | tr -d '[:space:]')" = "" ]; then
     # Fallback: conservative set covering JavaFX, OSHI system info,

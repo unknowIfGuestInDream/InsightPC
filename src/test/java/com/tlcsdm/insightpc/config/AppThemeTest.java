@@ -24,6 +24,16 @@ class AppThemeTest {
     }
 
     @Test
+    void testGetDisplayNameKeyForNewThemes() {
+        assertEquals("settings.theme.atlantafx.cupertinoLight",
+            AppTheme.ATLANTAFX_CUPERTINO_LIGHT.getDisplayNameKey());
+        assertEquals("settings.theme.atlantafx.cupertinoDark",
+            AppTheme.ATLANTAFX_CUPERTINO_DARK.getDisplayNameKey());
+        assertEquals("settings.theme.atlantafx.dracula",
+            AppTheme.ATLANTAFX_DRACULA.getDisplayNameKey());
+    }
+
+    @Test
     void testGetDisplayName() {
         AppTheme theme = AppTheme.ATLANTAFX_PRIMER_LIGHT;
         String name = theme.getDisplayName();
@@ -33,6 +43,7 @@ class AppThemeTest {
 
     @Test
     void testAllThemesHaveDisplayNameKey() {
+        assertEquals(7, AppTheme.values().length, "Should have 7 themes");
         for (AppTheme theme : AppTheme.values()) {
             assertNotNull(theme.getDisplayNameKey(), "Theme " + theme.name() + " should have a display name key");
             assertFalse(theme.getDisplayNameKey().isEmpty(), "Theme " + theme.name() + " display name key should not be empty");
