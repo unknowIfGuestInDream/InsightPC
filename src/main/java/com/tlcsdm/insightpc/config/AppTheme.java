@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * Theme configuration for the application.
- * Supports all AtlantaFX themes for consistent CSS styling.
+ * Supports AtlantaFX themes (Primer, Nord, Cupertino, Dracula) for consistent CSS styling.
  */
 public enum AppTheme {
 
