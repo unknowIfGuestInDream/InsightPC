@@ -1,5 +1,6 @@
 package com.tlcsdm.insightpc.controller;
 
+import com.dlsc.preferencesfx.PreferencesFx;
 import com.tlcsdm.insightpc.config.AppSettings;
 import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.controller.tab.*;
@@ -27,6 +28,10 @@ import java.util.concurrent.ScheduledExecutorService;
 public class MainController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
+    private static final double SETTINGS_DEFAULT_HEIGHT = 560;
+    private static final double SETTINGS_MIN_HEIGHT = 420;
+    private static final double SETTINGS_HEIGHT_DELTA = 120;
+    private static final double SETTINGS_Y_OFFSET = 40;
 
     @FXML
     private TabPane tabPane;
@@ -72,20 +77,25 @@ public class MainController {
      */
     @FXML
     public void openSettings() {
-        var preferencesFx = AppSettings.getInstance().getPreferencesFx();
-        preferencesFx.getView().setPrefHeight(560);
+        PreferencesFx preferencesFx = AppSettings.getInstance().getPreferencesFx();
+        preferencesFx.getView().setPrefHeight(SETTINGS_DEFAULT_HEIGHT);
         preferencesFx.show(true);
+        adjustSettingsWindow(preferencesFx);
+    }
 
+    private void adjustSettingsWindow(PreferencesFx preferencesFx) {
         Platform.runLater(() -> {
-            Stage settingsStage = (Stage) preferencesFx.getView().getScene().getWindow();
-            if (settingsStage == null) {
+            if (preferencesFx.getView().getScene() == null || preferencesFx.getView().getScene().getWindow() == null) {
+                adjustSettingsWindow(preferencesFx);
                 return;
             }
 
-            double targetHeight = 560;
+            Stage settingsStage = (Stage) preferencesFx.getView().getScene().getWindow();
+            double targetHeight = SETTINGS_DEFAULT_HEIGHT;
             if (primaryStage != null && primaryStage.isShowing()) {
-                targetHeight = Math.max(420, Math.min(560, primaryStage.getHeight() - 120));
-                settingsStage.setY(primaryStage.getY() + 40);
+                targetHeight = Math.max(SETTINGS_MIN_HEIGHT,
+                    Math.min(SETTINGS_DEFAULT_HEIGHT, primaryStage.getHeight() - SETTINGS_HEIGHT_DELTA));
+                settingsStage.setY(primaryStage.getY() + SETTINGS_Y_OFFSET);
             }
             settingsStage.setHeight(targetHeight);
         });
