@@ -32,6 +32,7 @@ public class MainController {
     private static final double SETTINGS_MIN_HEIGHT = 420;
     private static final double SETTINGS_HEIGHT_DELTA = 120;
     private static final double SETTINGS_Y_OFFSET = 40;
+    private static final int SETTINGS_WINDOW_MAX_RETRIES = 10;
 
     @FXML
     private TabPane tabPane;
@@ -80,13 +81,17 @@ public class MainController {
         PreferencesFx preferencesFx = AppSettings.getInstance().getPreferencesFx();
         preferencesFx.getView().setPrefHeight(SETTINGS_DEFAULT_HEIGHT);
         preferencesFx.show(true);
-        adjustSettingsWindow(preferencesFx);
+        adjustSettingsWindow(preferencesFx, 0);
     }
 
-    private void adjustSettingsWindow(PreferencesFx preferencesFx) {
+    private void adjustSettingsWindow(PreferencesFx preferencesFx, int retryCount) {
         Platform.runLater(() -> {
             if (preferencesFx.getView().getScene() == null || preferencesFx.getView().getScene().getWindow() == null) {
-                adjustSettingsWindow(preferencesFx);
+                if (retryCount < SETTINGS_WINDOW_MAX_RETRIES) {
+                    adjustSettingsWindow(preferencesFx, retryCount + 1);
+                } else {
+                    LOG.warn("Could not position preferences dialog after {} attempts", SETTINGS_WINDOW_MAX_RETRIES);
+                }
                 return;
             }
 
