@@ -54,13 +54,13 @@ public class OverviewTabBuilder extends AbstractTabBuilder {
         // Computer Model and OS Version header
         String computerModel = (cs.getManufacturer() + " " + cs.getModel()).trim();
         Label modelLabel = new Label(computerModel);
-        modelLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        modelLabel.getStyleClass().add("overview-model-label");
 
         String osInfo = systemInfoService.getOsManufacturer() + " "
             + systemInfoService.getOsFamily() + " "
             + systemInfoService.getOsVersionInfo();
         Label osLabel = new Label(osInfo.trim());
-        osLabel.setStyle("-fx-font-size: 16px;");
+        osLabel.getStyleClass().add("overview-os-label");
 
         infoBox.getChildren().addAll(modelLabel, osLabel, new Separator());
 
@@ -154,10 +154,10 @@ public class OverviewTabBuilder extends AbstractTabBuilder {
             I18N.get("overview.soundCard"), soundInfo));
 
         // Power Source
+        powerSources.forEach(PowerSource::updateAttributes);
         String powerInfo = powerSources.isEmpty() ? "N/A"
             : powerSources.stream()
             .map(ps -> {
-                ps.updateAttributes();
                 StringBuilder sb = new StringBuilder(ps.getName());
                 double remaining = ps.getRemainingCapacityPercent();
                 if (remaining >= 0) {

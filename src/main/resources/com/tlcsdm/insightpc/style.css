@@ -301,3 +301,12 @@
     -fx-border-color: #e8e8e8;
     -fx-border-width: 1 0 0 0;
 }
+
+.overview-model-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.overview-os-label {
+    -fx-font-size: 16px;
+}
