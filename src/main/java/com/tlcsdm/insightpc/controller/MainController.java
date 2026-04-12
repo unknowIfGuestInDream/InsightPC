@@ -4,10 +4,13 @@ import com.tlcsdm.insightpc.config.AppSettings;
 import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.controller.tab.*;
 import com.tlcsdm.insightpc.service.SystemInfoService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +85,28 @@ public class MainController {
     }
 
     /**
+     * Restart the application.
+     */
+    @FXML
+    public void restartApplication() {
+        LOG.info("Application restarting");
+        shutdown();
+        if (primaryStage != null) {
+            primaryStage.close();
+        }
+        Platform.runLater(() -> {
+            try {
+                com.tlcsdm.insightpc.InsightApplication app = new com.tlcsdm.insightpc.InsightApplication();
+                Stage newStage = new Stage();
+                app.init();
+                app.start(newStage);
+            } catch (Exception e) {
+                LOG.error("Failed to restart application", e);
+            }
+        });
+    }
+
+    /**
      * Show about dialog.
      */
     @FXML
@@ -102,6 +127,56 @@ public class MainController {
         Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
         alertStage.getIcons().add(logoImage);
         alert.showAndWait();
+    }
+
+    /**
+     * Show open-source libraries dialog.
+     */
+    @FXML
+    public void showOpenSourceLibraries() {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle(I18N.get("about.openSource"));
+        dialog.setHeaderText(I18N.get("about.openSource.description"));
+        if (primaryStage != null) {
+            dialog.initOwner(primaryStage);
+        }
+
+        String[][] libraries = {
+            {"JavaFX", "GPL v2 with Classpath Exception"},
+            {"ControlsFX", "BSD 3-Clause License"},
+            {"PreferencesFX", "Apache License 2.0"},
+            {"AtlantaFX", "MIT License"},
+            {"Ikonli", "Apache License 2.0"},
+            {"OSHI", "MIT License"},
+            {"JNA", "Apache License 2.0 / LGPL 2.1"},
+            {"SLF4J", "MIT License"},
+            {"Logback", "EPL 1.0 / LGPL 2.1"},
+            {"Gson", "Apache License 2.0"},
+        };
+
+        VBox content = new VBox(6);
+        content.setPadding(new Insets(10));
+        for (String[] lib : libraries) {
+            Label label = new Label(lib[0] + " - " + lib[1]);
+            content.getChildren().add(label);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefSize(450, 300);
+
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+
+        try {
+            Image logoImage = new Image(getClass().getResourceAsStream("/com/tlcsdm/insightpc/logo.png"));
+            Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            dialogStage.getIcons().add(logoImage);
+        } catch (Exception e) {
+            LOG.warn("Could not set dialog icon", e);
+        }
+
+        dialog.showAndWait();
     }
 
     /**
