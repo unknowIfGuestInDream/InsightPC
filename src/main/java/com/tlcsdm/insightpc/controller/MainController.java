@@ -165,10 +165,10 @@ public class MainController {
             new OpenSourceLibrary("Gson", "Apache License 2.0")
         ));
 
-        TableColumn<OpenSourceLibrary, String> nameColumn = new TableColumn<>("Library");
+        TableColumn<OpenSourceLibrary, String> nameColumn = new TableColumn<>(I18N.get("about.openSource.table.library"));
         nameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue().name()));
 
-        TableColumn<OpenSourceLibrary, String> licenseColumn = new TableColumn<>("License");
+        TableColumn<OpenSourceLibrary, String> licenseColumn = new TableColumn<>(I18N.get("about.openSource.table.license"));
         licenseColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue().license()));
 
         tableView.getColumns().addAll(nameColumn, licenseColumn);
