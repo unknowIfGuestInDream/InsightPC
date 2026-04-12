@@ -35,6 +35,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Build and Test
+      - name: Install xvfb (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y xvfb
+
+      - name: Build and Test (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: xvfb-run --auto-servernum mvn -B clean verify --no-transfer-progress
+
+      - name: Build and Test (non-Linux)
+        if: runner.os != 'Linux'
         shell: bash
         run: mvn -B clean verify --no-transfer-progress
