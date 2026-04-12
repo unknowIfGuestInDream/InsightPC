@@ -72,7 +72,9 @@ public class MainController {
      */
     @FXML
     public void openSettings() {
-        AppSettings.getInstance().getPreferencesFx().show(true);
+        var preferencesFx = AppSettings.getInstance().getPreferencesFx();
+        preferencesFx.getView().setPrefHeight(620);
+        preferencesFx.show(true);
     }
 
     /**
@@ -122,7 +124,7 @@ public class MainController {
         Hyperlink openSourceLink = new Hyperlink(I18N.get("about.openSource"));
         openSourceLink.setOnAction(e -> showOpenSourceLibrariesDialog());
         VBox content = new VBox(8, descriptionLabel, openSourceLink);
-        content.setPadding(new Insets(4, 0, 0, 0));
+        content.setPadding(new Insets(4, 0, 0, 12));
         alert.getDialogPane().setContent(content);
 
         Image logoImage = new Image(getClass().getResourceAsStream("/com/tlcsdm/insightpc/logo.png"));
