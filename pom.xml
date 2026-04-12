@@ -203,12 +203,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.tlcsdm.insightpc.InsightApplication</mainClass>
-                    <options>
-                        <option>--enable-native-access=javafx.graphics</option>
-                        <option>--enable-native-access=com.sun.jna</option>
-                        <option>--enable-native-access=ALL-UNNAMED</option>
-                    </options>
+                    <mainClass>${mainClass}</mainClass>
                 </configuration>
             </plugin>
             <plugin>

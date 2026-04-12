@@ -16,6 +16,6 @@ if not %errorlevel% == 0 (
 set java_path=javaw
 )
 :START
-cmd /c start /b %java_path% --enable-native-access=javafx.graphics,com.sun.jna,ALL-UNNAMED -jar insightpc.jar
+cmd /c start /b %java_path% -jar insightpc.jar
 
 :END

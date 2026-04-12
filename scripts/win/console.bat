@@ -16,6 +16,6 @@ if not %errorlevel% == 0 (
 set java_path=java
 )
 :START
-%java_path% --enable-native-access=javafx.graphics,com.sun.jna,ALL-UNNAMED -jar insightpc.jar
+%java_path% -jar insightpc.jar
 
 :END

@@ -73,8 +73,22 @@ public class MainController {
     @FXML
     public void openSettings() {
         var preferencesFx = AppSettings.getInstance().getPreferencesFx();
-        preferencesFx.getView().setPrefHeight(620);
+        preferencesFx.getView().setPrefHeight(560);
         preferencesFx.show(true);
+
+        Platform.runLater(() -> {
+            Stage settingsStage = (Stage) preferencesFx.getView().getScene().getWindow();
+            if (settingsStage == null) {
+                return;
+            }
+
+            double targetHeight = 560;
+            if (primaryStage != null && primaryStage.isShowing()) {
+                targetHeight = Math.max(420, Math.min(560, primaryStage.getHeight() - 120));
+                settingsStage.setY(primaryStage.getY() + 40);
+            }
+            settingsStage.setHeight(targetHeight);
+        });
     }
 
     /**

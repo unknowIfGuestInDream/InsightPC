@@ -135,7 +135,6 @@ $jpackageArgs = @(
     '--java-options', '-Xmx256m',
     '--java-options', '-XX:MaxMetaspaceSize=128m',
     '--java-options', '-XX:+UseG1GC',
-    '--java-options', '--enable-native-access=javafx.graphics,com.sun.jna,ALL-UNNAMED',
     '--dest', 'app-image'
 ) + $iconArgs
 
