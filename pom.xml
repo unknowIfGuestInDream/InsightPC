@@ -191,6 +191,9 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>com.tlcsdm.insightpc.InsightApplication</mainClass>
+                    <options>
+                        <option>--enable-native-access=javafx.graphics,com.sun.jna,ALL-UNNAMED</option>
+                    </options>
                 </configuration>
             </plugin>
             <plugin>
