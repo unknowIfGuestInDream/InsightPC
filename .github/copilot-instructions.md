@@ -104,7 +104,7 @@ src/test/java/com/tlcsdm/insightpc/
 
 ## CI Checks
 
-The **Test** workflow (`.github/workflows/test.yml`) runs on every push and pull request to `main`/`master`:
+The **Test** workflow (`.github/workflows/test.yml`) runs on every push and pull request to `master`:
 
 1. Checks out the code
 2. Sets up Temurin JDK 21
@@ -116,6 +116,14 @@ The build must pass on Ubuntu, Windows, and macOS. Replicate locally with:
 ```bash
 mvn -B clean verify --no-transfer-progress
 ```
+
+## Code Comments and Documentation Style
+
+- Write natural, concise text that reads like a developer wrote it — no AI tone.
+- Avoid excessive politeness, over-explanation, or listing too many options.
+- Use direct wording and short sentences.
+- Code and comments must be in English.
+- PR replies should be in Chinese.
 
 ## Key Facts
 
