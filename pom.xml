@@ -47,7 +47,6 @@
         <oshi.version>6.10.0</oshi.version>
         <junit.version>6.0.3</junit.version>
         <testfx.version>4.0.18</testfx.version>
-        <native.access.modules>javafx.graphics,com.sun.jna,ALL-UNNAMED</native.access.modules>
         <mainClass>com.tlcsdm.insightpc.Launcher</mainClass>
     </properties>
 
@@ -206,7 +205,9 @@
                 <configuration>
                     <mainClass>com.tlcsdm.insightpc.InsightApplication</mainClass>
                     <options>
-                        <option>--enable-native-access=${native.access.modules}</option>
+                        <option>--enable-native-access=javafx.graphics</option>
+                        <option>--enable-native-access=com.sun.jna</option>
+                        <option>--enable-native-access=ALL-UNNAMED</option>
                     </options>
                 </configuration>
             </plugin>
@@ -229,7 +230,6 @@
                             <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                             <Bundle-Vendor>Tlcsdm</Bundle-Vendor>
-                            <Enable-Native-Access>${native.access.modules}</Enable-Native-Access>
                         </manifestEntries>
                     </archive>
                 </configuration>
