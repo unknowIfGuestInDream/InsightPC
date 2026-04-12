@@ -10,6 +10,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignH;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignS;
@@ -65,7 +66,7 @@ public class OverviewTabBuilder extends AbstractTabBuilder {
         infoBox.getChildren().addAll(modelLabel, osLabel, new Separator());
 
         // CPU
-        infoBox.getChildren().add(createOverviewRow(MaterialDesignD.DESKTOP_CLASSIC,
+        infoBox.getChildren().add(createOverviewRow(MaterialDesignC.CPU_64_BIT,
             I18N.get("overview.cpu.label"),
             cpu.getProcessorIdentifier().getName()));
 

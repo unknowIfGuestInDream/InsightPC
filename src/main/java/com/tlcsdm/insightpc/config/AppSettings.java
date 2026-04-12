@@ -8,6 +8,7 @@ import com.tlcsdm.insightpc.model.DisplayLocale;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.scene.image.Image;
 
 import java.util.Arrays;
 import java.util.List;
@@ -102,7 +103,13 @@ public class AppSettings {
                 .saveSettings(true)
                 .debugHistoryMode(false)
                 .buttonsVisibility(false)
-                .instantPersistent(true);
+                .instantPersistent(true)
+                .dialogTitle(I18N.get("settings.title"));
+
+            Image logo = loadLogoImage();
+            if (logo != null) {
+                preferencesFx.dialogIcon(logo);
+            }
 
             if (!savedLocale.equals(languageProperty.get())) {
                 languageProperty.set(savedLocale);
@@ -114,6 +121,14 @@ public class AppSettings {
 
     private void rebuildPreferences() {
         preferencesFx = null;
+    }
+
+    private Image loadLogoImage() {
+        try {
+            return new Image(AppSettings.class.getResourceAsStream("/com/tlcsdm/insightpc/logo.png"));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**

@@ -22,7 +22,6 @@
             </Menu>
             <Menu text="%menu.help">
                 <MenuItem text="%menu.about" onAction="#showAbout"/>
-                <MenuItem text="%menu.openSourceLibraries" onAction="#showOpenSourceLibraries"/>
             </Menu>
         </MenuBar>
     </top>

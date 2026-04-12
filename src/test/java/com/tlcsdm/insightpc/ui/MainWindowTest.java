@@ -61,8 +61,8 @@ class MainWindowTest {
     void testHelpMenuItems(FxRobot robot) {
         MenuBar menuBar = robot.lookup(".menu-bar").queryAs(MenuBar.class);
         var helpMenu = menuBar.getMenus().get(1);
-        // Help menu: About, Open Source Libraries
-        assertEquals(2, helpMenu.getItems().size(), "Help menu should have 2 items");
+        // Help menu: About
+        assertEquals(1, helpMenu.getItems().size(), "Help menu should have 1 item");
     }
 
     @Test

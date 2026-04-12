@@ -5,6 +5,8 @@ import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.controller.tab.*;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -114,7 +116,15 @@ public class MainController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(I18N.get("menu.about"));
         alert.setHeaderText(I18N.get("app.title"));
-        alert.setContentText(I18N.get("about.description"));
+
+        Label descriptionLabel = new Label(I18N.get("about.description"));
+        descriptionLabel.setWrapText(true);
+        Hyperlink openSourceLink = new Hyperlink(I18N.get("about.openSource"));
+        openSourceLink.setOnAction(e -> showOpenSourceLibrariesDialog());
+        VBox content = new VBox(8, descriptionLabel, openSourceLink);
+        content.setPadding(new Insets(4, 0, 0, 0));
+        alert.getDialogPane().setContent(content);
+
         Image logoImage = new Image(getClass().getResourceAsStream("/com/tlcsdm/insightpc/logo.png"));
         ImageView logoView = new ImageView(logoImage);
         logoView.setFitWidth(64);
@@ -132,8 +142,7 @@ public class MainController {
     /**
      * Show open-source libraries dialog.
      */
-    @FXML
-    public void showOpenSourceLibraries() {
+    private void showOpenSourceLibrariesDialog() {
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle(I18N.get("about.openSource"));
         dialog.setHeaderText(I18N.get("about.openSource.description"));
@@ -141,31 +150,34 @@ public class MainController {
             dialog.initOwner(primaryStage);
         }
 
-        String[][] libraries = {
-            {"JavaFX", "GPL v2 with Classpath Exception"},
-            {"ControlsFX", "BSD 3-Clause License"},
-            {"PreferencesFX", "Apache License 2.0"},
-            {"AtlantaFX", "MIT License"},
-            {"Ikonli", "Apache License 2.0"},
-            {"OSHI", "MIT License"},
-            {"JNA", "Apache License 2.0 / LGPL 2.1"},
-            {"SLF4J", "MIT License"},
-            {"Logback", "EPL 1.0 / LGPL 2.1"},
-            {"Gson", "Apache License 2.0"},
-        };
+        TableView<OpenSourceLibrary> tableView = new TableView<>();
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        tableView.setItems(FXCollections.observableArrayList(
+            new OpenSourceLibrary("JavaFX", "GPL v2 with Classpath Exception"),
+            new OpenSourceLibrary("ControlsFX", "BSD 3-Clause License"),
+            new OpenSourceLibrary("PreferencesFX", "Apache License 2.0"),
+            new OpenSourceLibrary("AtlantaFX", "MIT License"),
+            new OpenSourceLibrary("Ikonli", "Apache License 2.0"),
+            new OpenSourceLibrary("OSHI", "MIT License"),
+            new OpenSourceLibrary("JNA", "Apache License 2.0 / LGPL 2.1"),
+            new OpenSourceLibrary("SLF4J", "MIT License"),
+            new OpenSourceLibrary("Logback", "EPL 1.0 / LGPL 2.1"),
+            new OpenSourceLibrary("Gson", "Apache License 2.0")
+        ));
 
-        VBox content = new VBox(6);
+        TableColumn<OpenSourceLibrary, String> nameColumn = new TableColumn<>("Library");
+        nameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue().name()));
+
+        TableColumn<OpenSourceLibrary, String> licenseColumn = new TableColumn<>("License");
+        licenseColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue().license()));
+
+        tableView.getColumns().addAll(nameColumn, licenseColumn);
+
+        VBox content = new VBox(8, tableView);
         content.setPadding(new Insets(10));
-        for (String[] lib : libraries) {
-            Label label = new Label(lib[0] + " - " + lib[1]);
-            content.getChildren().add(label);
-        }
+        content.setPrefSize(500, 320);
 
-        ScrollPane scrollPane = new ScrollPane(content);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefSize(450, 300);
-
-        dialog.getDialogPane().setContent(scrollPane);
+        dialog.getDialogPane().setContent(content);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
 
         try {
@@ -177,6 +189,9 @@ public class MainController {
         }
 
         dialog.showAndWait();
+    }
+
+    private record OpenSourceLibrary(String name, String license) {
     }
 
     /**
