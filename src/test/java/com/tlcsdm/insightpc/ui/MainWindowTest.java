@@ -5,6 +5,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(ApplicationExtension.class)
 class MainWindowTest {
 
+    private static final int USB_TAB_INDEX = 8;
     private Stage stage;
 
     @Start
@@ -87,6 +89,16 @@ class MainWindowTest {
         assertNotNull(tabPane.getSelectionModel().getSelectedItem());
         // First tab should be selected by default
         assertEquals(0, tabPane.getSelectionModel().getSelectedIndex());
+    }
+
+    @Test
+    void testUsbTreeRootIsHidden(FxRobot robot) {
+        TabPane tabPane = robot.lookup(".tab-pane").queryAs(TabPane.class);
+        tabPane.getSelectionModel().select(USB_TAB_INDEX);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        TreeView<?> usbTree = robot.lookup(".tree-view").queryAs(TreeView.class);
+        assertFalse(usbTree.isShowRoot(), "USB tree should hide root node");
     }
 
     @Test
