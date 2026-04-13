@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VariablesTabBuilderTest {
@@ -29,10 +30,12 @@ class VariablesTabBuilderTest {
         source.put(null, "nullKey");
 
         Map<String, String> sorted = VariablesTabBuilder.toSortedStringMap(source);
+        assertEquals(3, sorted.size());
         assertEquals(List.of("10", "a", "b"), sorted.keySet().stream().toList());
         assertEquals("true", sorted.get("10"));
         assertEquals("1", sorted.get("a"));
         assertEquals("2", sorted.get("b"));
+        assertFalse(sorted.containsKey("nullValue"));
     }
 
     @Test

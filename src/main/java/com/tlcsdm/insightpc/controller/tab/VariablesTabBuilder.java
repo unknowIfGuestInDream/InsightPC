@@ -3,6 +3,7 @@ package com.tlcsdm.insightpc.controller.tab;
 import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Tab;
@@ -13,10 +14,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Supplier;
 
 /**
  * Builds the Variables tab showing environment variables.
@@ -27,7 +29,8 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
     static final double DEFAULT_DIVIDER_POSITION = 0.5;
 
     public VariablesTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
-        super(systemInfoService, scheduler);
+        super(Objects.requireNonNull(systemInfoService, "systemInfoService"),
+            Objects.requireNonNull(scheduler, "scheduler"));
     }
 
     @Override
@@ -39,8 +42,8 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
         VBox content = new VBox();
         content.setPadding(new Insets(15));
         SplitPane splitPane = new SplitPane(
-            createTableSection(I18N.get("variables.systemEnv"), getSortedEnvironmentVariables()),
-            createTableSection(I18N.get("variables.javaProps"), getSortedJavaProperties())
+            createTableSection(I18N.get("variables.systemEnv"), VariablesTabBuilder::getSortedEnvironmentVariables),
+            createTableSection(I18N.get("variables.javaProps"), VariablesTabBuilder::getSortedJavaProperties)
         );
         splitPane.setOrientation(Orientation.VERTICAL);
         splitPane.setDividerPositions(DEFAULT_DIVIDER_POSITION);
@@ -51,15 +54,16 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
         return tab;
     }
 
-    private VBox createTableSection(String title, Map<String, String> values) {
+    private VBox createTableSection(String title, Supplier<Map<String, String>> valuesSupplier) {
         VBox section = new VBox(8);
-        TableView<Map.Entry<String, String>> table = createVariablesTable(values);
+        TableView<Map.Entry<String, String>> table = createVariablesTable();
+        loadTableDataAsync(table, valuesSupplier);
         section.getChildren().addAll(createSectionLabel(title), table);
         VBox.setVgrow(table, Priority.ALWAYS);
         return section;
     }
 
-    private TableView<Map.Entry<String, String>> createVariablesTable(Map<String, String> values) {
+    private TableView<Map.Entry<String, String>> createVariablesTable() {
         TableView<Map.Entry<String, String>> table = new TableView<>();
         table.setMinHeight(MIN_TABLE_HEIGHT);
         table.setPrefHeight(resolveTablePrefHeight(DEFAULT_TABLE_HEIGHT));
@@ -73,8 +77,19 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
         valueCol.setPrefWidth(600);
 
         table.getColumns().addAll(nameCol, valueCol);
-        table.getItems().addAll(values.entrySet());
         return table;
+    }
+
+    private void loadTableDataAsync(TableView<Map.Entry<String, String>> table, Supplier<Map<String, String>> valuesSupplier) {
+        Runnable loadTask = () -> {
+            Map<String, String> values = valuesSupplier.get();
+            if (Platform.isFxApplicationThread()) {
+                table.getItems().setAll(values.entrySet());
+            } else {
+                Platform.runLater(() -> table.getItems().setAll(values.entrySet()));
+            }
+        };
+        scheduler.execute(loadTask);
     }
 
     static double resolveTablePrefHeight(double preferredHeight) {
@@ -85,11 +100,11 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
     }
 
     static Map<String, String> getSortedEnvironmentVariables() {
-        return toSortedStringMap(new HashMap<>(System.getenv()));
+        return toSortedStringMap(System.getenv());
     }
 
     static Map<String, String> getSortedJavaProperties() {
-        return toSortedStringMap(new HashMap<>(System.getProperties()));
+        return toSortedStringMap(System.getProperties());
     }
 
     static Map<String, String> toSortedStringMap(Map<?, ?> source) {
