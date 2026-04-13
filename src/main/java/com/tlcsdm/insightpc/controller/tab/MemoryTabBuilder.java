@@ -73,11 +73,12 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
                 GridPane pmGrid = createInfoGrid();
                 int row = 0;
                 addGridRow(pmGrid, row++, I18N.get("memory.bankLabel"), pm.getBankLabel());
+                addGridRow(pmGrid, row++, I18N.get("detail.manufacturer"), pm.getManufacturer());
                 addGridRow(pmGrid, row++, I18N.get("memory.capacity"),
                     SystemInfoService.formatBytes(pm.getCapacity()));
-                addGridRow(pmGrid, row++, I18N.get("memory.clockSpeed"),
-                    String.format("%.0f MHz", pm.getClockSpeed() / 1_000_000.0));
                 addGridRow(pmGrid, row++, I18N.get("memory.memoryType"), pm.getMemoryType());
+                addGridRow(pmGrid, row++, I18N.get("memory.clockSpeed"),
+                    pm.getClockSpeed() > 0 ? String.format("%.0f MHz", pm.getClockSpeed() / 1_000_000.0) : "N/A");
                 content.getChildren().add(pmGrid);
             }
         }
