@@ -219,11 +219,6 @@
     -fx-background-color: -color-bg-subtle;
 }
 
-.window-close-button:hover {
-    -fx-background-color: -color-accent-emphasis;
-    -fx-text-fill: white;
-}
-
 /* ============================================================
    MenuBar - Flat style
    ============================================================ */

@@ -94,6 +94,7 @@ class MainWindowTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertTrue(stage.getMinWidth() >= 800, "Min width should be at least 800");
         assertTrue(stage.getMinHeight() >= 600, "Min height should be at least 600");
+        assertTrue(stage.isResizable(), "Window should be resizable");
     }
 
     @Test
@@ -108,5 +109,7 @@ class MainWindowTest {
         assertNotNull(minimizeButton, "Minimize button should exist");
         assertNotNull(maximizeButton, "Maximize button should exist");
         assertNotNull(closeButton, "Close button should exist");
+        assertFalse(closeButton.getStyleClass().contains("window-close-button"),
+            "Close button should not use a special hover style class");
     }
 }

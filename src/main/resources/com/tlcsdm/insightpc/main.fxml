@@ -26,7 +26,7 @@
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button fx:id="minimizeButton" text="─" accessibleText="Minimize window" styleClass="window-control-button" onAction="#minimizeWindow"/>
                 <Button fx:id="maximizeButton" text="□" accessibleText="Maximize window" styleClass="window-control-button" onAction="#toggleMaximizeWindow"/>
-                <Button fx:id="closeButton" text="✕" accessibleText="Close window" styleClass="window-control-button window-close-button" onAction="#exitApplication"/>
+                <Button fx:id="closeButton" text="✕" accessibleText="Close window" styleClass="window-control-button" onAction="#exitApplication"/>
             </HBox>
             <MenuBar>
                 <Menu text="%menu.file">

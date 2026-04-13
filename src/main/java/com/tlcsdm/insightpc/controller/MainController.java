@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -322,6 +323,9 @@ public class MainController {
 
     private void handleWindowDrag(MouseEvent event) {
         if (primaryStage == null || primaryStage.isIconified()) {
+            return;
+        }
+        if (primaryStage.getScene() != null && primaryStage.getScene().getCursor() != Cursor.DEFAULT) {
             return;
         }
 
