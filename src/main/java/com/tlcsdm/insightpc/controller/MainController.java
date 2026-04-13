@@ -37,6 +37,7 @@ public class MainController {
     private static final double SETTINGS_HEIGHT_RATIO = 0.7;
     private static final int SETTINGS_WINDOW_MAX_RETRIES = 10;
     private static final double DRAG_MIN_TITLE_BAR_WIDTH = 10.0;
+    private static final double DEFAULT_DRAG_WIDTH_RATIO = 0.5;
     private static final String MAXIMIZE_SYMBOL = "□";
     private static final String RESTORE_SYMBOL = "❐";
 
@@ -284,11 +285,12 @@ public class MainController {
             return;
         }
 
-        if (titleBarLabel != null && primaryStage.getTitle() != null && !primaryStage.getTitle().isEmpty()) {
-            titleBarLabel.setText(primaryStage.getTitle());
+        String stageTitle = primaryStage.getTitle();
+        if (titleBarLabel != null && hasText(stageTitle)) {
+            titleBarLabel.setText(stageTitle);
         }
         primaryStage.titleProperty().addListener((obs, oldTitle, newTitle) -> {
-            if (titleBarLabel != null && newTitle != null && !newTitle.isEmpty()) {
+            if (titleBarLabel != null && hasText(newTitle)) {
                 titleBarLabel.setText(newTitle);
             }
         });
@@ -332,7 +334,7 @@ public class MainController {
             double titleBarWidth = titleBar.getWidth();
             double widthRatio = titleBarWidth > DRAG_MIN_TITLE_BAR_WIDTH
                 ? event.getSceneX() / titleBarWidth
-                : 0.5;
+                : DEFAULT_DRAG_WIDTH_RATIO;
             primaryStage.setMaximized(false);
             primaryStage.setX(event.getScreenX() - primaryStage.getWidth() * widthRatio);
             primaryStage.setY(event.getScreenY() - dragOffsetY);
@@ -347,5 +349,9 @@ public class MainController {
         if (maximizeButton != null) {
             maximizeButton.setText(maximized ? RESTORE_SYMBOL : MAXIMIZE_SYMBOL);
         }
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isEmpty();
     }
 }
