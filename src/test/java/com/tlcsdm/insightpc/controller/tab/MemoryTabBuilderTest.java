@@ -35,4 +35,11 @@ class MemoryTabBuilderTest {
         assertTrue(MemoryTabBuilder.isLowUsageForOverlayText(0.49));
         assertFalse(MemoryTabBuilder.isLowUsageForOverlayText(0.5));
     }
+
+    @Test
+    void testNormalizeFieldValue() {
+        assertEquals("N/A", MemoryTabBuilder.normalizeFieldValue(null));
+        assertEquals("N/A", MemoryTabBuilder.normalizeFieldValue("   "));
+        assertEquals("8 GB", MemoryTabBuilder.normalizeFieldValue(" 8 GB "));
+    }
 }
