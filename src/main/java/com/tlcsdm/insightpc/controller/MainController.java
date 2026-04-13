@@ -29,7 +29,7 @@ public class MainController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
     private static final double SETTINGS_DEFAULT_HEIGHT = 480;
-    private static final double SETTINGS_DEFAULT_WIDTH = 900;
+    private static final double SETTINGS_FALLBACK_WIDTH = 900;
     private static final double SETTINGS_MIN_HEIGHT = 360;
     private static final double SETTINGS_HEIGHT_RATIO = 0.7;
     private static final int SETTINGS_WINDOW_MAX_RETRIES = 10;
@@ -105,8 +105,8 @@ public class MainController {
             if (primaryStage != null && primaryStage.isShowing()) {
                 settingsStage.sizeToScene();
                 double targetWidth = settingsStage.getWidth();
-                if (targetWidth <= 0) {
-                    targetWidth = settingsStage.getScene() != null ? settingsStage.getScene().getWidth() : SETTINGS_DEFAULT_WIDTH;
+                if (targetWidth == 0) {
+                    targetWidth = settingsStage.getScene() != null ? settingsStage.getScene().getWidth() : SETTINGS_FALLBACK_WIDTH;
                 }
                 settingsStage.setY(primaryStage.getY() + (primaryStage.getHeight() - targetHeight) / 2.0);
                 settingsStage.setX(primaryStage.getX() + (primaryStage.getWidth() - targetWidth) / 2.0);
