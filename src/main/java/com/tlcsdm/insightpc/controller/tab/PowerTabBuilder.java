@@ -154,7 +154,7 @@ public class PowerTabBuilder extends AbstractTabBuilder {
         if (na.equals(current) && na.equals(max) && na.equals(design)) {
             return na;
         }
-        return String.format("%s %s / %s %s / %s %s",
+        return I18N.get("power.usageSummaryFormat",
             I18N.get("power.currentCapacity"), current,
             I18N.get("power.maxCapacity"), max,
             I18N.get("power.designCapacity"), design);
@@ -179,7 +179,7 @@ public class PowerTabBuilder extends AbstractTabBuilder {
     private String formatStatusInfo(PowerSource ps, String na) {
         String timeStr = resolveTimeRemainingText(ps);
         String temp = ps.getTemperature() > 0 ? String.format("%.1f°C", ps.getTemperature()) : na;
-        return I18N.get("power.timeRemainingEstimated") + ": " + timeStr + " / " + temp;
+        return I18N.get("power.statusSummaryFormat", I18N.get("power.timeRemainingEstimated"), timeStr, temp);
     }
 
     private String resolveTimeRemainingText(PowerSource ps) {
