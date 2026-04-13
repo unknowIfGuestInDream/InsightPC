@@ -44,6 +44,7 @@ public class UsbDevicesTabBuilder extends AbstractTabBuilder {
         }
 
         usbTree.setRoot(rootItem);
+        usbTree.setShowRoot(shouldShowRoot());
         usbTree.setPrefHeight(500);
         content.getChildren().add(usbTree);
 
@@ -66,5 +67,9 @@ public class UsbDevicesTabBuilder extends AbstractTabBuilder {
         }
 
         parent.getChildren().add(item);
+    }
+
+    static boolean shouldShowRoot() {
+        return false;
     }
 }
