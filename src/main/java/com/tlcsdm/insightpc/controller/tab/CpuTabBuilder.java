@@ -215,8 +215,8 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         return String.format("%.2f%%", normalizedLoad * 100);
     }
 
-    static double calculateUnusedLoad(double normalizedUsedLoad) {
-        return normalizeLoad(1 - normalizedUsedLoad);
+    static double calculateUnusedLoad(double usedLoad) {
+        return 1 - normalizeLoad(usedLoad);
     }
 
     private GridPane createProcessorInfoGrid() {
