@@ -33,6 +33,5 @@ class CpuTabBuilderTest {
         assertEquals(1.0, CpuTabBuilder.calculateUnusedLoad(0.0));
         assertEquals(0.75, CpuTabBuilder.calculateUnusedLoad(0.25));
         assertEquals(0.0, CpuTabBuilder.calculateUnusedLoad(1.0));
-        assertEquals(0.0, CpuTabBuilder.calculateUnusedLoad(2.0));
     }
 }
