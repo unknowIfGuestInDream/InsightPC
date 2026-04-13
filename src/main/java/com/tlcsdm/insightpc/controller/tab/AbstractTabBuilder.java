@@ -45,6 +45,15 @@ public abstract class AbstractTabBuilder {
         return label;
     }
 
+    protected Label createSectionLabel(Ikon icon, String text) {
+        Label label = createSectionLabel(text);
+        FontIcon fontIcon = new FontIcon(icon);
+        fontIcon.setIconSize(16);
+        label.setGraphic(fontIcon);
+        label.setGraphicTextGap(8);
+        return label;
+    }
+
     protected GridPane createInfoGrid() {
         GridPane grid = new GridPane();
         grid.setHgap(15);
