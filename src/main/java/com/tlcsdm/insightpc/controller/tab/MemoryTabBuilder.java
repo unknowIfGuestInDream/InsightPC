@@ -77,9 +77,9 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
             SystemInfoService.formatBytes(memory.getPageSize()));
         content.getChildren().add(physicalSummaryGrid);
         if (!physMems.isEmpty()) {
-            int index = 0;
+            int moduleIndex = 0;
             for (PhysicalMemory pm : physMems) {
-                content.getChildren().add(createSectionLabel(I18N.get("detail.physicalMemory") + ": #" + index++));
+                content.getChildren().add(createSectionLabel(I18N.get("detail.physicalMemory") + ": #" + moduleIndex++));
                 GridPane pmGrid = createInfoGrid();
                 int row = 0;
                 addGridRow(pmGrid, row++, I18N.get("memory.bankLabel"), pm.getBankLabel());
