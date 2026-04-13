@@ -1,5 +1,6 @@
 package com.tlcsdm.insightpc.controller.tab;
 
+import com.tlcsdm.insightpc.config.I18N;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,8 +39,8 @@ class MemoryTabBuilderTest {
 
     @Test
     void testNormalizeFieldValue() {
-        assertEquals("N/A", MemoryTabBuilder.normalizeFieldValue(null));
-        assertEquals("N/A", MemoryTabBuilder.normalizeFieldValue("   "));
+        assertEquals(I18N.get("power.notAvailable"), MemoryTabBuilder.normalizeFieldValue(null));
+        assertEquals(I18N.get("power.notAvailable"), MemoryTabBuilder.normalizeFieldValue("   "));
         assertEquals("8 GB", MemoryTabBuilder.normalizeFieldValue(" 8 GB "));
     }
 }

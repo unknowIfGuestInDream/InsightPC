@@ -218,10 +218,10 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
 
     static String normalizeFieldValue(String value) {
         if (value == null) {
-            return "N/A";
+            return I18N.get("power.notAvailable");
         }
         String trimmed = value.trim();
-        return trimmed.isEmpty() ? "N/A" : trimmed;
+        return trimmed.isEmpty() ? I18N.get("power.notAvailable") : trimmed;
     }
 
     static boolean isLowUsageForOverlayText(double usage) {
