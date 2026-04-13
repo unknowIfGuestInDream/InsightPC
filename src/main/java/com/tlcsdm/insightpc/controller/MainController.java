@@ -102,8 +102,12 @@ public class MainController {
             }
             settingsStage.setHeight(targetHeight);
             if (primaryStage != null && primaryStage.isShowing()) {
+                settingsStage.sizeToScene();
+                double targetWidth = settingsStage.getWidth() > 0
+                    ? settingsStage.getWidth()
+                    : settingsStage.getScene().getWidth();
                 settingsStage.setY(primaryStage.getY() + (primaryStage.getHeight() - targetHeight) / 2.0);
-                settingsStage.setX(primaryStage.getX() + (primaryStage.getWidth() - settingsStage.getWidth()) / 2.0);
+                settingsStage.setX(primaryStage.getX() + (primaryStage.getWidth() - targetWidth) / 2.0);
             }
         });
     }
