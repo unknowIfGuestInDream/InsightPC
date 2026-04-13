@@ -28,10 +28,9 @@ import java.util.concurrent.ScheduledExecutorService;
 public class MainController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
-    private static final double SETTINGS_DEFAULT_HEIGHT = 560;
-    private static final double SETTINGS_MIN_HEIGHT = 420;
-    private static final double SETTINGS_HEIGHT_DELTA = 120;
-    private static final double SETTINGS_Y_OFFSET = 40;
+    private static final double SETTINGS_DEFAULT_HEIGHT = 480;
+    private static final double SETTINGS_MIN_HEIGHT = 360;
+    private static final double SETTINGS_HEIGHT_RATIO_OF_MAIN = 0.7;
     private static final int SETTINGS_WINDOW_MAX_RETRIES = 10;
 
     @FXML
@@ -99,10 +98,13 @@ public class MainController {
             double targetHeight = SETTINGS_DEFAULT_HEIGHT;
             if (primaryStage != null && primaryStage.isShowing()) {
                 targetHeight = Math.max(SETTINGS_MIN_HEIGHT,
-                    Math.min(SETTINGS_DEFAULT_HEIGHT, primaryStage.getHeight() - SETTINGS_HEIGHT_DELTA));
-                settingsStage.setY(primaryStage.getY() + SETTINGS_Y_OFFSET);
+                    Math.min(SETTINGS_DEFAULT_HEIGHT, primaryStage.getHeight() * SETTINGS_HEIGHT_RATIO_OF_MAIN));
             }
             settingsStage.setHeight(targetHeight);
+            if (primaryStage != null && primaryStage.isShowing()) {
+                settingsStage.setY(primaryStage.getY() + (primaryStage.getHeight() - targetHeight) / 2.0);
+                settingsStage.setX(primaryStage.getX() + (primaryStage.getWidth() - settingsStage.getWidth()) / 2.0);
+            }
         });
     }
 
