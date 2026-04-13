@@ -36,6 +36,7 @@ public class MainController {
     private static final double SETTINGS_MIN_HEIGHT = 360;
     private static final double SETTINGS_HEIGHT_RATIO = 0.7;
     private static final int SETTINGS_WINDOW_MAX_RETRIES = 10;
+    private static final double DRAG_MIN_TITLE_BAR_WIDTH = 10.0;
     private static final String MAXIMIZE_SYMBOL = "□";
     private static final String RESTORE_SYMBOL = "❐";
 
@@ -297,9 +298,14 @@ public class MainController {
 
         if (titleBarIcon != null) {
             try {
-                titleBarIcon.setImage(new Image(getClass().getResourceAsStream("/com/tlcsdm/insightpc/logo.png")));
+                var iconUrl = getClass().getResource("/com/tlcsdm/insightpc/logo.png");
+                if (iconUrl == null) {
+                    LOG.warn("Could not set title bar icon: resource not found");
+                } else {
+                    titleBarIcon.setImage(new Image(iconUrl.toExternalForm()));
+                }
             } catch (Exception e) {
-                LOG.warn("Could not set title bar icon", e);
+                LOG.warn("Could not set title bar icon: {}", e.getMessage(), e);
             }
         }
 
@@ -323,7 +329,10 @@ public class MainController {
         }
 
         if (primaryStage.isMaximized()) {
-            double widthRatio = event.getSceneX() / Math.max(1.0, titleBar.getWidth());
+            double titleBarWidth = titleBar.getWidth();
+            double widthRatio = titleBarWidth > DRAG_MIN_TITLE_BAR_WIDTH
+                ? event.getSceneX() / titleBarWidth
+                : 0.5;
             primaryStage.setMaximized(false);
             primaryStage.setX(event.getScreenX() - primaryStage.getWidth() * widthRatio);
             primaryStage.setY(event.getScreenY() - dragOffsetY);

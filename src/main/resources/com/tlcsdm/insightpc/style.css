@@ -220,7 +220,7 @@
 }
 
 .window-close-button:hover {
-    -fx-background-color: #e81123;
+    -fx-background-color: -color-accent-emphasis;
     -fx-text-fill: white;
 }
 
