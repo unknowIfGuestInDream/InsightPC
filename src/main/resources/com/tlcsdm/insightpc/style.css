@@ -331,11 +331,11 @@
 }
 
 .usage-percent-label {
-    -fx-text-fill: -color-fg-default;
+    -fx-text-fill: black;
 }
 
 .usage-percent-label.usage-percent-label-low {
-    -fx-text-fill: -color-fg-default;
+    -fx-text-fill: black;
 }
 
 .detail-value-field {

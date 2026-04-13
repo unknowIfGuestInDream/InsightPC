@@ -6,6 +6,8 @@
         </encoder>
     </appender>
 
+    <logger name="oshi.util.platform.windows.WmiQueryHandler" level="ERROR"/>
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
