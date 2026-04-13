@@ -2,8 +2,11 @@ package com.tlcsdm.insightpc.ui;
 
 import com.tlcsdm.insightpc.InsightApplication;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -40,6 +43,12 @@ class MainWindowTest {
     void testWindowTitle(FxRobot robot) {
         WaitForAsyncUtils.waitForFxEvents();
         assertEquals("InsightPC", stage.getTitle());
+    }
+
+    @Test
+    void testWindowIsUndecorated(FxRobot robot) {
+        WaitForAsyncUtils.waitForFxEvents();
+        assertEquals(StageStyle.UNDECORATED, stage.getStyle(), "Window should use UNDECORATED style");
     }
 
     @Test
@@ -85,5 +94,19 @@ class MainWindowTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertTrue(stage.getMinWidth() >= 800, "Min width should be at least 800");
         assertTrue(stage.getMinHeight() >= 600, "Min height should be at least 600");
+    }
+
+    @Test
+    void testCustomTitleBarControls(FxRobot robot) {
+        Label title = robot.lookup("#titleBarLabel").queryAs(Label.class);
+        Button minimizeButton = robot.lookup("#minimizeButton").queryAs(Button.class);
+        Button maximizeButton = robot.lookup("#maximizeButton").queryAs(Button.class);
+        Button closeButton = robot.lookup("#closeButton").queryAs(Button.class);
+
+        assertNotNull(title, "Title label should exist");
+        assertEquals("InsightPC", title.getText(), "Title label should match window title");
+        assertNotNull(minimizeButton, "Minimize button should exist");
+        assertNotNull(maximizeButton, "Maximize button should exist");
+        assertNotNull(closeButton, "Close button should exist");
     }
 }

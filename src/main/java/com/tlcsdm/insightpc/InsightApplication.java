@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,11 @@ public class InsightApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        try {
+            primaryStage.initStyle(StageStyle.UNDECORATED);
+        } catch (IllegalStateException e) {
+            LOG.debug("Primary stage style already initialized: {}", e.getMessage());
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         loader.setResources(I18N.getBundle());
         Parent root = loader.load();

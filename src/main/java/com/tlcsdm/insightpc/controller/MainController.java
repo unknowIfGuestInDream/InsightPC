@@ -13,6 +13,9 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -33,13 +36,25 @@ public class MainController {
     private static final double SETTINGS_MIN_HEIGHT = 360;
     private static final double SETTINGS_HEIGHT_RATIO = 0.7;
     private static final int SETTINGS_WINDOW_MAX_RETRIES = 10;
+    private static final String MAXIMIZE_SYMBOL = "□";
+    private static final String RESTORE_SYMBOL = "❐";
 
     @FXML
     private TabPane tabPane;
+    @FXML
+    private HBox titleBar;
+    @FXML
+    private ImageView titleBarIcon;
+    @FXML
+    private Label titleBarLabel;
+    @FXML
+    private Button maximizeButton;
 
     private Stage primaryStage;
     private SystemInfoService systemInfoService;
     private ScheduledExecutorService scheduler;
+    private double dragOffsetX;
+    private double dragOffsetY;
 
     @FXML
     public void initialize() {
@@ -71,6 +86,7 @@ public class MainController {
      */
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
+        setupCustomTitleBar();
     }
 
     /**
@@ -123,6 +139,25 @@ public class MainController {
         if (primaryStage != null) {
             primaryStage.close();
         }
+    }
+
+    @FXML
+    public void minimizeWindow() {
+        if (primaryStage != null) {
+            primaryStage.setIconified(true);
+        }
+    }
+
+    @FXML
+    public void toggleMaximizeWindow() {
+        if (primaryStage != null) {
+            primaryStage.setMaximized(!primaryStage.isMaximized());
+        }
+    }
+
+    @FXML
+    public void closeWindow() {
+        exitApplication();
     }
 
     /**
@@ -240,6 +275,68 @@ public class MainController {
         LOG.info("Application shutting down");
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdownNow();
+        }
+    }
+
+    private void setupCustomTitleBar() {
+        if (primaryStage == null || titleBar == null) {
+            return;
+        }
+
+        if (titleBarLabel != null && primaryStage.getTitle() != null && !primaryStage.getTitle().isEmpty()) {
+            titleBarLabel.setText(primaryStage.getTitle());
+        }
+        primaryStage.titleProperty().addListener((obs, oldTitle, newTitle) -> {
+            if (titleBarLabel != null && newTitle != null && !newTitle.isEmpty()) {
+                titleBarLabel.setText(newTitle);
+            }
+        });
+
+        primaryStage.maximizedProperty().addListener((obs, oldValue, maximized) -> updateMaximizeButtonSymbol(maximized));
+        updateMaximizeButtonSymbol(primaryStage.isMaximized());
+
+        if (titleBarIcon != null) {
+            try {
+                titleBarIcon.setImage(new Image(getClass().getResourceAsStream("/com/tlcsdm/insightpc/logo.png")));
+            } catch (Exception e) {
+                LOG.warn("Could not set title bar icon", e);
+            }
+        }
+
+        titleBar.setOnMousePressed(this::recordDragOffset);
+        titleBar.setOnMouseDragged(this::handleWindowDrag);
+        titleBar.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                toggleMaximizeWindow();
+            }
+        });
+    }
+
+    private void recordDragOffset(MouseEvent event) {
+        dragOffsetX = event.getSceneX();
+        dragOffsetY = event.getSceneY();
+    }
+
+    private void handleWindowDrag(MouseEvent event) {
+        if (primaryStage == null || primaryStage.isIconified()) {
+            return;
+        }
+
+        if (primaryStage.isMaximized()) {
+            double widthRatio = event.getSceneX() / Math.max(1.0, titleBar.getWidth());
+            primaryStage.setMaximized(false);
+            primaryStage.setX(event.getScreenX() - primaryStage.getWidth() * widthRatio);
+            primaryStage.setY(event.getScreenY() - dragOffsetY);
+            return;
+        }
+
+        primaryStage.setX(event.getScreenX() - dragOffsetX);
+        primaryStage.setY(event.getScreenY() - dragOffsetY);
+    }
+
+    private void updateMaximizeButtonSymbol(boolean maximized) {
+        if (maximizeButton != null) {
+            maximizeButton.setText(maximized ? RESTORE_SYMBOL : MAXIMIZE_SYMBOL);
         }
     }
 }
