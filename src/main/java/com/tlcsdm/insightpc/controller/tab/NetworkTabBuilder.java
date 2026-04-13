@@ -8,10 +8,14 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignW;
 import oshi.hardware.NetworkIF;
@@ -32,6 +36,8 @@ import java.util.concurrent.TimeUnit;
 public class NetworkTabBuilder extends AbstractTabBuilder {
 
     private static final long ONE_SECOND_IN_NANOS = 1_000_000_000L;
+    private static final String READONLY_VALUE_FIELD_STYLE =
+        "-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;";
 
     public NetworkTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
         super(systemInfoService, scheduler);
@@ -58,11 +64,11 @@ public class NetworkTabBuilder extends AbstractTabBuilder {
 
         GridPane networkInfoGrid = createInfoGrid();
         int infoRow = 0;
-        addGridRow(networkInfoGrid, infoRow++, I18N.get("detail.domainName"), networkParams.getDomainName());
-        addGridRow(networkInfoGrid, infoRow++, I18N.get("detail.hostName"), networkParams.getHostName());
-        addGridRow(networkInfoGrid, infoRow++, I18N.get("detail.ipv4DefaultGateway"), networkParams.getIpv4DefaultGateway());
-        addGridRow(networkInfoGrid, infoRow++, I18N.get("detail.ipv6DefaultGateway"), networkParams.getIpv6DefaultGateway());
-        addGridRow(networkInfoGrid, infoRow, I18N.get("detail.dnsServers"), Arrays.toString(networkParams.getDnsServers()));
+        addReadOnlyValueRow(networkInfoGrid, infoRow++, I18N.get("detail.domainName"), networkParams.getDomainName());
+        addReadOnlyValueRow(networkInfoGrid, infoRow++, I18N.get("detail.hostName"), networkParams.getHostName());
+        addReadOnlyValueRow(networkInfoGrid, infoRow++, I18N.get("detail.ipv4DefaultGateway"), networkParams.getIpv4DefaultGateway());
+        addReadOnlyValueRow(networkInfoGrid, infoRow++, I18N.get("detail.ipv6DefaultGateway"), networkParams.getIpv6DefaultGateway());
+        addReadOnlyValueRow(networkInfoGrid, infoRow, I18N.get("detail.dnsServers"), Arrays.toString(networkParams.getDnsServers()));
         content.getChildren().add(networkInfoGrid);
 
         content.getChildren().add(createSectionLabel(I18N.get("network.info")));
@@ -197,8 +203,44 @@ public class NetworkTabBuilder extends AbstractTabBuilder {
                                                           double width) {
         TableColumn<NetworkRow, String> column = new TableColumn<>(title);
         column.setCellValueFactory(data -> new SimpleStringProperty(mapper.apply(data.getValue())));
+        column.setCellFactory(col -> new TableCell<>() {
+            private final Tooltip tooltip = new Tooltip();
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isBlank()) {
+                    setText(null);
+                    setTooltip(null);
+                } else {
+                    setText(item);
+                    tooltip.setText(item);
+                    setTooltip(tooltip);
+                }
+            }
+        });
         column.setPrefWidth(width);
         return column;
+    }
+
+    private void addReadOnlyValueRow(GridPane grid, int row, String key, String value) {
+        Label keyLabel = new Label(key + ":");
+        keyLabel.getStyleClass().add("key-label");
+        TextField valueField = new TextField(normalizeFieldValue(value));
+        valueField.setEditable(false);
+        valueField.setFocusTraversable(false);
+        valueField.setStyle(READONLY_VALUE_FIELD_STYLE);
+        GridPane.setHgrow(valueField, Priority.ALWAYS);
+        grid.add(keyLabel, 0, row);
+        grid.add(valueField, 1, row);
+    }
+
+    static String normalizeFieldValue(String value) {
+        if (value == null) {
+            return "N/A";
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? "N/A" : trimmed;
     }
 
     private record NetworkRow(

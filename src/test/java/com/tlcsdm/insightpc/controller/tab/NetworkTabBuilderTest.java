@@ -32,4 +32,11 @@ class NetworkTabBuilderTest {
         assertEquals("5", NetworkTabBuilder.toText(5));
         assertEquals("N/A", NetworkTabBuilder.toText(-1));
     }
+
+    @Test
+    void testNormalizeFieldValue() {
+        assertEquals("N/A", NetworkTabBuilder.normalizeFieldValue(null));
+        assertEquals("N/A", NetworkTabBuilder.normalizeFieldValue("   "));
+        assertEquals("example", NetworkTabBuilder.normalizeFieldValue("  example  "));
+    }
 }
