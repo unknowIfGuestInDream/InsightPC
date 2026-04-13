@@ -67,7 +67,7 @@ public class PowerTabBuilder extends AbstractTabBuilder {
                 addGridRow(grid, row++, I18N.get("power.amperage"),
                     String.format("%.1f mA", ps.getAmperage()));
                 addGridRow(grid, row++, I18N.get("power.powerUsageRate"),
-                    ps.getPowerUsageRate() >= 0 ? String.format("%.1f mW", ps.getPowerUsageRate()) : na);
+                    String.format("%.1f mW", ps.getPowerUsageRate()));
                 addGridRow(grid, row++, I18N.get("power.powerOnLine"),
                     String.valueOf(ps.isPowerOnLine()));
                 addGridRow(grid, row++, I18N.get("power.charging"),

@@ -95,16 +95,21 @@ src/main/resources/com/tlcsdm/insightpc/
 
 src/test/java/com/tlcsdm/insightpc/
   config/AppThemeTest.java        # Unit tests for AppTheme
+  config/AppThemeEnhancedTest.java # Parameterized tests for AppTheme
   config/I18NTest.java            # Unit tests for I18N
+  config/I18NEnhancedTest.java    # Extended tests for I18N (locale switching, edge cases)
   model/DisplayLocaleTest.java    # Unit tests for DisplayLocale
-  service/SystemInfoServiceTest.java # Unit tests for SystemInfoService
+  model/DisplayLocaleEnhancedTest.java # Equality, hash code, edge case tests
+  service/SystemInfoServiceTest.java   # Unit tests for SystemInfoService
+  service/SystemInfoServiceEnhancedTest.java # Parameterized formatBytes/formatUptime tests
+  ui/MainWindowTest.java          # TestFX UI tests for main window layout
 
 .gitignore         # Ignores: target/, .idea/, .vscode/, *.class, staging/, dist/
 ```
 
 ## CI Checks
 
-The **Test** workflow (`.github/workflows/test.yml`) runs on every push and pull request to `main`/`master`:
+The **Test** workflow (`.github/workflows/test.yml`) runs on every push and pull request to `master`:
 
 1. Checks out the code
 2. Sets up Temurin JDK 21
@@ -117,12 +122,26 @@ The build must pass on Ubuntu, Windows, and macOS. Replicate locally with:
 mvn -B clean verify --no-transfer-progress
 ```
 
+## Code Comments and Documentation Style
+
+- Write natural, concise text that reads like a developer wrote it — no AI tone.
+- Avoid excessive politeness, over-explanation, or listing too many options.
+- Use direct wording and short sentences.
+- Code and comments must be in English.
+- PR replies should be in Chinese.
+
+## Testing
+
+- Write thorough unit tests covering all cases: normal paths, edge cases, boundary values, null/empty inputs, and error conditions.
+- Use TestFX (`org.testfx:testfx-junit5`) for JavaFX UI tests. UI tests run in headless mode on CI (via `xvfb` on Linux, native on Windows/macOS).
+- Every code change must include corresponding test updates. New features need new tests; bug fixes need regression tests.
+- Keep unit tests (non-UI) headless — no JavaFX toolkit initialization required.
+
 ## Key Facts
 
 - The `Launcher` class must remain the JAR manifest entry point; do **not** change the manifest `mainClass` or the classpath-based launch will fail.
 - The packaging produces `target/insightpc.jar` + `target/lib/`; both must be kept together to run the application.
 - When adding i18n keys, add them to **all three** properties files (`messages.properties`, `messages_zh.properties`, `messages_ja.properties`).
-- Tests do **not** start the JavaFX runtime; keep unit tests headless. UI changes must be tested manually.
 - `AppSettings` uses PreferencesFX and persists data to the OS preferences store; it is a singleton accessed via `AppSettings.getInstance()`.
 - `SystemInfoService` wraps OSHI's `SystemInfo` and provides methods for CPU, memory, disk, network, and process data.
 - Trust these instructions first; only search the codebase if something here appears incomplete or incorrect.
