@@ -186,6 +186,40 @@
 }
 
 /* ============================================================
+   Custom title bar
+   ============================================================ */
+.custom-title-bar {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
+    -fx-padding: 0 0 0 10;
+    -fx-min-height: 34;
+    -fx-pref-height: 34;
+}
+
+.custom-title-text {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.window-control-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-min-width: 42;
+    -fx-pref-width: 42;
+    -fx-min-height: 34;
+    -fx-pref-height: 34;
+    -fx-font-size: 12px;
+}
+
+.window-control-button:hover {
+    -fx-background-color: -color-bg-subtle;
+}
+
+/* ============================================================
    MenuBar - Flat style
    ============================================================ */
 .menu-bar {
