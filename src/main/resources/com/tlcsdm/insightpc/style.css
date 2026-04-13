@@ -301,7 +301,7 @@
 }
 
 .usage-percent-label.usage-percent-label-low {
-    -fx-text-fill: #1f1f1f;
+    -fx-text-fill: -color-fg-default;
 }
 
 .detail-value-field {

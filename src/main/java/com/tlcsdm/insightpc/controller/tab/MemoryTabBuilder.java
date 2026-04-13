@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  * Builds the Memory tab showing physical and virtual memory info.
  */
 public class MemoryTabBuilder extends AbstractTabBuilder {
+    private static final double LOW_USAGE_OVERLAY_THRESHOLD = 0.5;
 
     public MemoryTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
         super(systemInfoService, scheduler);
@@ -201,7 +202,7 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
     }
 
     static boolean isLowUsageForOverlayText(double usage) {
-        return usage < 0.5;
+        return usage < LOW_USAGE_OVERLAY_THRESHOLD;
     }
 
     /**
