@@ -7,12 +7,12 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -24,9 +24,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import oshi.hardware.CentralProcessor;
+import oshi.hardware.Sensors;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -40,13 +40,13 @@ public class CpuTabBuilder extends AbstractTabBuilder {
     private static final double CORE_NAME_MIN_WIDTH = 55;
     private static final double SYSTEM_BAR_HEIGHT = 36;
     private static final double CORE_BAR_HEIGHT = 18;
+    private static final double METRIC_VALUE_FONT_SIZE = 38;
     private static final double INFO_GRID_KEY_MIN_WIDTH = 130;
     private static final double INFO_GRID_KEY_PREF_WIDTH = 140;
     private static final String PROGRESS_PERCENT_TEXT_STYLE = "-fx-text-fill: black;";
     private static final String READONLY_VALUE_FIELD_STYLE =
         "-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;";
     static final double DEFAULT_DIVIDER_POSITION = 0.68;
-    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public CpuTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
         super(systemInfoService, scheduler);
@@ -64,13 +64,34 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         rightContent.setPadding(new Insets(15));
 
         CentralProcessor cpu = systemInfoService.getProcessor();
+        Sensors sensors = systemInfoService.getSensors();
         CentralProcessor.ProcessorIdentifier id = cpu.getProcessorIdentifier();
 
         rightContent.getChildren().add(createSectionLabel(I18N.get("cpu.info")));
+        GridPane metricsGrid = createMetricsGrid();
+        Label usageMetricValue = createMetricValueLabel(formatSystemUsageText(0));
+        Label unusedMetricValue = createMetricValueLabel(formatSystemUsageText(1));
+        Label freqMetricValue = createMetricValueLabel(formatFrequencyText(cpu.getCurrentFreq(), cpu.getMaxFreq()));
+        Label interruptsMetricValue = createMetricValueLabel(formatCounterText(cpu.getInterrupts()));
+        Label contextSwitchesMetricValue = createMetricValueLabel(formatCounterText(cpu.getContextSwitches()));
+        Label temperatureMetricValue = createMetricValueLabel(formatTemperatureText(sensors.getCpuTemperature()));
+        Label voltageMetricValue = createMetricValueLabel(formatVoltageText(sensors.getCpuVoltage()));
+        Label fanSpeedsMetricValue = createMetricValueLabel(formatFanSpeedsText(sensors.getFanSpeeds()));
+        int metricRow = 0;
+        metricsGrid.add(createMetricCard(I18N.get("cpu.inUse"), usageMetricValue), 0, metricRow);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.unused"), unusedMetricValue), 1, metricRow);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.freq"), freqMetricValue), 2, metricRow++);
+        metricsGrid.add(createMetricsSeparator(), 0, metricRow++, 3, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.interrupts"), interruptsMetricValue), 0, metricRow);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.contextSwitches"), contextSwitchesMetricValue), 1, metricRow++);
+        metricsGrid.add(createMetricsSeparator(), 0, metricRow++, 3, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.temperature"), temperatureMetricValue), 0, metricRow);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.voltage"), voltageMetricValue), 1, metricRow);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.fanSpeeds"), fanSpeedsMetricValue), 2, metricRow);
+        rightContent.getChildren().add(metricsGrid);
+
         GridPane grid = createProcessorInfoGrid();
         int row = 0;
-        TextField inUseField = addReadOnlyValueRow(grid, row++, I18N.get("cpu.inUse"), "0.0%");
-        TextField unusedField = addReadOnlyValueRow(grid, row++, I18N.get("cpu.unused"), "100.0%");
         addReadOnlyValueRow(grid, row++, I18N.get("cpu.name"), id.getName());
         addReadOnlyValueRow(grid, row++, I18N.get("cpu.vendor"), id.getVendor());
         addReadOnlyValueRow(grid, row++, I18N.get("cpu.family"), id.getFamily());
@@ -87,17 +108,17 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         rightContent.getChildren().add(grid);
 
         // CPU usage area chart
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("");
+        NumberAxis xAxis = new NumberAxis(0, MAX_DATA_POINTS - 1, 1);
         xAxis.setAnimated(false);
         xAxis.setTickLabelsVisible(false);
         xAxis.setTickMarkVisible(false);
+        xAxis.setMinorTickVisible(false);
 
         NumberAxis yAxis = new NumberAxis(0, 100, 10);
         yAxis.setLabel("%");
         yAxis.setAnimated(false);
 
-        AreaChart<String, Number> cpuChart = new AreaChart<>(xAxis, yAxis);
+        AreaChart<Number, Number> cpuChart = new AreaChart<>(xAxis, yAxis);
         cpuChart.setTitle(I18N.get("cpu.usage"));
         cpuChart.setAnimated(false);
         cpuChart.setCreateSymbols(false);
@@ -109,8 +130,11 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         cpuChart.setPrefHeight(280);
         VBox.setVgrow(cpuChart, Priority.ALWAYS);
 
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName(I18N.get("cpu.usage"));
+        for (int i = 0; i < MAX_DATA_POINTS; i++) {
+            series.getData().add(new XYChart.Data<>(i, 0));
+        }
         cpuChart.setData(FXCollections.observableArrayList(series));
         leftContent.getChildren().add(cpuChart);
 
@@ -168,8 +192,14 @@ public class CpuTabBuilder extends AbstractTabBuilder {
                 double normalizedCpuLoad = normalizeLoad(cpuLoad);
                 cpuBar.setProgress(normalizedCpuLoad);
                 cpuUsageLabel.setText(formatSystemUsageText(normalizedCpuLoad));
-                inUseField.setText(formatSystemUsageText(normalizedCpuLoad));
-                unusedField.setText(formatSystemUsageText(calculateUnusedLoad(normalizedCpuLoad)));
+                usageMetricValue.setText(formatSystemUsageText(normalizedCpuLoad));
+                unusedMetricValue.setText(formatSystemUsageText(calculateUnusedLoad(normalizedCpuLoad)));
+                freqMetricValue.setText(formatFrequencyText(cpu.getCurrentFreq(), cpu.getMaxFreq()));
+                interruptsMetricValue.setText(formatCounterText(cpu.getInterrupts()));
+                contextSwitchesMetricValue.setText(formatCounterText(cpu.getContextSwitches()));
+                temperatureMetricValue.setText(formatTemperatureText(sensors.getCpuTemperature()));
+                voltageMetricValue.setText(formatVoltageText(sensors.getCpuVoltage()));
+                fanSpeedsMetricValue.setText(formatFanSpeedsText(sensors.getFanSpeeds()));
 
                 int updateCount = Math.min(coreLoads.length, coreBars.length);
                 for (int i = 0; i < updateCount; i++) {
@@ -178,11 +208,11 @@ public class CpuTabBuilder extends AbstractTabBuilder {
                     coreLabels[i].setText(formatCoreUsageText(normalizedCoreLoad));
                 }
 
-                String timeLabel = LocalTime.now().format(TIME_FMT);
-                series.getData().add(new XYChart.Data<>(timeLabel, normalizedCpuLoad * 100));
-                if (series.getData().size() > MAX_DATA_POINTS) {
-                    series.getData().remove(0);
+                int dataSize = series.getData().size();
+                for (int i = 1; i < dataSize; i++) {
+                    series.getData().get(i - 1).setYValue(series.getData().get(i).getYValue());
                 }
+                series.getData().get(dataSize - 1).setYValue(normalizedCpuLoad * 100);
             });
         }, 1, 2, TimeUnit.SECONDS);
 
@@ -219,6 +249,42 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         return 1 - normalizedUsedLoad;
     }
 
+    static String formatFrequencyText(long[] currentFrequencies, long maxFrequency) {
+        if (currentFrequencies != null && currentFrequencies.length > 0) {
+            long total = 0;
+            int count = 0;
+            for (long currentFrequency : currentFrequencies) {
+                if (currentFrequency > 0) {
+                    total += currentFrequency;
+                    count++;
+                }
+            }
+            if (count > 0) {
+                return String.format("%.2f", (double) total / count / 1_000_000_000.0);
+            }
+        }
+        if (maxFrequency > 0) {
+            return String.format("%.2f", maxFrequency / 1_000_000_000.0);
+        }
+        return "N/A";
+    }
+
+    static String formatCounterText(long value) {
+        return value >= 0 ? Long.toString(value) : "N/A";
+    }
+
+    static String formatTemperatureText(double temperature) {
+        return String.format("%.1f°C", Math.max(0, temperature));
+    }
+
+    static String formatVoltageText(double voltage) {
+        return String.format("%.1f", Math.max(0, voltage));
+    }
+
+    static String formatFanSpeedsText(int[] fanSpeeds) {
+        return fanSpeeds == null ? "[]" : Arrays.toString(fanSpeeds);
+    }
+
     private GridPane createProcessorInfoGrid() {
         GridPane grid = new GridPane();
         grid.setHgap(8);
@@ -245,5 +311,39 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         grid.add(keyLabel, 0, row);
         grid.add(valueField, 1, row);
         return valueField;
+    }
+
+    private GridPane createMetricsGrid() {
+        GridPane grid = new GridPane();
+        grid.setHgap(18);
+        grid.setVgap(4);
+        grid.setPadding(new Insets(0, 0, 8, 0));
+        for (int i = 0; i < 3; i++) {
+            ColumnConstraints col = new ColumnConstraints();
+            col.setHgrow(Priority.ALWAYS);
+            col.setPercentWidth(33.3);
+            grid.getColumnConstraints().add(col);
+        }
+        return grid;
+    }
+
+    private VBox createMetricCard(String title, Label valueLabel) {
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-size: 14;");
+        VBox card = new VBox(2, titleLabel, valueLabel);
+        card.setPadding(new Insets(4, 0, 6, 0));
+        return card;
+    }
+
+    private Label createMetricValueLabel(String initialValue) {
+        Label valueLabel = new Label(initialValue);
+        valueLabel.setStyle("-fx-font-size: " + METRIC_VALUE_FONT_SIZE + "; -fx-font-weight: bold;");
+        return valueLabel;
+    }
+
+    private Separator createMetricsSeparator() {
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(4, 0, 4, 0));
+        return separator;
     }
 }
