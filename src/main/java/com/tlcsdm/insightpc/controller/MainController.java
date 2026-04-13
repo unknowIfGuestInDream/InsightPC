@@ -157,11 +157,6 @@ public class MainController {
         }
     }
 
-    @FXML
-    public void closeWindow() {
-        exitApplication();
-    }
-
     /**
      * Restart the application.
      */

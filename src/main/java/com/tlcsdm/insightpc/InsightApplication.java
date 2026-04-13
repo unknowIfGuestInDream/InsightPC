@@ -43,7 +43,7 @@ public class InsightApplication extends Application {
         try {
             primaryStage.initStyle(StageStyle.UNDECORATED);
         } catch (IllegalStateException e) {
-            LOG.debug("Primary stage style already initialized: {}", e.getMessage());
+            LOG.debug("Failed to set UNDECORATED style, stage may already be shown: {}", e.getMessage());
         }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         loader.setResources(I18N.getBundle());

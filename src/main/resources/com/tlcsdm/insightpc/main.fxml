@@ -24,9 +24,9 @@
                 <ImageView fx:id="titleBarIcon" fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true"/>
                 <Label fx:id="titleBarLabel" styleClass="custom-title-text"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="minimizeButton" text="─" styleClass="window-control-button" onAction="#minimizeWindow"/>
-                <Button fx:id="maximizeButton" text="□" styleClass="window-control-button" onAction="#toggleMaximizeWindow"/>
-                <Button fx:id="closeButton" text="✕" styleClass="window-control-button window-close-button" onAction="#closeWindow"/>
+                <Button fx:id="minimizeButton" text="─" accessibleText="Minimize window" styleClass="window-control-button" onAction="#minimizeWindow"/>
+                <Button fx:id="maximizeButton" text="□" accessibleText="Maximize window" styleClass="window-control-button" onAction="#toggleMaximizeWindow"/>
+                <Button fx:id="closeButton" text="✕" accessibleText="Close window" styleClass="window-control-button window-close-button" onAction="#exitApplication"/>
             </HBox>
             <MenuBar>
                 <Menu text="%menu.file">
