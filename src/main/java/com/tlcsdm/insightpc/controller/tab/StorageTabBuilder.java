@@ -9,6 +9,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -84,6 +85,7 @@ public class StorageTabBuilder extends AbstractTabBuilder {
                 Label percentLabel = new Label(formatPercentText(usage));
                 percentLabel.getStyleClass().add("key-label");
                 percentLabel.getStyleClass().add("usage-percent-label");
+                percentLabel.setStyle("-fx-text-fill: black;");
                 StackPane barPane = new StackPane(bar, percentLabel);
                 barPane.setAlignment(Pos.CENTER);
                 barPane.setMaxWidth(Double.MAX_VALUE);
@@ -123,5 +125,27 @@ public class StorageTabBuilder extends AbstractTabBuilder {
 
     static String formatPercentText(double usage) {
         return String.format("%.0f%%", usage * 100);
+    }
+
+    @Override
+    protected void addGridRow(GridPane grid, int row, String key, String value) {
+        Label keyLabel = new Label(key + ":");
+        keyLabel.getStyleClass().add("key-label");
+
+        TextField valueField = new TextField(normalizeFieldValue(value));
+        valueField.setEditable(false);
+        valueField.getStyleClass().add("detail-value-field");
+        GridPane.setHgrow(valueField, Priority.ALWAYS);
+
+        grid.add(keyLabel, 0, row);
+        grid.add(valueField, 1, row);
+    }
+
+    static String normalizeFieldValue(String value) {
+        if (value == null) {
+            return I18N.get("power.notAvailable");
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? I18N.get("power.notAvailable") : trimmed;
     }
 }
