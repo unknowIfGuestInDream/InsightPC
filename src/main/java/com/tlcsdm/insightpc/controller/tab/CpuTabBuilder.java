@@ -216,7 +216,7 @@ public class CpuTabBuilder extends AbstractTabBuilder {
     }
 
     static double calculateUnusedLoad(double normalizedUsedLoad) {
-        return normalizeLoad(1 - normalizeLoad(normalizedUsedLoad));
+        return normalizeLoad(1 - normalizedUsedLoad);
     }
 
     private GridPane createProcessorInfoGrid() {
@@ -239,7 +239,9 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         TextField valueField = new TextField(value != null ? value : "N/A");
         valueField.setEditable(false);
         valueField.setFocusTraversable(false);
+        valueField.setAccessibleText(key);
         valueField.setStyle(READONLY_VALUE_FIELD_STYLE);
+        keyLabel.setLabelFor(valueField);
         grid.add(keyLabel, 0, row);
         grid.add(valueField, 1, row);
         return valueField;
