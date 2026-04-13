@@ -4,8 +4,8 @@ import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
@@ -55,7 +55,7 @@ public class PowerTabBuilder extends AbstractTabBuilder {
                 double remainingRatio = normalizeUsage(ps.getRemainingCapacityPercent());
                 ProgressBar capacityBar = new ProgressBar(remainingRatio);
                 capacityBar.setMaxWidth(Double.MAX_VALUE);
-                capacityBar.setPrefHeight(20);
+                capacityBar.setPrefHeight(50);
                 Label percentLabel = new Label(formatPercentText(remainingRatio));
                 percentLabel.getStyleClass().add("usage-percent-label");
                 StackPane barPane = new StackPane(capacityBar, percentLabel);
