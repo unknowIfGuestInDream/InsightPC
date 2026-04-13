@@ -57,7 +57,7 @@ jobs:
       - name: Create custom JRE (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: & scripts\jre.ps1 -StagingDir staging
+        run: '& scripts\jre.ps1 -StagingDir staging'
 
       - name: Resolve version & stage files (Linux)
         if: runner.os == 'Linux'
