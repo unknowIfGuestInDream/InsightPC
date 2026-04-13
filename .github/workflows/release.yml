@@ -60,12 +60,12 @@ jobs:
       - name: Create custom JRE (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: & scripts\jre.ps1 -StagingDir staging
+        run: '& scripts\jre.ps1 -StagingDir staging'
 
       - name: Package artifact (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: & scripts\package.ps1
+        run: '& scripts\package.ps1'
 
       - name: Resolve version & stage files (Linux)
         if: runner.os == 'Linux'
