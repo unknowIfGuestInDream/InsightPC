@@ -191,6 +191,7 @@ public class MainController {
 
         TableView<OpenSourceLibrary> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        // Keep this list aligned with direct dependencies declared in pom.xml (exclude transitive dependencies).
         tableView.setItems(FXCollections.observableArrayList(
             new OpenSourceLibrary("JavaFX", "GPL v2 with Classpath Exception"),
             new OpenSourceLibrary("ControlsFX", "BSD 3-Clause License"),
@@ -198,7 +199,6 @@ public class MainController {
             new OpenSourceLibrary("AtlantaFX", "MIT License"),
             new OpenSourceLibrary("Ikonli", "Apache License 2.0"),
             new OpenSourceLibrary("OSHI", "MIT License"),
-            new OpenSourceLibrary("JNA", "Apache License 2.0 / LGPL 2.1"),
             new OpenSourceLibrary("SLF4J", "MIT License"),
             new OpenSourceLibrary("Logback", "EPL 1.0 / LGPL 2.1"),
             new OpenSourceLibrary("Gson", "Apache License 2.0")

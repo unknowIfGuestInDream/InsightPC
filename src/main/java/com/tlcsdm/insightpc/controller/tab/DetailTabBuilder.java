@@ -379,7 +379,8 @@ public class DetailTabBuilder extends AbstractTabBuilder {
         keyLabel.getStyleClass().add("key-label");
 
         TextField valueField = new TextField(normalizeValue(value));
-        valueField.setEditable(true);
+        valueField.setEditable(false);
+        valueField.getStyleClass().add("detail-value-field");
         GridPane.setHgrow(valueField, Priority.ALWAYS);
 
         grid.add(keyLabel, 0, row);

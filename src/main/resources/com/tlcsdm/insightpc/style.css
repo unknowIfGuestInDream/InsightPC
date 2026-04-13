@@ -296,6 +296,16 @@
     -fx-font-weight: bold;
 }
 
+.detail-value-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-insets: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
 /* Separator */
 .separator > .line {
     -fx-border-color: #e8e8e8;
