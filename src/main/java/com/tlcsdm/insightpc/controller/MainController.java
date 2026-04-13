@@ -29,8 +29,9 @@ public class MainController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
     private static final double SETTINGS_DEFAULT_HEIGHT = 480;
+    private static final double SETTINGS_DEFAULT_WIDTH = 900;
     private static final double SETTINGS_MIN_HEIGHT = 360;
-    private static final double SETTINGS_HEIGHT_RATIO_OF_MAIN = 0.7;
+    private static final double SETTINGS_HEIGHT_RATIO = 0.7;
     private static final int SETTINGS_WINDOW_MAX_RETRIES = 10;
 
     @FXML
@@ -98,14 +99,15 @@ public class MainController {
             double targetHeight = SETTINGS_DEFAULT_HEIGHT;
             if (primaryStage != null && primaryStage.isShowing()) {
                 targetHeight = Math.max(SETTINGS_MIN_HEIGHT,
-                    Math.min(SETTINGS_DEFAULT_HEIGHT, primaryStage.getHeight() * SETTINGS_HEIGHT_RATIO_OF_MAIN));
+                    Math.min(SETTINGS_DEFAULT_HEIGHT, primaryStage.getHeight() * SETTINGS_HEIGHT_RATIO));
             }
             settingsStage.setHeight(targetHeight);
             if (primaryStage != null && primaryStage.isShowing()) {
                 settingsStage.sizeToScene();
-                double targetWidth = settingsStage.getWidth() > 0
-                    ? settingsStage.getWidth()
-                    : settingsStage.getScene().getWidth();
+                double targetWidth = settingsStage.getWidth();
+                if (targetWidth <= 0) {
+                    targetWidth = settingsStage.getScene() != null ? settingsStage.getScene().getWidth() : SETTINGS_DEFAULT_WIDTH;
+                }
                 settingsStage.setY(primaryStage.getY() + (primaryStage.getHeight() - targetHeight) / 2.0);
                 settingsStage.setX(primaryStage.getX() + (primaryStage.getWidth() - targetWidth) / 2.0);
             }
