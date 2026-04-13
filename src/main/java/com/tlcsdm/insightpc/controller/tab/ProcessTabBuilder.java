@@ -22,7 +22,6 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -56,6 +55,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
     private static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 2;
     private static final double NANOS_PER_SECOND = 1_000_000_000d;
     private static final int PROCESS_ICON_SIZE = 16;
+    static final double PROCESS_ICON_COLUMN_WIDTH = 54d;
 
     public ProcessTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
         super(systemInfoService, scheduler);
@@ -74,8 +74,10 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
         OperatingSystem os = systemInfoService.getOperatingSystem();
 
         content.getChildren().add(createSectionLabel(I18N.get("process.summary")));
-        GridPane summaryGrid = createInfoGrid();
-        content.getChildren().add(summaryGrid);
+        Label processCountLabel = new Label();
+        Label threadCountLabel = new Label();
+        HBox summaryBox = new HBox(24, processCountLabel, threadCountLabel);
+        content.getChildren().add(summaryBox);
 
         content.getChildren().add(createSectionLabel(I18N.get("process.list")));
 
@@ -84,7 +86,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
         TableColumn<ProcessRow, Image> iconCol = new TableColumn<>(I18N.get("process.icon"));
         iconCol.setCellValueFactory(p -> new SimpleObjectProperty<>(p.getValue().icon()));
-        iconCol.setPrefWidth(34);
+        iconCol.setPrefWidth(PROCESS_ICON_COLUMN_WIDTH);
         iconCol.setCellFactory(col -> new TableCell<>() {
             private final ImageView imageView = new ImageView();
             private final Label fallback = new Label();
@@ -203,7 +205,8 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
         Runnable refreshAction = () -> refreshProcesses(
             os,
-            summaryGrid,
+            processCountLabel,
+            threadCountLabel,
             processTable,
             totalMemory,
             logicalProcessorCount,
@@ -244,7 +247,8 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
     }
 
     private void refreshProcesses(OperatingSystem os,
-                                  GridPane summaryGrid,
+                                  Label processCountLabel,
+                                  Label threadCountLabel,
                                   TableView<ProcessRow> processTable,
                                   long totalMemory,
                                   int logicalProcessorCount,
@@ -301,9 +305,8 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
                 int threadCount = os.getThreadCount();
                 Platform.runLater(() -> {
-                    summaryGrid.getChildren().clear();
-                    addGridRow(summaryGrid, 0, I18N.get("process.count"), String.valueOf(processCount));
-                    addGridRow(summaryGrid, 1, I18N.get("process.threadCount"), String.valueOf(threadCount));
+                    processCountLabel.setText(createSummaryItemText(I18N.get("process.count"), processCount));
+                    threadCountLabel.setText(createSummaryItemText(I18N.get("process.threadCount"), threadCount));
                     processTable.getItems().setAll(rows);
                 });
             } finally {
@@ -314,6 +317,10 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
     static String formatPercentValue(double value) {
         return String.format("%.1f%%", value);
+    }
+
+    static String createSummaryItemText(String label, int value) {
+        return label + ": " + value;
     }
 
     static int resolveProcessLimit(int processCount) {

@@ -52,6 +52,16 @@ class ProcessTabBuilderTest {
     }
 
     @Test
+    void testCreateSummaryItemText() {
+        assertEquals("Process Count: 123", ProcessTabBuilder.createSummaryItemText("Process Count", 123));
+    }
+
+    @Test
+    void testProcessIconColumnWidth() {
+        assertEquals(54d, ProcessTabBuilder.PROCESS_ICON_COLUMN_WIDTH);
+    }
+
+    @Test
     void testCreateProcessIconCacheKey() {
         assertEquals("C:/Program Files/App/app.exe",
             ProcessTabBuilder.createProcessIconCacheKey("C:/Program Files/App/app.exe", "app"));
