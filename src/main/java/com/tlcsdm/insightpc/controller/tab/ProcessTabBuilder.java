@@ -4,8 +4,10 @@ import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -14,18 +16,26 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.embed.swing.SwingFXUtils;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,6 +45,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import javax.swing.Icon;
+import javax.swing.filechooser.FileSystemView;
 
 /**
  * Builds the Processes tab showing running processes.
@@ -43,6 +55,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
     private static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 2;
     private static final double NANOS_PER_SECOND = 1_000_000_000d;
+    private static final int PROCESS_ICON_SIZE = 16;
 
     public ProcessTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
         super(systemInfoService, scheduler);
@@ -68,6 +81,35 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
         TableView<ProcessRow> processTable = new TableView<>();
         processTable.setPrefHeight(420);
+
+        TableColumn<ProcessRow, Image> iconCol = new TableColumn<>(I18N.get("process.icon"));
+        iconCol.setCellValueFactory(p -> new SimpleObjectProperty<>(p.getValue().icon()));
+        iconCol.setPrefWidth(34);
+        iconCol.setCellFactory(col -> new TableCell<>() {
+            private final ImageView imageView = new ImageView();
+            private final Label fallback = new Label();
+
+            {
+                imageView.setFitWidth(PROCESS_ICON_SIZE);
+                imageView.setFitHeight(PROCESS_ICON_SIZE);
+                imageView.setPreserveRatio(true);
+                fallback.setGraphic(new FontIcon(MaterialDesignA.APPS));
+                fallback.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            }
+
+            @Override
+            protected void updateItem(Image item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else if (item != null) {
+                    imageView.setImage(item);
+                    setGraphic(imageView);
+                } else {
+                    setGraphic(fallback);
+                }
+            }
+        });
 
         TableColumn<ProcessRow, Number> pidCol = new TableColumn<>(I18N.get("process.pid"));
         pidCol.setCellValueFactory(p -> new SimpleLongProperty(p.getValue().pid()));
@@ -107,6 +149,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
         nameCol.setPrefWidth(260);
 
         processTable.getColumns().addAll(
+            iconCol,
             pidCol,
             ppidCol,
             threadsCol,
@@ -223,6 +266,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
                 List<ProcessRow> rows = new ArrayList<>(processes.size());
                 Map<Integer, OSProcess> currentProcessMap = new HashMap<>(processes.size());
+                Map<String, Image> iconCache = new HashMap<>();
                 for (OSProcess process : processes) {
                     int pid = process.getProcessID();
                     OSProcess previousProcess = previousProcesses.get(pid);
@@ -234,7 +278,11 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
                         calculateCpuPercent(process.getProcessCpuLoadCumulative(), cpuPercentScope, logicalProcessorCount);
                     double memoryPercent = calculateMemoryPercent(process.getResidentSetSize(), totalMemory);
 
+                    String iconKey = createProcessIconCacheKey(process.getPath(), process.getName());
+                    Image processIcon = iconCache.computeIfAbsent(iconKey, key -> loadProcessIcon(process.getPath()));
+
                     rows.add(new ProcessRow(
+                        processIcon,
                         pid,
                         process.getParentProcessID(),
                         process.getThreadCount(),
@@ -307,6 +355,39 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
         return comparator.thenComparingLong(ProcessRow::pid);
     }
 
+    static String createProcessIconCacheKey(String processPath, String processName) {
+        if (processPath != null) {
+            String normalizedPath = processPath.trim();
+            if (!normalizedPath.isEmpty()) {
+                return normalizedPath;
+            }
+        }
+        return processName == null ? "" : processName;
+    }
+
+    static Image loadProcessIcon(String processPath) {
+        if (processPath == null || processPath.isBlank()) {
+            return null;
+        }
+        try {
+            File processFile = new File(processPath);
+            if (!processFile.exists()) {
+                return null;
+            }
+            Icon icon = FileSystemView.getFileSystemView().getSystemIcon(processFile);
+            if (icon == null || icon.getIconWidth() <= 0 || icon.getIconHeight() <= 0) {
+                return null;
+            }
+            BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics = image.createGraphics();
+            icon.paintIcon(null, graphics, 0, 0);
+            graphics.dispose();
+            return SwingFXUtils.toFXImage(image, null);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T selectedValue(ToggleGroup toggleGroup, T defaultValue) {
         Toggle selectedToggle = toggleGroup.getSelectedToggle();
@@ -334,7 +415,8 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
         SYSTEM
     }
 
-    record ProcessRow(long pid,
+    record ProcessRow(Image icon,
+                      long pid,
                       long ppid,
                       long threads,
                       double cpuPercent,

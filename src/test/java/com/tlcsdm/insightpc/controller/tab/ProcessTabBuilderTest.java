@@ -52,11 +52,21 @@ class ProcessTabBuilderTest {
     }
 
     @Test
+    void testCreateProcessIconCacheKey() {
+        assertEquals("C:/Program Files/App/app.exe",
+            ProcessTabBuilder.createProcessIconCacheKey("C:/Program Files/App/app.exe", "app"));
+        assertEquals("app",
+            ProcessTabBuilder.createProcessIconCacheKey("   ", "app"));
+        assertEquals("",
+            ProcessTabBuilder.createProcessIconCacheKey(null, null));
+    }
+
+    @Test
     void testCreateSortComparator() {
         List<ProcessTabBuilder.ProcessRow> rows = new ArrayList<>();
-        rows.add(new ProcessTabBuilder.ProcessRow(2, 0, 0, 10.0, 30.0, 20.0, "", "", "b"));
-        rows.add(new ProcessTabBuilder.ProcessRow(1, 0, 0, 30.0, 20.0, 10.0, "", "", "a"));
-        rows.add(new ProcessTabBuilder.ProcessRow(3, 0, 0, 20.0, 10.0, 40.0, "", "", "c"));
+        rows.add(new ProcessTabBuilder.ProcessRow(null, 2, 0, 0, 10.0, 30.0, 20.0, "", "", "b"));
+        rows.add(new ProcessTabBuilder.ProcessRow(null, 1, 0, 0, 30.0, 20.0, 10.0, "", "", "a"));
+        rows.add(new ProcessTabBuilder.ProcessRow(null, 3, 0, 0, 20.0, 10.0, 40.0, "", "", "c"));
 
         rows.sort(ProcessTabBuilder.createSortComparator(ProcessTabBuilder.ProcessSort.CPU));
         assertEquals(1, rows.get(0).pid());
