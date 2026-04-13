@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,8 +21,14 @@ class ResourceConfigurationTest {
     @Test
     void memoryUsagePercentLabelIsFixedBlack() throws IOException {
         String css = readClasspathResource("/com/tlcsdm/insightpc/style.css");
-        assertTrue(css.contains(".usage-percent-label {\n    -fx-text-fill: black;"));
-        assertTrue(css.contains(".usage-percent-label.usage-percent-label-low {\n    -fx-text-fill: black;"));
+        Pattern usagePercentLabelPattern = Pattern.compile(
+            "\\.usage-percent-label\\s*\\{[^}]*-fx-text-fill\\s*:\\s*black;",
+            Pattern.DOTALL);
+        Pattern lowUsagePercentLabelPattern = Pattern.compile(
+            "\\.usage-percent-label\\.usage-percent-label-low\\s*\\{[^}]*-fx-text-fill\\s*:\\s*black;",
+            Pattern.DOTALL);
+        assertTrue(usagePercentLabelPattern.matcher(css).find());
+        assertTrue(lowUsagePercentLabelPattern.matcher(css).find());
     }
 
     private static String readClasspathResource(String path) throws IOException {
