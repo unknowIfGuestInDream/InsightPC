@@ -3,11 +3,17 @@ package com.tlcsdm.insightpc.controller.tab;
 import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignH;
 import oshi.hardware.HWDiskStore;
@@ -68,11 +74,34 @@ public class StorageTabBuilder extends AbstractTabBuilder {
             long total = fs.getTotalSpace();
             long usable = fs.getUsableSpace();
             if (total > 0) {
-                ProgressBar bar = new ProgressBar((double) (total - usable) / total);
+                long used = Math.max(total - usable, 0);
+                long available = Math.max(usable, 0);
+                double usage = calculateUsage(used, total);
+
+                ProgressBar bar = new ProgressBar(usage);
                 bar.setMaxWidth(Double.MAX_VALUE);
                 bar.setPrefHeight(20);
+                Label percentLabel = new Label(formatPercentText(usage));
+                percentLabel.getStyleClass().add("key-label");
+                percentLabel.getStyleClass().add("usage-percent-label");
+                StackPane barPane = new StackPane(bar, percentLabel);
+                barPane.setAlignment(Pos.CENTER);
+                barPane.setMaxWidth(Double.MAX_VALUE);
+
+                Label usedLabel = new Label(I18N.get("storage.usage.used",
+                    SystemInfoService.formatBytes(used),
+                    SystemInfoService.formatBytes(total)));
+                Label availableLabel = new Label(I18N.get("storage.usage.available",
+                    SystemInfoService.formatBytes(available),
+                    SystemInfoService.formatBytes(total)));
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                HBox infoRow = new HBox(8, usedLabel, spacer, availableLabel);
+                infoRow.setAlignment(Pos.CENTER_LEFT);
+                VBox usagePanel = new VBox(4, barPane, infoRow);
+                usagePanel.setFillWidth(true);
                 content.getChildren().add(fsGrid);
-                content.getChildren().add(bar);
+                content.getChildren().add(usagePanel);
             } else {
                 content.getChildren().add(fsGrid);
             }
@@ -83,5 +112,16 @@ public class StorageTabBuilder extends AbstractTabBuilder {
         scrollPane.setFitToWidth(true);
         tab.setContent(scrollPane);
         return tab;
+    }
+
+    static double calculateUsage(long used, long total) {
+        if (total <= 0) {
+            return 0;
+        }
+        return Math.min(Math.max((double) used / total, 0), 1.0);
+    }
+
+    static String formatPercentText(double usage) {
+        return String.format("%.0f%%", usage * 100);
     }
 }
