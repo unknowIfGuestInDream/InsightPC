@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignW;
 import oshi.hardware.NetworkIF;
 import oshi.software.os.NetworkParams;
@@ -205,17 +206,21 @@ public class NetworkTabBuilder extends AbstractTabBuilder {
         column.setCellValueFactory(data -> new SimpleStringProperty(mapper.apply(data.getValue())));
         column.setCellFactory(col -> new TableCell<>() {
             private final Tooltip tooltip = new Tooltip();
+            {
+                tooltip.setShowDelay(Duration.millis(100));
+                tooltip.setShowDuration(Duration.seconds(30));
+                Tooltip.install(this, tooltip);
+            }
 
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null || item.isBlank()) {
                     setText(null);
-                    setTooltip(null);
+                    tooltip.setText("");
                 } else {
                     setText(item);
                     tooltip.setText(item);
-                    setTooltip(tooltip);
                 }
             }
         });
