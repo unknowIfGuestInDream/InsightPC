@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(ApplicationExtension.class)
 class MainWindowTest {
 
+    private static final int USB_TAB_INDEX = 8;
     private Stage stage;
 
     @Start
@@ -93,7 +94,7 @@ class MainWindowTest {
     @Test
     void testUsbTreeRootIsHidden(FxRobot robot) {
         TabPane tabPane = robot.lookup(".tab-pane").queryAs(TabPane.class);
-        tabPane.getSelectionModel().select(8);
+        tabPane.getSelectionModel().select(USB_TAB_INDEX);
         WaitForAsyncUtils.waitForFxEvents();
 
         TreeView<?> usbTree = robot.lookup(".tree-view").queryAs(TreeView.class);
