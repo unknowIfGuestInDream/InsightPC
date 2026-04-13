@@ -44,7 +44,7 @@ public class UsbDevicesTabBuilder extends AbstractTabBuilder {
         }
 
         usbTree.setRoot(rootItem);
-        usbTree.setShowRoot(shouldShowRoot());
+        usbTree.setShowRoot(false);
         usbTree.setPrefHeight(500);
         content.getChildren().add(usbTree);
 
@@ -67,12 +67,5 @@ public class UsbDevicesTabBuilder extends AbstractTabBuilder {
         }
 
         parent.getChildren().add(item);
-    }
-
-    /**
-     * Keep this as a method to make root visibility behavior easy to assert in unit tests.
-     */
-    static boolean shouldShowRoot() {
-        return false;
     }
 }
