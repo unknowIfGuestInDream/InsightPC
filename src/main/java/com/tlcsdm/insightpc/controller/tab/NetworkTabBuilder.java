@@ -157,7 +157,9 @@ public class NetworkTabBuilder extends AbstractTabBuilder {
             Platform.runLater(() -> {
                 downloadSpeedLabel.setText(downloadSpeedText);
                 uploadSpeedLabel.setText(uploadSpeedText);
-                networkTable.getItems().setAll(rows);
+                if (shouldRefreshTable(networkTable.isHover())) {
+                    networkTable.getItems().setAll(rows);
+                }
             });
         };
 
@@ -246,6 +248,10 @@ public class NetworkTabBuilder extends AbstractTabBuilder {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? "N/A" : trimmed;
+    }
+
+    static boolean shouldRefreshTable(boolean tableHovered) {
+        return !tableHovered;
     }
 
     private record NetworkRow(

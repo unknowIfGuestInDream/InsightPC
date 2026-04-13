@@ -39,4 +39,10 @@ class NetworkTabBuilderTest {
         assertEquals("N/A", NetworkTabBuilder.normalizeFieldValue("   "));
         assertEquals("example", NetworkTabBuilder.normalizeFieldValue("  example  "));
     }
+
+    @Test
+    void testShouldRefreshTable() {
+        assertEquals(true, NetworkTabBuilder.shouldRefreshTable(false));
+        assertEquals(false, NetworkTabBuilder.shouldRefreshTable(true));
+    }
 }
