@@ -40,7 +40,8 @@ public class CpuTabBuilder extends AbstractTabBuilder {
     private static final double CORE_NAME_MIN_WIDTH = 55;
     private static final double SYSTEM_BAR_HEIGHT = 36;
     private static final double CORE_BAR_HEIGHT = 18;
-    private static final double METRIC_VALUE_FONT_SIZE = 38;
+    private static final double METRIC_TITLE_FONT_SIZE = 13;
+    private static final double METRIC_VALUE_FONT_SIZE = 28;
     private static final double INFO_GRID_KEY_MIN_WIDTH = 130;
     private static final double INFO_GRID_KEY_PREF_WIDTH = 140;
     private static final String PROGRESS_PERCENT_TEXT_STYLE = "-fx-text-fill: black;";
@@ -315,7 +316,7 @@ public class CpuTabBuilder extends AbstractTabBuilder {
 
     private GridPane createMetricsGrid() {
         GridPane grid = new GridPane();
-        grid.setHgap(18);
+        grid.setHgap(10);
         grid.setVgap(4);
         grid.setPadding(new Insets(0, 0, 8, 0));
         for (int i = 0; i < 3; i++) {
@@ -329,14 +330,17 @@ public class CpuTabBuilder extends AbstractTabBuilder {
 
     private VBox createMetricCard(String title, Label valueLabel) {
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 14;");
+        titleLabel.setStyle("-fx-font-size: " + METRIC_TITLE_FONT_SIZE + ";");
         VBox card = new VBox(2, titleLabel, valueLabel);
+        card.setFillWidth(true);
         card.setPadding(new Insets(4, 0, 6, 0));
         return card;
     }
 
     private Label createMetricValueLabel(String initialValue) {
         Label valueLabel = new Label(initialValue);
+        valueLabel.setWrapText(true);
+        valueLabel.setMaxWidth(Double.MAX_VALUE);
         valueLabel.setStyle("-fx-font-size: " + METRIC_VALUE_FONT_SIZE + "; -fx-font-weight: bold;");
         return valueLabel;
     }
