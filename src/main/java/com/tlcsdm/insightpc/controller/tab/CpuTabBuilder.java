@@ -34,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 public class CpuTabBuilder extends AbstractTabBuilder {
 
     private static final int MAX_DATA_POINTS = 30;
+    private static final double CORE_NAME_MIN_WIDTH = 55;
+    private static final double CORE_PERCENT_MIN_WIDTH = 56;
     static final double DEFAULT_DIVIDER_POSITION = 0.68;
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -119,12 +121,12 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         for (int i = 0; i < logicalCores; i++) {
             Label coreName = new Label(I18N.get("cpu.core") + " " + i);
             coreName.getStyleClass().add("key-label");
-            coreName.setMinWidth(55);
+            coreName.setMinWidth(CORE_NAME_MIN_WIDTH);
             ProgressBar coreBar = new ProgressBar(0);
             coreBar.setMaxWidth(Double.MAX_VALUE);
             coreBar.setPrefHeight(18);
             Label corePercent = new Label("0%");
-            corePercent.setMinWidth(56);
+            corePercent.setMinWidth(CORE_PERCENT_MIN_WIDTH);
             HBox coreRow = new HBox(8, coreName, coreBar, corePercent);
             coreRow.setAlignment(Pos.CENTER_LEFT);
             HBox.setHgrow(coreBar, Priority.ALWAYS);
@@ -177,7 +179,7 @@ public class CpuTabBuilder extends AbstractTabBuilder {
     }
 
     static double normalizeLoad(double load) {
-        if (!Double.isFinite(load) || load <= 0) {
+        if (!Double.isFinite(load) || load < 0) {
             return 0;
         }
         return Math.min(load, 1.0);
