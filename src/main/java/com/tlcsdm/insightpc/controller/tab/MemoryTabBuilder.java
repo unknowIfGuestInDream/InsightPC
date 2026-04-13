@@ -67,9 +67,18 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
         // Physical memory sticks
         GlobalMemory memory = systemInfoService.getMemory();
         List<PhysicalMemory> physMems = memory.getPhysicalMemory();
+        content.getChildren().add(createSectionLabel(I18N.get("memory.physicalInfo")));
+        GridPane physicalSummaryGrid = createInfoGrid();
+        int summaryRow = 0;
+        addGridRow(physicalSummaryGrid, summaryRow++, I18N.get("memory.total"),
+            SystemInfoService.formatBytes(memory.getTotal()));
+        addGridRow(physicalSummaryGrid, summaryRow, I18N.get("memory.pageSize"),
+            SystemInfoService.formatBytes(memory.getPageSize()));
+        content.getChildren().add(physicalSummaryGrid);
         if (!physMems.isEmpty()) {
-            content.getChildren().add(createSectionLabel(I18N.get("memory.physicalInfo")));
+            int index = 0;
             for (PhysicalMemory pm : physMems) {
+                content.getChildren().add(createSectionLabel(I18N.get("detail.physicalMemory") + ": #" + index++));
                 GridPane pmGrid = createInfoGrid();
                 int row = 0;
                 addGridRow(pmGrid, row++, I18N.get("memory.bankLabel"), pm.getBankLabel());
@@ -154,6 +163,10 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
         double usage = calculateUsage(used, total);
         panel.progressBar().setProgress(usage);
         panel.percentLabel().setText(formatPercentText(usage));
+        panel.percentLabel().getStyleClass().remove("usage-percent-label-low");
+        if (isLowUsageForOverlayText(usage)) {
+            panel.percentLabel().getStyleClass().add("usage-percent-label-low");
+        }
         panel.usedLabel().setText(I18N.get("memory.usage.used",
             SystemInfoService.formatBytes(used),
             SystemInfoService.formatBytes(total)));
@@ -169,6 +182,7 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
 
         Label percentLabel = new Label("0%");
         percentLabel.getStyleClass().add("key-label");
+        percentLabel.getStyleClass().add("usage-percent-label");
 
         StackPane barPane = new StackPane(bar, percentLabel);
         barPane.setAlignment(Pos.CENTER);
@@ -184,6 +198,10 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
         VBox container = new VBox(4, barPane, infoRow);
         container.setFillWidth(true);
         return new MemoryUsagePanel(container, bar, percentLabel, usedLabel, remainLabel);
+    }
+
+    static boolean isLowUsageForOverlayText(double usage) {
+        return usage < 0.5;
     }
 
     /**

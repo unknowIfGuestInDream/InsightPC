@@ -3,6 +3,8 @@ package com.tlcsdm.insightpc.controller.tab;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MemoryTabBuilderTest {
 
@@ -26,5 +28,11 @@ class MemoryTabBuilderTest {
     void testFormatPercentText() {
         assertEquals("88%", MemoryTabBuilder.formatPercentText(0.88));
         assertEquals("0%", MemoryTabBuilder.formatPercentText(0.0));
+    }
+
+    @Test
+    void testIsLowUsageForOverlayText() {
+        assertTrue(MemoryTabBuilder.isLowUsageForOverlayText(0.49));
+        assertFalse(MemoryTabBuilder.isLowUsageForOverlayText(0.5));
     }
 }
