@@ -69,6 +69,9 @@ public class UsbDevicesTabBuilder extends AbstractTabBuilder {
         parent.getChildren().add(item);
     }
 
+    /**
+     * Keep this as a method to make root visibility behavior easy to assert in unit tests.
+     */
     static boolean shouldShowRoot() {
         return false;
     }
