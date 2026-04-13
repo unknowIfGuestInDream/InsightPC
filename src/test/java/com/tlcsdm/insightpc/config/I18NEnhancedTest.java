@@ -174,4 +174,23 @@ class I18NEnhancedTest {
             }
         }
     }
+
+    @Test
+    void testMemoryUiOptimizationKeysExistInAllLocales() {
+        String[] keys = {
+            "memory.swap", "memory.runtime", "memory.runtime.max", "memory.runtime.allocated",
+            "memory.runtime.used", "memory.runtime.free", "memory.usage.used",
+            "memory.usage.available", "memory.usage.free", "memory.physicalInfo"
+        };
+
+        for (Locale locale : I18N.getSupportedLocales()) {
+            ResourceBundle bundle = ResourceBundle.getBundle("com.tlcsdm.insightpc.i18n.messages", locale);
+            for (String key : keys) {
+                assertTrue(bundle.containsKey(key), "Missing key " + key + " for locale " + locale);
+                String value = bundle.getString(key);
+                assertNotNull(value, "Value must not be null for key " + key + " locale " + locale);
+                assertFalse(value.isBlank(), "Value must not be blank for key " + key + " locale " + locale);
+            }
+        }
+    }
 }
