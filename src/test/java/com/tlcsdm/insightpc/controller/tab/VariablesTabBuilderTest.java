@@ -8,6 +8,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VariablesTabBuilderTest {
@@ -42,5 +43,13 @@ class VariablesTabBuilderTest {
     void testGetSortedJavaPropertiesContainsJavaVersion() {
         Map<String, String> properties = VariablesTabBuilder.getSortedJavaProperties();
         assertTrue(properties.containsKey("java.version"));
+    }
+
+    @Test
+    void testResolveTooltipText() {
+        assertNull(VariablesTabBuilder.resolveTooltipText(true, "abc"));
+        assertNull(VariablesTabBuilder.resolveTooltipText(false, null));
+        assertNull(VariablesTabBuilder.resolveTooltipText(false, "   "));
+        assertEquals("long-value", VariablesTabBuilder.resolveTooltipText(false, "long-value"));
     }
 }

@@ -7,11 +7,14 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 
 import java.util.Map;
@@ -74,6 +77,26 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
 
         TableColumn<Map.Entry<String, String>, String> valueCol = new TableColumn<>(I18N.get("variables.value"));
         valueCol.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getValue()));
+        valueCol.setCellFactory(col -> new TableCell<>() {
+            private final Tooltip tooltip = new Tooltip();
+            {
+                tooltip.setShowDelay(Duration.millis(100));
+                tooltip.setShowDuration(Duration.seconds(30));
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                String text = resolveTooltipText(empty, item);
+                setText(text);
+                if (text == null) {
+                    setTooltip(null);
+                } else {
+                    tooltip.setText(text);
+                    setTooltip(tooltip);
+                }
+            }
+        });
         valueCol.setPrefWidth(600);
 
         table.getColumns().addAll(nameCol, valueCol);
@@ -90,6 +113,13 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
             }
         };
         scheduler.execute(loadTask);
+    }
+
+    static String resolveTooltipText(boolean empty, String value) {
+        if (empty || value == null || value.isBlank()) {
+            return null;
+        }
+        return value;
     }
 
     static double resolveTablePrefHeight(double preferredHeight) {
