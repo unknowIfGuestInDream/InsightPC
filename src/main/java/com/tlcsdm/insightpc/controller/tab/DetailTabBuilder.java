@@ -3,13 +3,10 @@ package com.tlcsdm.insightpc.controller.tab;
 import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignB;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
@@ -375,24 +372,7 @@ public class DetailTabBuilder extends AbstractTabBuilder {
 
     @Override
     protected void addGridRow(GridPane grid, int row, String key, String value) {
-        Label keyLabel = new Label(key + ":");
-        keyLabel.getStyleClass().add("key-label");
-
-        TextField valueField = new TextField(normalizeValue(value));
-        valueField.setEditable(false);
-        valueField.getStyleClass().add("detail-value-field");
-        GridPane.setHgrow(valueField, Priority.ALWAYS);
-
-        grid.add(keyLabel, 0, row);
-        grid.add(valueField, 1, row);
-    }
-
-    private String normalizeValue(String value) {
-        if (value == null) {
-            return I18N.get("power.notAvailable");
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? I18N.get("power.notAvailable") : trimmed;
+        addReadOnlyGridRow(grid, row, key, value);
     }
 
     private String toHex(byte[] data) {

@@ -9,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -143,17 +142,6 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
         return tab;
     }
 
-    static double calculateUsage(long used, long total) {
-        if (total <= 0) {
-            return 0;
-        }
-        return Math.min(Math.max((double) used / total, 0), 1.0);
-    }
-
-    static String formatPercentText(double usage) {
-        return String.format("%.0f%%", usage * 100);
-    }
-
     private static long normalizedTotal(long total, long used) {
         if (total > 0) {
             return total;
@@ -204,24 +192,7 @@ public class MemoryTabBuilder extends AbstractTabBuilder {
 
     @Override
     protected void addGridRow(GridPane grid, int row, String key, String value) {
-        Label keyLabel = new Label(key + ":");
-        keyLabel.getStyleClass().add("key-label");
-
-        TextField valueField = new TextField(normalizeFieldValue(value));
-        valueField.setEditable(false);
-        valueField.getStyleClass().add("detail-value-field");
-        GridPane.setHgrow(valueField, Priority.ALWAYS);
-
-        grid.add(keyLabel, 0, row);
-        grid.add(valueField, 1, row);
-    }
-
-    static String normalizeFieldValue(String value) {
-        if (value == null) {
-            return I18N.get("power.notAvailable");
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? I18N.get("power.notAvailable") : trimmed;
+        addReadOnlyGridRow(grid, row, key, value);
     }
 
     static boolean isLowUsageForOverlayText(double usage) {

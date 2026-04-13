@@ -242,14 +242,6 @@ public class NetworkTabBuilder extends AbstractTabBuilder {
         grid.add(valueField, 1, row);
     }
 
-    static String normalizeFieldValue(String value) {
-        if (value == null) {
-            return "N/A";
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? "N/A" : trimmed;
-    }
-
     static boolean shouldRefreshTable(boolean tableHovered) {
         return !tableHovered;
     }

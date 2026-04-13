@@ -37,9 +37,9 @@ class NetworkTabBuilderTest {
 
     @Test
     void testNormalizeFieldValue() {
-        assertEquals("N/A", NetworkTabBuilder.normalizeFieldValue(null));
-        assertEquals("N/A", NetworkTabBuilder.normalizeFieldValue("   "));
-        assertEquals("example", NetworkTabBuilder.normalizeFieldValue("  example  "));
+        assertEquals("N/A", AbstractTabBuilder.normalizeFieldValue(null));
+        assertEquals("N/A", AbstractTabBuilder.normalizeFieldValue("   "));
+        assertEquals("example", AbstractTabBuilder.normalizeFieldValue("  example  "));
     }
 
     @Test
