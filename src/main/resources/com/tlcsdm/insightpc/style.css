@@ -190,8 +190,8 @@
    ============================================================ */
 .custom-title-bar {
     -fx-background-color: -color-bg-default;
-    -fx-border-color: transparent transparent #e0e0e0 transparent;
-    -fx-border-width: 0 0 1 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-alignment: center-left;
     -fx-spacing: 8;
     -fx-padding: 0 0 0 10;
