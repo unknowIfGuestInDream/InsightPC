@@ -11,24 +11,24 @@ class MemoryTabBuilderTest {
 
     @Test
     void testCalculateUsageWithZeroOrNegativeValues() {
-        assertEquals(0.0, MemoryTabBuilder.calculateUsage(1, 0));
-        assertEquals(0.0, MemoryTabBuilder.calculateUsage(-1, 100));
+        assertEquals(0.0, AbstractTabBuilder.calculateUsage(1, 0));
+        assertEquals(0.0, AbstractTabBuilder.calculateUsage(-1, 100));
     }
 
     @Test
     void testCalculateUsageWithinRange() {
-        assertEquals(0.5, MemoryTabBuilder.calculateUsage(50, 100));
+        assertEquals(0.5, AbstractTabBuilder.calculateUsage(50, 100));
     }
 
     @Test
     void testCalculateUsageCapsAtOne() {
-        assertEquals(1.0, MemoryTabBuilder.calculateUsage(150, 100));
+        assertEquals(1.0, AbstractTabBuilder.calculateUsage(150, 100));
     }
 
     @Test
     void testFormatPercentText() {
-        assertEquals("88%", MemoryTabBuilder.formatPercentText(0.88));
-        assertEquals("0%", MemoryTabBuilder.formatPercentText(0.0));
+        assertEquals("88%", AbstractTabBuilder.formatPercentText(0.88));
+        assertEquals("0%", AbstractTabBuilder.formatPercentText(0.0));
     }
 
     @Test
@@ -39,8 +39,8 @@ class MemoryTabBuilderTest {
 
     @Test
     void testNormalizeFieldValue() {
-        assertEquals(I18N.get("power.notAvailable"), MemoryTabBuilder.normalizeFieldValue(null));
-        assertEquals(I18N.get("power.notAvailable"), MemoryTabBuilder.normalizeFieldValue("   "));
-        assertEquals("8 GB", MemoryTabBuilder.normalizeFieldValue(" 8 GB "));
+        assertEquals(I18N.get("power.notAvailable"), AbstractTabBuilder.normalizeFieldValue(null));
+        assertEquals(I18N.get("power.notAvailable"), AbstractTabBuilder.normalizeFieldValue("   "));
+        assertEquals("8 GB", AbstractTabBuilder.normalizeFieldValue(" 8 GB "));
     }
 }

@@ -25,8 +25,8 @@ class PowerTabBuilderTest {
 
     @Test
     void testNormalizeFieldValue() {
-        assertEquals(I18N.get("power.notAvailable"), PowerTabBuilder.normalizeFieldValue(null));
-        assertEquals(I18N.get("power.notAvailable"), PowerTabBuilder.normalizeFieldValue("   "));
-        assertEquals("Battery", PowerTabBuilder.normalizeFieldValue("  Battery "));
+        assertEquals(I18N.get("power.notAvailable"), AbstractTabBuilder.normalizeFieldValue(null));
+        assertEquals(I18N.get("power.notAvailable"), AbstractTabBuilder.normalizeFieldValue("   "));
+        assertEquals("Battery", AbstractTabBuilder.normalizeFieldValue("  Battery "));
     }
 }

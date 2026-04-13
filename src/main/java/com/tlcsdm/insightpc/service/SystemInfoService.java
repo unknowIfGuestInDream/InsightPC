@@ -161,6 +161,8 @@ public class SystemInfoService {
      * @param bytes the number of bytes
      * @return human-readable string (e.g., "8.0 GB")
      */
+    private static final String[] BYTE_UNITS = {"B", "KB", "MB", "GB", "TB"};
+
     public static String formatBytes(long bytes) {
         if (bytes < 0) {
             return "N/A";
@@ -169,13 +171,12 @@ public class SystemInfoService {
             return bytes + " B";
         }
         double value = bytes;
-        String[] units = {"B", "KB", "MB", "GB", "TB"};
         int unitIndex = 0;
-        while (value >= 1024 && unitIndex < units.length - 1) {
+        while (value >= 1024 && unitIndex < BYTE_UNITS.length - 1) {
             value /= 1024;
             unitIndex++;
         }
-        return String.format("%.1f %s", value, units[unitIndex]);
+        return String.format("%.1f %s", value, BYTE_UNITS[unitIndex]);
     }
 
     /**

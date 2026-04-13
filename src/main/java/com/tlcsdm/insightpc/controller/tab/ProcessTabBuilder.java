@@ -200,6 +200,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
         long totalMemory = systemInfoService.getMemory().getTotal();
         int logicalProcessorCount = systemInfoService.getProcessor().getLogicalProcessorCount();
         Map<Integer, OSProcess> previousProcesses = new HashMap<>();
+        Map<String, Image> iconCache = new HashMap<>();
         AtomicBoolean refreshing = new AtomicBoolean(false);
         AtomicLong lastAutoRefreshTime = new AtomicLong(0L);
 
@@ -211,6 +212,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
             totalMemory,
             logicalProcessorCount,
             previousProcesses,
+            iconCache,
             selectedValue(sortGroup, ProcessSort.CPU),
             selectedValue(cpuScopeGroup, CpuPercentScope.SYSTEM),
             refreshing);
@@ -253,6 +255,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
                                   long totalMemory,
                                   int logicalProcessorCount,
                                   Map<Integer, OSProcess> previousProcesses,
+                                  Map<String, Image> iconCache,
                                   ProcessSort processSort,
                                   CpuPercentScope cpuPercentScope,
                                   AtomicBoolean refreshing) {
@@ -270,7 +273,6 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
                 List<ProcessRow> rows = new ArrayList<>(processes.size());
                 Map<Integer, OSProcess> currentProcessMap = new HashMap<>(processes.size());
-                Map<String, Image> iconCache = new HashMap<>();
                 for (OSProcess process : processes) {
                     int pid = process.getProcessID();
                     OSProcess previousProcess = previousProcesses.get(pid);
@@ -302,6 +304,13 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
                 rows.sort(createSortComparator(processSort));
                 previousProcesses.keySet().retainAll(currentProcessMap.keySet());
                 previousProcesses.putAll(currentProcessMap);
+
+                // Remove cached icons for processes that are no longer running
+                java.util.Set<String> activeIconKeys = new java.util.HashSet<>(processes.size());
+                for (OSProcess process : processes) {
+                    activeIconKeys.add(createProcessIconCacheKey(process.getPath(), process.getName()));
+                }
+                iconCache.keySet().retainAll(activeIconKeys);
 
                 int threadCount = os.getThreadCount();
                 Platform.runLater(() -> {
