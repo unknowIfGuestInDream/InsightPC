@@ -22,7 +22,7 @@
         <VBox>
             <HBox fx:id="titleBar" styleClass="custom-title-bar">
                 <ImageView fx:id="titleBarIcon" fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true"/>
-                <Label fx:id="titleBarLabel" text="%app.title" styleClass="custom-title-text"/>
+                <Label fx:id="titleBarLabel" styleClass="custom-title-text"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button fx:id="minimizeButton" text="─" styleClass="window-control-button" onAction="#minimizeWindow"/>
                 <Button fx:id="maximizeButton" text="□" styleClass="window-control-button" onAction="#toggleMaximizeWindow"/>
