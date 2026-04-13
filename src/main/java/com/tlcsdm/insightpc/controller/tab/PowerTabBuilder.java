@@ -50,15 +50,13 @@ public class PowerTabBuilder extends AbstractTabBuilder {
             String na = I18N.get("power.notAvailable");
             for (PowerSource ps : powerSources) {
                 ps.updateAttributes();
-                content.getChildren().add(createSectionLabel(ps.getName() + " "
-                    + normalizeFieldValue(ps.getDeviceName()) + " " + normalizeFieldValue(ps.getChemistry())));
+                content.getChildren().add(createSectionLabel(buildPowerHeader(ps, na)));
 
                 double remainingRatio = normalizeUsage(ps.getRemainingCapacityPercent());
                 ProgressBar capacityBar = new ProgressBar(remainingRatio);
                 capacityBar.setMaxWidth(Double.MAX_VALUE);
                 capacityBar.setPrefHeight(20);
                 Label percentLabel = new Label(formatPercentText(remainingRatio));
-                percentLabel.getStyleClass().add("key-label");
                 percentLabel.getStyleClass().add("usage-percent-label");
                 StackPane barPane = new StackPane(capacityBar, percentLabel);
                 barPane.setAlignment(Pos.CENTER);
@@ -132,7 +130,7 @@ public class PowerTabBuilder extends AbstractTabBuilder {
 
     static double normalizeUsage(double usage) {
         if (Double.isNaN(usage) || Double.isInfinite(usage)) {
-            return 0;
+            return 0.0;
         }
         return Math.min(Math.max(usage, 0), 1.0);
     }
@@ -153,10 +151,29 @@ public class PowerTabBuilder extends AbstractTabBuilder {
         String current = ps.getCurrentCapacity() > 0 ? String.valueOf(ps.getCurrentCapacity()) : na;
         String max = ps.getMaxCapacity() > 0 ? String.valueOf(ps.getMaxCapacity()) : na;
         String design = ps.getDesignCapacity() > 0 ? String.valueOf(ps.getDesignCapacity()) : na;
+        if (na.equals(current) && na.equals(max) && na.equals(design)) {
+            return na;
+        }
         return String.format("%s %s / %s %s / %s %s",
             I18N.get("power.currentCapacity"), current,
             I18N.get("power.maxCapacity"), max,
             I18N.get("power.designCapacity"), design);
+    }
+
+    private String buildPowerHeader(PowerSource ps, String na) {
+        String name = normalizeFieldValue(ps.getName());
+        String deviceName = normalizeFieldValue(ps.getDeviceName());
+        String chemistry = normalizeFieldValue(ps.getChemistry());
+        if (na.equals(deviceName) && na.equals(chemistry)) {
+            return name;
+        }
+        if (na.equals(chemistry)) {
+            return String.format("%s - %s", name, deviceName);
+        }
+        if (na.equals(deviceName)) {
+            return String.format("%s - %s", name, chemistry);
+        }
+        return String.format("%s - %s (%s)", name, deviceName, chemistry);
     }
 
     private String formatStatusInfo(PowerSource ps, String na) {
