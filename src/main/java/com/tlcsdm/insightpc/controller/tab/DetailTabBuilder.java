@@ -3,10 +3,13 @@ package com.tlcsdm.insightpc.controller.tab;
 import com.tlcsdm.insightpc.config.I18N;
 import com.tlcsdm.insightpc.service.SystemInfoService;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignB;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
@@ -109,6 +112,12 @@ public class DetailTabBuilder extends AbstractTabBuilder {
         addGridRow(csGrid, row++, I18N.get("detail.model"), cs.getModel());
         addGridRow(csGrid, row++, I18N.get("detail.serialNumber"), cs.getSerialNumber());
         addGridRow(csGrid, row++, I18N.get("detail.hardwareUUID"), cs.getHardwareUUID());
+        Firmware firmware = cs.getFirmware();
+        addGridRow(csGrid, row++, I18N.get("detail.firmwareManufacturer"), firmware.getManufacturer());
+        addGridRow(csGrid, row++, I18N.get("detail.firmwareName"), firmware.getName());
+        addGridRow(csGrid, row++, I18N.get("detail.firmwareDescription"), firmware.getDescription());
+        addGridRow(csGrid, row++, I18N.get("detail.firmwareVersion"), firmware.getVersion());
+        addGridRow(csGrid, row++, I18N.get("detail.firmwareReleaseDate"), firmware.getReleaseDate());
         content.getChildren().addAll(csGrid, new Separator());
 
         // Baseboard section
@@ -228,8 +237,14 @@ public class DetailTabBuilder extends AbstractTabBuilder {
                 addGridRow(displayGrid, row++, I18N.get("detail.serialNumber"), EdidUtil.getSerialNo(edid));
                 addGridRow(displayGrid, row++, I18N.get("detail.resolution"), EdidUtil.getPreferredResolution(edid));
             } else {
-                addGridRow(displayGrid, row++, I18N.get("detail.rawEdid"), na);
+                addGridRow(displayGrid, row++, I18N.get("overview.display"), I18N.get("overview.unknownDisplay"));
             }
+            addGridRow(displayGrid, row++, I18N.get("detail.rawEdid"), edid != null ? toHex(edid) : na);
+            content.getChildren().add(displayGrid);
+        }
+        if (displays.isEmpty()) {
+            GridPane displayGrid = createInfoGrid();
+            addGridRow(displayGrid, 0, I18N.get("detail.rawEdid"), na);
             content.getChildren().add(displayGrid);
         }
         content.getChildren().add(new Separator());
@@ -293,18 +308,6 @@ public class DetailTabBuilder extends AbstractTabBuilder {
         }
         content.getChildren().add(new Separator());
 
-        // Firmware section
-        Firmware firmware = cs.getFirmware();
-        content.getChildren().add(createSectionLabel(MaterialDesignI.INFORMATION_OUTLINE, I18N.get("detail.firmware")));
-        GridPane fwGrid = createInfoGrid();
-        row = 0;
-        addGridRow(fwGrid, row++, I18N.get("detail.firmwareManufacturer"), firmware.getManufacturer());
-        addGridRow(fwGrid, row++, I18N.get("detail.firmwareName"), firmware.getName());
-        addGridRow(fwGrid, row++, I18N.get("detail.firmwareVersion"), firmware.getVersion());
-        addGridRow(fwGrid, row++, I18N.get("detail.firmwareReleaseDate"), firmware.getReleaseDate());
-        addGridRow(fwGrid, row++, I18N.get("detail.firmwareDescription"), firmware.getDescription());
-        content.getChildren().addAll(fwGrid, new Separator());
-
         // Power section
         content.getChildren().add(createSectionLabel(MaterialDesignB.BATTERY, I18N.get("overview.powerSource")));
         index = 0;
@@ -319,11 +322,48 @@ public class DetailTabBuilder extends AbstractTabBuilder {
                 powerSource.getRemainingCapacityPercent() >= 0
                     ? String.format("%.1f%%", powerSource.getRemainingCapacityPercent() * 100)
                     : na);
+            double timeRemaining = powerSource.getTimeRemainingEstimated();
+            String timeStr;
+            if (timeRemaining < -1) {
+                timeStr = I18N.get("power.unlimited");
+            } else if (timeRemaining < 0) {
+                timeStr = powerSource.isPowerOnLine() ? I18N.get("power.unlimited") : I18N.get("power.calculating");
+            } else {
+                timeStr = SystemInfoService.formatUptime((long) timeRemaining);
+            }
+            addGridRow(powerGrid, row++, I18N.get("power.timeRemainingEstimated"), timeStr);
+            addGridRow(powerGrid, row++, I18N.get("power.timeRemainingInstant"),
+                powerSource.getTimeRemainingInstant() >= 0
+                    ? SystemInfoService.formatUptime((long) powerSource.getTimeRemainingInstant())
+                    : na);
+            addGridRow(powerGrid, row++, I18N.get("power.voltage"),
+                powerSource.getVoltage() >= 0 ? String.format("%.1f V", powerSource.getVoltage()) : na);
+            addGridRow(powerGrid, row++, I18N.get("power.amperage"),
+                powerSource.getAmperage() >= 0 ? String.format("%.1f mA", powerSource.getAmperage()) : na);
+            addGridRow(powerGrid, row++, I18N.get("power.powerUsageRate"),
+                powerSource.getPowerUsageRate() >= 0 ? String.format("%.1f mW", powerSource.getPowerUsageRate()) : na);
             addGridRow(powerGrid, row++, I18N.get("power.powerOnLine"), String.valueOf(powerSource.isPowerOnLine()));
             addGridRow(powerGrid, row++, I18N.get("power.charging"), String.valueOf(powerSource.isCharging()));
             addGridRow(powerGrid, row++, I18N.get("power.discharging"), String.valueOf(powerSource.isDischarging()));
+            addGridRow(powerGrid, row++, I18N.get("power.capacityUnits"), String.valueOf(powerSource.getCapacityUnits()));
+            addGridRow(powerGrid, row++, I18N.get("power.currentCapacity"),
+                powerSource.getCurrentCapacity() > 0 ? String.valueOf(powerSource.getCurrentCapacity()) : na);
+            addGridRow(powerGrid, row++, I18N.get("power.maxCapacity"),
+                powerSource.getMaxCapacity() > 0 ? String.valueOf(powerSource.getMaxCapacity()) : na);
+            addGridRow(powerGrid, row++, I18N.get("power.designCapacity"),
+                powerSource.getDesignCapacity() > 0 ? String.valueOf(powerSource.getDesignCapacity()) : na);
+            addGridRow(powerGrid, row++, I18N.get("power.cycleCount"),
+                powerSource.getCycleCount() >= 0 ? String.valueOf(powerSource.getCycleCount()) : na);
+            addGridRow(powerGrid, row++, I18N.get("power.chemistry"), powerSource.getChemistry());
             addGridRow(powerGrid, row++, I18N.get("power.manufacturer"), powerSource.getManufacturer());
             addGridRow(powerGrid, row++, I18N.get("power.serialNumber"), powerSource.getSerialNumber());
+            addGridRow(powerGrid, row++, I18N.get("power.temperature"),
+                powerSource.getTemperature() > 0 ? String.format("%.1f °C", powerSource.getTemperature()) : na);
+            content.getChildren().add(powerGrid);
+        }
+        if (powerSources.isEmpty()) {
+            GridPane powerGrid = createInfoGrid();
+            addGridRow(powerGrid, 0, I18N.get("power.info"), na);
             content.getChildren().add(powerGrid);
         }
 
@@ -331,5 +371,37 @@ public class DetailTabBuilder extends AbstractTabBuilder {
         scrollPane.setFitToWidth(true);
         tab.setContent(scrollPane);
         return tab;
+    }
+
+    @Override
+    protected void addGridRow(GridPane grid, int row, String key, String value) {
+        Label keyLabel = new Label(key + ":");
+        keyLabel.getStyleClass().add("key-label");
+
+        TextField valueField = new TextField(normalizeValue(value));
+        valueField.setEditable(true);
+        GridPane.setHgrow(valueField, Priority.ALWAYS);
+
+        grid.add(keyLabel, 0, row);
+        grid.add(valueField, 1, row);
+    }
+
+    private String normalizeValue(String value) {
+        if (value == null) {
+            return I18N.get("power.notAvailable");
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? I18N.get("power.notAvailable") : trimmed;
+    }
+
+    private String toHex(byte[] data) {
+        if (data == null || data.length == 0) {
+            return I18N.get("power.notAvailable");
+        }
+        StringBuilder sb = new StringBuilder(data.length * 2);
+        for (byte b : data) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }
