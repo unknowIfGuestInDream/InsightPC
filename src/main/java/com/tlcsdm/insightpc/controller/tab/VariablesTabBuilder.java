@@ -30,6 +30,7 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
     static final double MIN_TABLE_HEIGHT = 180;
     static final double DEFAULT_TABLE_HEIGHT = 280;
     static final double DEFAULT_DIVIDER_POSITION = 0.5;
+    static final int TOOLTIP_WRAP_LINE_LENGTH = 80;
 
     public VariablesTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
         super(Objects.requireNonNull(systemInfoService, "systemInfoService"),
@@ -82,6 +83,7 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
             {
                 tooltip.setShowDelay(Duration.millis(100));
                 tooltip.setShowDuration(Duration.seconds(30));
+                tooltip.setWrapText(true);
             }
 
             @Override
@@ -92,7 +94,7 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
                 if (text == null) {
                     setTooltip(null);
                 } else {
-                    tooltip.setText(text);
+                    tooltip.setText(wrapTooltipText(text, TOOLTIP_WRAP_LINE_LENGTH));
                     setTooltip(tooltip);
                 }
             }
@@ -120,6 +122,28 @@ public class VariablesTabBuilder extends AbstractTabBuilder {
             return null;
         }
         return value;
+    }
+
+    static String wrapTooltipText(String text, int lineLength) {
+        if (text == null || lineLength < 1) {
+            return text;
+        }
+        StringBuilder wrapped = new StringBuilder(text.length());
+        int currentLineLength = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            wrapped.append(ch);
+            if (ch == '\n') {
+                currentLineLength = 0;
+                continue;
+            }
+            currentLineLength++;
+            if (currentLineLength >= lineLength && i < text.length() - 1 && text.charAt(i + 1) != '\n') {
+                wrapped.append('\n');
+                currentLineLength = 0;
+            }
+        }
+        return wrapped.toString();
     }
 
     static double resolveTablePrefHeight(double preferredHeight) {

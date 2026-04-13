@@ -52,4 +52,13 @@ class VariablesTabBuilderTest {
         assertNull(VariablesTabBuilder.resolveTooltipText(false, "   "));
         assertEquals("long-value", VariablesTabBuilder.resolveTooltipText(false, "long-value"));
     }
+
+    @Test
+    void testWrapTooltipText() {
+        assertNull(VariablesTabBuilder.wrapTooltipText(null, 10));
+        assertEquals("abcdef", VariablesTabBuilder.wrapTooltipText("abcdef", 10));
+        assertEquals("abc\ndef", VariablesTabBuilder.wrapTooltipText("abcdef", 3));
+        assertEquals("abc\ndef\nghi", VariablesTabBuilder.wrapTooltipText("abc\ndefghi", 3));
+        assertEquals("abcdef", VariablesTabBuilder.wrapTooltipText("abcdef", 0));
+    }
 }
