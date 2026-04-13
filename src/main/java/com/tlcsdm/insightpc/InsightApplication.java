@@ -114,7 +114,7 @@ public class InsightApplication extends Application {
     }
 
     private void enableUndecoratedResize(Stage stage, Scene scene) {
-        scene.setOnMouseMoved(event -> {
+        scene.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
             if (stage.isMaximized()) {
                 resizeCursor = Cursor.DEFAULT;
                 scene.setCursor(Cursor.DEFAULT);
@@ -124,7 +124,7 @@ public class InsightApplication extends Application {
             scene.setCursor(resizeCursor);
         });
 
-        scene.setOnMousePressed(event -> {
+        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.getButton() != MouseButton.PRIMARY || resizeCursor == Cursor.DEFAULT || stage.isMaximized()) {
                 return;
             }
@@ -134,13 +134,15 @@ public class InsightApplication extends Application {
             resizeStartY = stage.getY();
             resizeStartWidth = stage.getWidth();
             resizeStartHeight = stage.getHeight();
+            event.consume();
         });
 
-        scene.setOnMouseDragged(event -> {
+        scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
             if (event.getButton() != MouseButton.PRIMARY || resizeCursor == Cursor.DEFAULT || stage.isMaximized()) {
                 return;
             }
             resizeStage(stage, event);
+            event.consume();
         });
     }
 
