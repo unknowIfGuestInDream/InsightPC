@@ -148,4 +148,30 @@ class I18NEnhancedTest {
         I18N.setLocale("xx");
         assertEquals(original.getLanguage(), I18N.getCurrentLocale().getLanguage());
     }
+
+    @Test
+    void testDetailUiOptimizationKeysExistInAllLocales() {
+        String[] keys = {
+            "detail.operatingSystem", "detail.computer", "detail.version", "detail.bitness",
+            "detail.maxFileDescriptors", "detail.openFileDescriptors", "detail.systemBootTime",
+            "detail.systemUptime", "detail.processorId", "detail.vendorFreq",
+            "detail.physicalPackageCount", "detail.physicalMemory", "detail.diskStore",
+            "detail.partition", "detail.deviceId", "detail.vram", "detail.resolution",
+            "detail.driverVersion", "detail.codec", "detail.domainName", "detail.hostName",
+            "detail.ipv4DefaultGateway", "detail.ipv6DefaultGateway", "detail.dnsServers",
+            "detail.networkInterface", "detail.ifAlias", "detail.mtu", "detail.traffic",
+            "detail.received", "detail.transmitted", "detail.err", "detail.drop",
+            "detail.coll", "detail.rawEdid"
+        };
+
+        for (Locale locale : I18N.getSupportedLocales()) {
+            ResourceBundle bundle = ResourceBundle.getBundle("com.tlcsdm.insightpc.i18n.messages", locale);
+            for (String key : keys) {
+                assertTrue(bundle.containsKey(key), "Missing key " + key + " for locale " + locale);
+                String value = bundle.getString(key);
+                assertNotNull(value, "Value must not be null for key " + key + " locale " + locale);
+                assertFalse(value.isBlank(), "Value must not be blank for key " + key + " locale " + locale);
+            }
+        }
+    }
 }
