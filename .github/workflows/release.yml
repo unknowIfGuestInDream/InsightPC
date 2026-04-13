@@ -46,26 +46,17 @@ jobs:
           if (-not $version) { throw 'Failed to extract version from Maven' }
           Add-Content -Path $env:GITHUB_ENV -Value "APP_VERSION=$version" -Encoding utf8
 
-          if (-not (Test-Path dist)) { New-Item -ItemType Directory -Path dist | Out-Null }
-
           $stagingDir = 'staging'
           if (-not (Test-Path $stagingDir)) { New-Item -ItemType Directory -Path $stagingDir | Out-Null }
 
           Copy-Item -Path 'target\insightpc.jar' -Destination $stagingDir
           Copy-Item -Path 'target\lib' -Destination $stagingDir -Recurse
-          Copy-Item -Path 'README.md' -Destination $stagingDir
           Copy-Item -Path 'LICENSE' -Destination $stagingDir
-          Copy-Item -Path 'scripts\win\*' -Destination $stagingDir -Recurse
 
-      - name: Create custom JRE (Windows)
+      - name: Package app image artifact (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: '& scripts\jre.ps1 -StagingDir staging'
-
-      - name: Package artifact (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: '& scripts\package.ps1'
+        run: '& scripts\package-app-image.ps1 -StagingDir staging'
 
       - name: Resolve version & stage files (Linux)
         if: runner.os == 'Linux'
@@ -79,18 +70,12 @@ jobs:
           mkdir -p dist staging
           cp target/insightpc.jar staging/
           cp -r target/lib staging/
-          cp README.md LICENSE staging/
-          cp scripts/linux/* staging/
+          cp LICENSE staging/
 
-      - name: Create custom JRE (Linux)
+      - name: Package app image artifact (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: bash scripts/jre.sh staging
-
-      - name: Package artifact (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: bash scripts/package.sh
+        run: bash scripts/package-app-image.sh staging
 
       - name: Resolve version & stage files (macOS)
         if: runner.os == 'macOS'
@@ -104,18 +89,12 @@ jobs:
           mkdir -p dist staging
           cp target/insightpc.jar staging/
           cp -r target/lib staging/
-          cp README.md LICENSE staging/
-          cp scripts/mac/* staging/
+          cp LICENSE staging/
 
-      - name: Create custom JRE (macOS)
+      - name: Package app image artifact (macOS)
         if: runner.os == 'macOS'
         shell: bash
-        run: bash scripts/jre_mac.sh staging
-
-      - name: Package artifact (macOS)
-        if: runner.os == 'macOS'
-        shell: bash
-        run: bash scripts/package_mac.sh
+        run: bash scripts/package-app-image_mac.sh staging
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
