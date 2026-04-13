@@ -27,4 +27,12 @@ class CpuTabBuilderTest {
         assertEquals("12.35%", CpuTabBuilder.formatCoreUsageText(0.12345));
         assertEquals("100.00%", CpuTabBuilder.formatCoreUsageText(1.0));
     }
+
+    @Test
+    void testCalculateUnusedLoad() {
+        assertEquals(1.0, CpuTabBuilder.calculateUnusedLoad(0.0));
+        assertEquals(0.75, CpuTabBuilder.calculateUnusedLoad(0.25));
+        assertEquals(0.0, CpuTabBuilder.calculateUnusedLoad(1.0));
+        assertEquals(0.0, CpuTabBuilder.calculateUnusedLoad(2.0));
+    }
 }

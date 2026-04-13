@@ -15,9 +15,12 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import oshi.hardware.CentralProcessor;
@@ -35,7 +38,13 @@ public class CpuTabBuilder extends AbstractTabBuilder {
 
     private static final int MAX_DATA_POINTS = 30;
     private static final double CORE_NAME_MIN_WIDTH = 55;
-    private static final double CORE_PERCENT_MIN_WIDTH = 56;
+    private static final double SYSTEM_BAR_HEIGHT = 36;
+    private static final double CORE_BAR_HEIGHT = 18;
+    private static final double INFO_GRID_KEY_MIN_WIDTH = 130;
+    private static final double INFO_GRID_KEY_PREF_WIDTH = 140;
+    private static final String PROGRESS_PERCENT_TEXT_STYLE = "-fx-text-fill: black;";
+    private static final String READONLY_VALUE_FIELD_STYLE =
+        "-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;";
     static final double DEFAULT_DIVIDER_POSITION = 0.68;
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -58,20 +67,22 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         CentralProcessor.ProcessorIdentifier id = cpu.getProcessorIdentifier();
 
         rightContent.getChildren().add(createSectionLabel(I18N.get("cpu.info")));
-        GridPane grid = createInfoGrid();
+        GridPane grid = createProcessorInfoGrid();
         int row = 0;
-        addGridRow(grid, row++, I18N.get("cpu.name"), id.getName());
-        addGridRow(grid, row++, I18N.get("cpu.vendor"), id.getVendor());
-        addGridRow(grid, row++, I18N.get("cpu.family"), id.getFamily());
-        addGridRow(grid, row++, I18N.get("cpu.model"), id.getModel());
-        addGridRow(grid, row++, I18N.get("cpu.stepping"), id.getStepping());
-        addGridRow(grid, row++, I18N.get("cpu.identifier"), id.getIdentifier());
-        addGridRow(grid, row++, I18N.get("cpu.microarchitecture"), id.getMicroarchitecture());
-        addGridRow(grid, row++, I18N.get("cpu.physicalCores"),
+        TextField inUseField = addReadOnlyValueRow(grid, row++, I18N.get("cpu.inUse"), "0.0%");
+        TextField unusedField = addReadOnlyValueRow(grid, row++, I18N.get("cpu.unused"), "100.0%");
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.name"), id.getName());
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.vendor"), id.getVendor());
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.family"), id.getFamily());
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.model"), id.getModel());
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.stepping"), id.getStepping());
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.identifier"), id.getIdentifier());
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.microarchitecture"), id.getMicroarchitecture());
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.physicalCores"),
             String.valueOf(cpu.getPhysicalProcessorCount()));
-        addGridRow(grid, row++, I18N.get("cpu.logicalCores"),
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.logicalCores"),
             String.valueOf(cpu.getLogicalProcessorCount()));
-        addGridRow(grid, row++, I18N.get("cpu.maxFreq"),
+        addReadOnlyValueRow(grid, row++, I18N.get("cpu.maxFreq"),
             String.format("%.2f GHz", cpu.getMaxFreq() / 1_000_000_000.0));
         rightContent.getChildren().add(grid);
 
@@ -79,6 +90,8 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("");
         xAxis.setAnimated(false);
+        xAxis.setTickLabelsVisible(false);
+        xAxis.setTickMarkVisible(false);
 
         NumberAxis yAxis = new NumberAxis(0, 100, 10);
         yAxis.setLabel("%");
@@ -89,6 +102,10 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         cpuChart.setAnimated(false);
         cpuChart.setCreateSymbols(false);
         cpuChart.setLegendVisible(false);
+        cpuChart.setHorizontalGridLinesVisible(false);
+        cpuChart.setVerticalGridLinesVisible(false);
+        cpuChart.setAlternativeRowFillVisible(false);
+        cpuChart.setAlternativeColumnFillVisible(false);
         cpuChart.setPrefHeight(280);
         VBox.setVgrow(cpuChart, Priority.ALWAYS);
 
@@ -101,13 +118,15 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         leftContent.getChildren().add(createSectionLabel(I18N.get("cpu.systemUsage")));
         ProgressBar cpuBar = new ProgressBar(0);
         cpuBar.setMaxWidth(Double.MAX_VALUE);
-        cpuBar.setPrefHeight(25);
+        cpuBar.setPrefHeight(SYSTEM_BAR_HEIGHT);
         Label cpuUsageLabel = new Label("0%");
         cpuUsageLabel.setAlignment(Pos.CENTER);
+        cpuUsageLabel.setStyle(PROGRESS_PERCENT_TEXT_STYLE);
 
-        HBox usageBox = new HBox(10, cpuBar, cpuUsageLabel);
+        StackPane usageBarPane = new StackPane(cpuBar, cpuUsageLabel);
+        HBox usageBox = new HBox(usageBarPane);
         usageBox.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(cpuBar, Priority.ALWAYS);
+        HBox.setHgrow(usageBarPane, Priority.ALWAYS);
         leftContent.getChildren().add(usageBox);
 
         // Per-core CPU usage bars
@@ -124,12 +143,13 @@ public class CpuTabBuilder extends AbstractTabBuilder {
             coreName.setMinWidth(CORE_NAME_MIN_WIDTH);
             ProgressBar coreBar = new ProgressBar(0);
             coreBar.setMaxWidth(Double.MAX_VALUE);
-            coreBar.setPrefHeight(18);
+            coreBar.setPrefHeight(CORE_BAR_HEIGHT);
             Label corePercent = new Label("0%");
-            corePercent.setMinWidth(CORE_PERCENT_MIN_WIDTH);
-            HBox coreRow = new HBox(8, coreName, coreBar, corePercent);
+            corePercent.setStyle(PROGRESS_PERCENT_TEXT_STYLE);
+            StackPane coreBarPane = new StackPane(coreBar, corePercent);
+            HBox coreRow = new HBox(8, coreName, coreBarPane);
             coreRow.setAlignment(Pos.CENTER_LEFT);
-            HBox.setHgrow(coreBar, Priority.ALWAYS);
+            HBox.setHgrow(coreBarPane, Priority.ALWAYS);
             coreBars[i] = coreBar;
             coreLabels[i] = corePercent;
             coreBoxContainer.getChildren().add(coreRow);
@@ -148,6 +168,8 @@ public class CpuTabBuilder extends AbstractTabBuilder {
                 double normalizedCpuLoad = normalizeLoad(cpuLoad);
                 cpuBar.setProgress(normalizedCpuLoad);
                 cpuUsageLabel.setText(formatSystemUsageText(normalizedCpuLoad));
+                inUseField.setText(formatSystemUsageText(normalizedCpuLoad));
+                unusedField.setText(formatSystemUsageText(calculateUnusedLoad(normalizedCpuLoad)));
 
                 int updateCount = Math.min(coreLoads.length, coreBars.length);
                 for (int i = 0; i < updateCount; i++) {
@@ -191,5 +213,35 @@ public class CpuTabBuilder extends AbstractTabBuilder {
 
     static String formatCoreUsageText(double normalizedLoad) {
         return String.format("%.2f%%", normalizedLoad * 100);
+    }
+
+    static double calculateUnusedLoad(double normalizedUsedLoad) {
+        return normalizeLoad(1 - normalizeLoad(normalizedUsedLoad));
+    }
+
+    private GridPane createProcessorInfoGrid() {
+        GridPane grid = new GridPane();
+        grid.setHgap(8);
+        grid.setVgap(5);
+        grid.setPadding(new Insets(5, 0, 5, 10));
+        ColumnConstraints keyCol = new ColumnConstraints();
+        keyCol.setMinWidth(INFO_GRID_KEY_MIN_WIDTH);
+        keyCol.setPrefWidth(INFO_GRID_KEY_PREF_WIDTH);
+        ColumnConstraints valCol = new ColumnConstraints();
+        valCol.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(keyCol, valCol);
+        return grid;
+    }
+
+    private TextField addReadOnlyValueRow(GridPane grid, int row, String key, String value) {
+        Label keyLabel = new Label(key + ":");
+        keyLabel.getStyleClass().add("key-label");
+        TextField valueField = new TextField(value != null ? value : "N/A");
+        valueField.setEditable(false);
+        valueField.setFocusTraversable(false);
+        valueField.setStyle(READONLY_VALUE_FIELD_STYLE);
+        grid.add(keyLabel, 0, row);
+        grid.add(valueField, 1, row);
+        return valueField;
     }
 }
