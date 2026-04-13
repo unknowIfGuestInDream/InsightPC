@@ -13,8 +13,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class CpuTabBuilder extends AbstractTabBuilder {
 
     private static final int MAX_DATA_POINTS = 30;
+    static final double DEFAULT_DIVIDER_POSITION = 0.68;
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public CpuTabBuilder(SystemInfoService systemInfoService, ScheduledExecutorService scheduler) {
@@ -46,13 +47,15 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         tab.setClosable(false);
         tab.setGraphic(createTabIcon(MaterialDesignC.CPU_64_BIT));
 
-        VBox content = new VBox(10);
-        content.setPadding(new Insets(15));
+        VBox leftContent = new VBox(10);
+        leftContent.setPadding(new Insets(15));
+        VBox rightContent = new VBox(10);
+        rightContent.setPadding(new Insets(15));
 
         CentralProcessor cpu = systemInfoService.getProcessor();
         CentralProcessor.ProcessorIdentifier id = cpu.getProcessorIdentifier();
 
-        content.getChildren().add(createSectionLabel(I18N.get("cpu.info")));
+        rightContent.getChildren().add(createSectionLabel(I18N.get("cpu.info")));
         GridPane grid = createInfoGrid();
         int row = 0;
         addGridRow(grid, row++, I18N.get("cpu.name"), id.getName());
@@ -68,55 +71,7 @@ public class CpuTabBuilder extends AbstractTabBuilder {
             String.valueOf(cpu.getLogicalProcessorCount()));
         addGridRow(grid, row++, I18N.get("cpu.maxFreq"),
             String.format("%.2f GHz", cpu.getMaxFreq() / 1_000_000_000.0));
-        content.getChildren().add(grid);
-
-        // Overall CPU usage progress bar
-        content.getChildren().add(createSectionLabel(I18N.get("cpu.usage")));
-        ProgressBar cpuBar = new ProgressBar(0);
-        cpuBar.setMaxWidth(Double.MAX_VALUE);
-        cpuBar.setPrefHeight(25);
-        Label cpuUsageLabel = new Label("0%");
-        cpuUsageLabel.setAlignment(Pos.CENTER);
-
-        HBox usageBox = new HBox(10, cpuBar, cpuUsageLabel);
-        usageBox.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(cpuBar, Priority.ALWAYS);
-        content.getChildren().add(usageBox);
-
-        // Per-core CPU usage bars
-        int logicalCores = cpu.getLogicalProcessorCount();
-        content.getChildren().add(createSectionLabel(I18N.get("cpu.perCoreUsage")));
-        int columns = Math.min(logicalCores, 4);
-        GridPane coreGrid = new GridPane();
-        coreGrid.setHgap(15);
-        coreGrid.setVgap(8);
-        coreGrid.setPadding(new Insets(5, 0, 5, 10));
-        for (int c = 0; c < columns; c++) {
-            ColumnConstraints cc = new ColumnConstraints();
-            cc.setPercentWidth(100.0 / columns);
-            cc.setHgrow(Priority.ALWAYS);
-            coreGrid.getColumnConstraints().add(cc);
-        }
-
-        ProgressBar[] coreBars = new ProgressBar[logicalCores];
-        Label[] coreLabels = new Label[logicalCores];
-        for (int i = 0; i < logicalCores; i++) {
-            VBox coreBox = new VBox(2);
-            Label coreName = new Label(I18N.get("cpu.core") + " " + i);
-            coreName.getStyleClass().add("key-label");
-            ProgressBar coreBar = new ProgressBar(0);
-            coreBar.setMaxWidth(Double.MAX_VALUE);
-            coreBar.setPrefHeight(18);
-            Label corePercent = new Label("0%");
-            HBox coreRow = new HBox(5, coreBar, corePercent);
-            coreRow.setAlignment(Pos.CENTER_LEFT);
-            HBox.setHgrow(coreBar, Priority.ALWAYS);
-            coreBox.getChildren().addAll(coreName, coreRow);
-            coreBars[i] = coreBar;
-            coreLabels[i] = corePercent;
-            coreGrid.add(coreBox, i % columns, i / columns);
-        }
-        content.getChildren().add(coreGrid);
+        rightContent.getChildren().add(grid);
 
         // CPU usage area chart
         CategoryAxis xAxis = new CategoryAxis();
@@ -132,14 +87,52 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         cpuChart.setAnimated(false);
         cpuChart.setCreateSymbols(false);
         cpuChart.setLegendVisible(false);
-        cpuChart.setPrefHeight(300);
+        cpuChart.setPrefHeight(280);
         VBox.setVgrow(cpuChart, Priority.ALWAYS);
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName(I18N.get("cpu.usage"));
         cpuChart.setData(FXCollections.observableArrayList(series));
+        leftContent.getChildren().add(cpuChart);
 
-        content.getChildren().add(cpuChart);
+        // Overall CPU usage progress bar
+        leftContent.getChildren().add(createSectionLabel(I18N.get("cpu.systemUsage")));
+        ProgressBar cpuBar = new ProgressBar(0);
+        cpuBar.setMaxWidth(Double.MAX_VALUE);
+        cpuBar.setPrefHeight(25);
+        Label cpuUsageLabel = new Label("0%");
+        cpuUsageLabel.setAlignment(Pos.CENTER);
+
+        HBox usageBox = new HBox(10, cpuBar, cpuUsageLabel);
+        usageBox.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(cpuBar, Priority.ALWAYS);
+        leftContent.getChildren().add(usageBox);
+
+        // Per-core CPU usage bars
+        int logicalCores = cpu.getLogicalProcessorCount();
+        leftContent.getChildren().add(createSectionLabel(I18N.get("cpu.processorUsage")));
+        VBox coreBoxContainer = new VBox(6);
+        coreBoxContainer.setPadding(new Insets(5, 0, 5, 0));
+
+        ProgressBar[] coreBars = new ProgressBar[logicalCores];
+        Label[] coreLabels = new Label[logicalCores];
+        for (int i = 0; i < logicalCores; i++) {
+            Label coreName = new Label(I18N.get("cpu.core") + " " + i);
+            coreName.getStyleClass().add("key-label");
+            coreName.setMinWidth(55);
+            ProgressBar coreBar = new ProgressBar(0);
+            coreBar.setMaxWidth(Double.MAX_VALUE);
+            coreBar.setPrefHeight(18);
+            Label corePercent = new Label("0%");
+            corePercent.setMinWidth(56);
+            HBox coreRow = new HBox(8, coreName, coreBar, corePercent);
+            coreRow.setAlignment(Pos.CENTER_LEFT);
+            HBox.setHgrow(coreBar, Priority.ALWAYS);
+            coreBars[i] = coreBar;
+            coreLabels[i] = corePercent;
+            coreBoxContainer.getChildren().add(coreRow);
+        }
+        leftContent.getChildren().add(coreBoxContainer);
 
         // Schedule CPU usage updates
         final long[][] prevTicksHolder = {cpu.getSystemCpuLoadTicks()};
@@ -150,26 +143,51 @@ public class CpuTabBuilder extends AbstractTabBuilder {
             double[] coreLoads = cpu.getProcessorCpuLoadBetweenTicks(prevCoreTicks[0]);
             prevCoreTicks[0] = cpu.getProcessorCpuLoadTicks();
             Platform.runLater(() -> {
-                cpuBar.setProgress(cpuLoad);
-                cpuUsageLabel.setText(String.format("%.1f%%", cpuLoad * 100));
+                double normalizedCpuLoad = normalizeLoad(cpuLoad);
+                cpuBar.setProgress(normalizedCpuLoad);
+                cpuUsageLabel.setText(formatSystemUsageText(normalizedCpuLoad));
 
                 int updateCount = Math.min(coreLoads.length, coreBars.length);
                 for (int i = 0; i < updateCount; i++) {
-                    coreBars[i].setProgress(coreLoads[i]);
-                    coreLabels[i].setText(String.format("%.0f%%", coreLoads[i] * 100));
+                    double normalizedCoreLoad = normalizeLoad(coreLoads[i]);
+                    coreBars[i].setProgress(normalizedCoreLoad);
+                    coreLabels[i].setText(formatCoreUsageText(normalizedCoreLoad));
                 }
 
                 String timeLabel = LocalTime.now().format(TIME_FMT);
-                series.getData().add(new XYChart.Data<>(timeLabel, cpuLoad * 100));
+                series.getData().add(new XYChart.Data<>(timeLabel, normalizedCpuLoad * 100));
                 if (series.getData().size() > MAX_DATA_POINTS) {
                     series.getData().remove(0);
                 }
             });
         }, 1, 2, TimeUnit.SECONDS);
 
-        ScrollPane scrollPane = new ScrollPane(content);
-        scrollPane.setFitToWidth(true);
-        tab.setContent(scrollPane);
+        ScrollPane leftScrollPane = new ScrollPane(leftContent);
+        leftScrollPane.setFitToWidth(true);
+        leftScrollPane.setFitToHeight(true);
+
+        ScrollPane rightScrollPane = new ScrollPane(rightContent);
+        rightScrollPane.setFitToWidth(true);
+        rightScrollPane.setFitToHeight(true);
+
+        SplitPane splitPane = new SplitPane(leftScrollPane, rightScrollPane);
+        splitPane.setDividerPositions(DEFAULT_DIVIDER_POSITION);
+        tab.setContent(splitPane);
         return tab;
+    }
+
+    static double normalizeLoad(double load) {
+        if (!Double.isFinite(load) || load <= 0) {
+            return 0;
+        }
+        return Math.min(load, 1.0);
+    }
+
+    static String formatSystemUsageText(double normalizedLoad) {
+        return String.format("%.1f%%", normalizedLoad * 100);
+    }
+
+    static String formatCoreUsageText(double normalizedLoad) {
+        return String.format("%.2f%%", normalizedLoad * 100);
     }
 }
