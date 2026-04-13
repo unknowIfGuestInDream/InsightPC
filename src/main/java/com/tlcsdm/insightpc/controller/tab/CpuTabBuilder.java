@@ -42,6 +42,9 @@ public class CpuTabBuilder extends AbstractTabBuilder {
     private static final double CORE_BAR_HEIGHT = 18;
     private static final double METRIC_TITLE_FONT_SIZE = 13;
     private static final double METRIC_VALUE_FONT_SIZE = 28;
+    private static final int METRICS_GRID_COLUMNS = 6;
+    private static final int METRIC_SPAN_THIRD = 2;
+    private static final int METRIC_SPAN_HALF = 3;
     private static final double INFO_GRID_KEY_MIN_WIDTH = 130;
     private static final double INFO_GRID_KEY_PREF_WIDTH = 140;
     private static final String PROGRESS_PERCENT_TEXT_STYLE = "-fx-text-fill: black;";
@@ -79,16 +82,21 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         Label voltageMetricValue = createMetricValueLabel(formatVoltageText(sensors.getCpuVoltage()));
         Label fanSpeedsMetricValue = createMetricValueLabel(formatFanSpeedsText(sensors.getFanSpeeds()));
         int metricRow = 0;
-        metricsGrid.add(createMetricCard(I18N.get("cpu.inUse"), usageMetricValue), 0, metricRow);
-        metricsGrid.add(createMetricCard(I18N.get("cpu.unused"), unusedMetricValue), 1, metricRow);
-        metricsGrid.add(createMetricCard(I18N.get("cpu.freq"), freqMetricValue), 2, metricRow++);
-        metricsGrid.add(createMetricsSeparator(), 0, metricRow++, 3, 1);
-        metricsGrid.add(createMetricCard(I18N.get("cpu.interrupts"), interruptsMetricValue), 0, metricRow);
-        metricsGrid.add(createMetricCard(I18N.get("cpu.contextSwitches"), contextSwitchesMetricValue), 1, metricRow++);
-        metricsGrid.add(createMetricsSeparator(), 0, metricRow++, 3, 1);
-        metricsGrid.add(createMetricCard(I18N.get("cpu.temperature"), temperatureMetricValue), 0, metricRow);
-        metricsGrid.add(createMetricCard(I18N.get("cpu.voltage"), voltageMetricValue), 1, metricRow);
-        metricsGrid.add(createMetricCard(I18N.get("cpu.fanSpeeds"), fanSpeedsMetricValue), 2, metricRow);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.inUse"), usageMetricValue), 0, metricRow, METRIC_SPAN_THIRD, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.unused"), unusedMetricValue), 2, metricRow, METRIC_SPAN_THIRD, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.freq"), freqMetricValue), 4, metricRow++, METRIC_SPAN_THIRD, 1);
+        metricsGrid.add(createMetricsSeparator(), 0, metricRow++, METRICS_GRID_COLUMNS, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.interrupts"), interruptsMetricValue), 0, metricRow,
+            METRIC_SPAN_HALF, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.contextSwitches"), contextSwitchesMetricValue), 3, metricRow++,
+            METRIC_SPAN_HALF, 1);
+        metricsGrid.add(createMetricsSeparator(), 0, metricRow++, METRICS_GRID_COLUMNS, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.temperature"), temperatureMetricValue), 0, metricRow,
+            METRIC_SPAN_THIRD, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.voltage"), voltageMetricValue), 2, metricRow,
+            METRIC_SPAN_THIRD, 1);
+        metricsGrid.add(createMetricCard(I18N.get("cpu.fanSpeeds"), fanSpeedsMetricValue), 4, metricRow,
+            METRIC_SPAN_THIRD, 1);
         rightContent.getChildren().add(metricsGrid);
 
         GridPane grid = createProcessorInfoGrid();
@@ -319,10 +327,10 @@ public class CpuTabBuilder extends AbstractTabBuilder {
         grid.setHgap(10);
         grid.setVgap(4);
         grid.setPadding(new Insets(0, 0, 8, 0));
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < METRICS_GRID_COLUMNS; i++) {
             ColumnConstraints col = new ColumnConstraints();
             col.setHgrow(Priority.ALWAYS);
-            col.setPercentWidth(33.3);
+            col.setPercentWidth(100.0 / METRICS_GRID_COLUMNS);
             grid.getColumnConstraints().add(col);
         }
         return grid;
