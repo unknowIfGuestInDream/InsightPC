@@ -3,6 +3,8 @@ package com.tlcsdm.insightpc.controller.tab;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NetworkTabBuilderTest {
 
@@ -42,7 +44,7 @@ class NetworkTabBuilderTest {
 
     @Test
     void testShouldRefreshTable() {
-        assertEquals(true, NetworkTabBuilder.shouldRefreshTable(false));
-        assertEquals(false, NetworkTabBuilder.shouldRefreshTable(true));
+        assertTrue(NetworkTabBuilder.shouldRefreshTable(false));
+        assertFalse(NetworkTabBuilder.shouldRefreshTable(true));
     }
 }
