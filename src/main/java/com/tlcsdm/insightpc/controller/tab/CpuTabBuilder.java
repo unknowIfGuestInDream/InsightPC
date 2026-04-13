@@ -340,7 +340,6 @@ public class CpuTabBuilder extends AbstractTabBuilder {
     private Label createMetricValueLabel(String initialValue) {
         Label valueLabel = new Label(initialValue);
         valueLabel.setWrapText(true);
-        valueLabel.setMaxWidth(Double.MAX_VALUE);
         valueLabel.setStyle("-fx-font-size: " + METRIC_VALUE_FONT_SIZE + "; -fx-font-weight: bold;");
         return valueLabel;
     }
