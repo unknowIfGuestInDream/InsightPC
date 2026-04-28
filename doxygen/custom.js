@@ -51,12 +51,12 @@
         setState(collapsed);
         window.addEventListener("resize", updatePosition);
 
-        if (window.insightPcSidebarToggleObserver) {
-            window.insightPcSidebarToggleObserver.disconnect();
+        if (window.doxygenSidebarToggleObserver) {
+            window.doxygenSidebarToggleObserver.disconnect();
         }
         if (typeof ResizeObserver !== "undefined") {
-            window.insightPcSidebarToggleObserver = new ResizeObserver(updatePosition);
-            window.insightPcSidebarToggleObserver.observe(sideNav);
+            window.doxygenSidebarToggleObserver = new ResizeObserver(updatePosition);
+            window.doxygenSidebarToggleObserver.observe(sideNav);
         }
     }
 
