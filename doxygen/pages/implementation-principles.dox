@@ -23,7 +23,7 @@
  *     fillcolor="#eff6ff";
  *     style="rounded,filled";
  *     Main [label="MainController\nwindow lifecycle\nrefresh actions"];
- *     Tabs [label="Tab builders\nCPU, memory, storage,\nnetwork, process, power"];
+ *     Tabs [label="Tab builders\nCPU, memory, storage,\nnetwork, process, and power"];
  *     Controls [label="JavaFX controls\ntables, labels, charts"];
  *   }
  *

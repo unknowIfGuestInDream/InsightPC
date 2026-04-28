@@ -68,9 +68,9 @@
     }
 
     function pointPackageMenuToPackageDocs() {
-        // Match both direct hrefs and path-qualified hrefs used from nested pages.
+        // Match both direct hrefs and path-qualified hrefs used in the top menu.
         document
-            .querySelectorAll(`a[href="${GENERATED_PACKAGE_LIST}"], a[href$="/${GENERATED_PACKAGE_LIST}"]`)
+            .querySelectorAll(`#main-menu a[href="${GENERATED_PACKAGE_LIST}"], #main-menu a[href$="/${GENERATED_PACKAGE_LIST}"]`)
             .forEach((link) => {
                 const text = link.textContent.trim();
                 if (text === PACKAGE_MENU_TEXT || text === PACKAGE_LIST_MENU_TEXT) {
