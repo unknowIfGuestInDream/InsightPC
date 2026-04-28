@@ -1,4 +1,36 @@
 /**
+ * @page package_list Package List
+ * @brief Maintainer-facing package map generated from doxygen/packages.dox.
+ * @tableofcontents
+ *
+ * @section package_list_overview Overview
+ *
+ * InsightPC keeps the JavaFX desktop shell, preferences, UI builders, display
+ * models, and OSHI integration in small packages with clear ownership. Use this
+ * page as the primary navigation point for package-level API documentation.
+ *
+ * | Package | Responsibility | Typical changes |
+ * | ------- | -------------- | --------------- |
+ * | @ref com.tlcsdm.insightpc | Application startup and JavaFX lifecycle. | Launcher, application initialization, main FXML loading. |
+ * | @ref com.tlcsdm.insightpc.config | User settings, locale lookup, and AtlantaFX theme selection. | New preferences, resource bundle lookup, theme persistence. |
+ * | @ref com.tlcsdm.insightpc.controller | Window-level controllers and UI lifecycle coordination. | Main window wiring, settings dialog actions, refresh coordination. |
+ * | @ref com.tlcsdm.insightpc.controller.tab | Builders for the tabbed OSHI views. | New tabs, table/chart layout changes, tab-specific refresh logic. |
+ * | @ref com.tlcsdm.insightpc.model | Small UI-facing value objects. | ComboBox display models and equality/display helpers. |
+ * | @ref com.tlcsdm.insightpc.service | OSHI access and formatting utilities. | Hardware/OS queries, byte and uptime formatting, process data mapping. |
+ *
+ * @section package_list_rules Ownership rules
+ *
+ * - Keep direct OSHI calls in @ref com.tlcsdm.insightpc.service so UI code can
+ *   stay focused on presentation.
+ * - Keep JavaFX control construction in @ref com.tlcsdm.insightpc.controller.tab
+ *   builders unless the control belongs to the main window shell.
+ * - Keep persisted preferences and user-visible locale/theme state in
+ *   @ref com.tlcsdm.insightpc.config.
+ * - Add new package-level documentation here first so the Packages navigation
+ *   remains stable and does not depend on generated namespace indexes.
+ */
+
+/**
  * @namespace com.tlcsdm.insightpc
  * @brief JavaFX application entry points for InsightPC.
  */

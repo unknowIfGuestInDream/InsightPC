@@ -17,6 +17,6 @@
  * @section package_reference_navigation Native package list
  *
  * Package declarations are documented with @c package-info.java files and
- * @c @namespace declarations in @c doxygen/packages.dox. Doxygen uses those
+ * @c @@namespace declarations in @c doxygen/packages.dox. Doxygen uses those
  * declarations to build the native expandable Package List in the navigation tree.
  */

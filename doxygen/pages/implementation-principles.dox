@@ -3,6 +3,12 @@
  * @brief Design rules used by InsightPC.
  * @tableofcontents
  *
+ * @section implementation_principles_goal Goal
+ *
+ * InsightPC favors a thin JavaFX presentation layer over a small service
+ * facade. The UI should be easy to scan, OSHI calls should be isolated, and
+ * formatting rules should be reusable by both production code and tests.
+ *
  * @section implementation_principles_diagram Data ownership
  *
  * @dot
@@ -24,10 +30,49 @@
  *
  * @section implementation_principles_rules Rules
  *
- * - Keep OSHI access behind com.tlcsdm.insightpc.service.SystemInfoService.
- * - Keep tab construction in com.tlcsdm.insightpc.controller.tab builders so the
- *   main controller only coordinates lifecycle events.
+ * - Keep OSHI access behind com.tlcsdm.insightpc.service.SystemInfoService so
+ *   controllers do not depend on vendor-specific API shapes.
+ * - Keep tab construction in com.tlcsdm.insightpc.controller.tab builders. The
+ *   main controller should coordinate tab lifecycle, refresh, and settings
+ *   actions rather than owning every table or label.
  * - Keep user-visible strings in resource bundles and access them through
- *   com.tlcsdm.insightpc.config.I18N.
- * - Keep theme and locale persistence in com.tlcsdm.insightpc.config.AppSettings.
+ *   com.tlcsdm.insightpc.config.I18N. New labels must be added for every
+ *   supported locale.
+ * - Keep theme and locale persistence in com.tlcsdm.insightpc.config.AppSettings
+ *   so PreferencesFX remains the single source of persisted UI state.
+ * - Keep value formatting close to the data source. Byte sizes, uptime, and
+ *   process values should be formatted by the service layer before controls
+ *   display them.
+ * - Keep tests headless unless a behavior requires JavaFX/TestFX. Formatting,
+ *   package model, and configuration tests should not initialize a toolkit.
+ *
+ * @section implementation_principles_refresh Refresh flow
+ *
+ * Tab builders should create controls once, then update displayed values through
+ * explicit refresh actions. Avoid rebuilding full tab contents during routine
+ * refreshes unless a table structure changes. This keeps the application
+ * responsive and makes future background refresh scheduling easier to add.
+ *
+ * @section implementation_principles_i18n Internationalization
+ *
+ * The default bundle is English, with Simplified Chinese and Japanese bundles
+ * kept in sync. Code should not concatenate translated fragments when a full
+ * sentence or label is needed; add a dedicated key instead. Locale changes
+ * should go through AppSettings and I18N so every view observes the same locale
+ * source.
+ *
+ * @section implementation_principles_errors Error handling
+ *
+ * OSHI data can be unavailable or platform-specific. Service methods should
+ * prefer safe defaults and formatted fallback text over leaking exceptions into
+ * JavaFX event handlers. UI code can then render partial system information
+ * without blocking unrelated tabs.
+ *
+ * @section implementation_principles_docs Documentation
+ *
+ * Public classes should describe their role in the package. Package-level
+ * ownership belongs in doxygen/packages.dox, while longer maintainer guidance
+ * belongs in these supplemental Doxygen pages. Keep generated documentation out
+ * of source control; commit only the configuration and source comments that
+ * produce it.
  */
