@@ -1,4 +1,9 @@
 (function () {
+    const PACKAGE_MENU_TEXT = "Packages";
+    const PACKAGE_LIST_MENU_TEXT = "Package List";
+    const GENERATED_PACKAGE_LIST = "namespaces.html";
+    const PACKAGE_DOCS_FILE = "packages_8dox.html";
+
     function addSidebarToggle() {
         const sideNav = document.getElementById("side-nav");
         const docContent = document.getElementById("doc-content");
@@ -62,11 +67,11 @@
 
     function pointPackageMenuToPackageDocs() {
         document
-            .querySelectorAll('a[href="namespaces.html"], a[href$="/namespaces.html"]')
+            .querySelectorAll(`a[href="${GENERATED_PACKAGE_LIST}"], a[href$="/${GENERATED_PACKAGE_LIST}"]`)
             .forEach((link) => {
                 const text = link.textContent.trim();
-                if (text === "Packages" || text === "Package List") {
-                    link.setAttribute("href", "packages_8dox.html");
+                if (text === PACKAGE_MENU_TEXT || text === PACKAGE_LIST_MENU_TEXT) {
+                    link.setAttribute("href", PACKAGE_DOCS_FILE);
                 }
             });
     }
