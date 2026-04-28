@@ -64,6 +64,9 @@ DISABLE_INDEX          = NO
 SEARCHENGINE           = YES
 SERVER_BASED_SEARCH    = NO
 
+# Graph rendering requires Graphviz's dot executable. The GitHub workflow installs
+# graphviz and validates dot before running Doxygen; Jenkins agents should provide
+# dot for complete diagrams.
 HAVE_DOT               = YES
 DOT_IMAGE_FORMAT       = svg
 INTERACTIVE_SVG        = YES
