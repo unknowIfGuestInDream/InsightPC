@@ -43,6 +43,8 @@ public enum AppTheme {
 
     /**
      * Get the display name key for i18n.
+     *
+     * @return resource bundle key for this theme
      */
     public String getDisplayNameKey() {
         return displayNameKey;
@@ -50,6 +52,8 @@ public enum AppTheme {
 
     /**
      * Get the display name for the theme.
+     *
+     * @return localized display name
      */
     public String getDisplayName() {
         return I18N.get(displayNameKey);
@@ -65,6 +69,8 @@ public enum AppTheme {
     /**
      * Get the saved theme from preferences.
      * Default is ATLANTAFX_PRIMER_LIGHT.
+     *
+     * @return persisted theme or the default light theme
      */
     public static AppTheme getSavedTheme() {
         String themeName = PREFS.get(PREF_KEY_THEME, ATLANTAFX_PRIMER_LIGHT.name());
@@ -77,6 +83,8 @@ public enum AppTheme {
 
     /**
      * Save the theme to preferences.
+     *
+     * @param theme theme to persist
      */
     public static void saveTheme(AppTheme theme) {
         if (theme != null) {

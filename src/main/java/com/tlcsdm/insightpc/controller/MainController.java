@@ -59,6 +59,9 @@ public class MainController {
     private double dragOffsetX;
     private double dragOffsetY;
 
+    /**
+     * Initializes shared services and builds all system information tabs.
+     */
     @FXML
     public void initialize() {
         systemInfoService = new SystemInfoService();
@@ -144,6 +147,9 @@ public class MainController {
         }
     }
 
+    /**
+     * Minimize the main window.
+     */
     @FXML
     public void minimizeWindow() {
         if (primaryStage != null) {
@@ -151,6 +157,9 @@ public class MainController {
         }
     }
 
+    /**
+     * Toggle the main window between normal and maximized states.
+     */
     @FXML
     public void toggleMaximizeWindow() {
         if (primaryStage != null) {

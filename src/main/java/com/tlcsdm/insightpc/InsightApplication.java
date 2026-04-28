@@ -49,6 +49,12 @@ public class InsightApplication extends Application {
         AppSettings.getInstance().applyInitialSettings();
     }
 
+    /**
+     * Creates and shows the main application window.
+     *
+     * @param primaryStage the JavaFX primary stage
+     * @throws IOException if the main FXML layout cannot be loaded
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
@@ -100,6 +106,11 @@ public class InsightApplication extends Application {
         }
     }
 
+    /**
+     * Launches InsightPC from an IDE or exploded classpath.
+     *
+     * @param args command-line arguments passed to JavaFX
+     */
     public static void main(String[] args) {
         launch(args);
     }

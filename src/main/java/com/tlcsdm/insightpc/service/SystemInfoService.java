@@ -16,6 +16,9 @@ public class SystemInfoService {
     private final HardwareAbstractionLayer hardware;
     private final OperatingSystem operatingSystem;
 
+    /**
+     * Creates a service facade backed by a new OSHI SystemInfo instance.
+     */
     public SystemInfoService() {
         this.systemInfo = new SystemInfo();
         this.hardware = systemInfo.getHardware();
@@ -24,6 +27,8 @@ public class SystemInfoService {
 
     /**
      * Get operating system information.
+     *
+     * @return OSHI operating system facade
      */
     public OperatingSystem getOperatingSystem() {
         return operatingSystem;
@@ -31,6 +36,8 @@ public class SystemInfoService {
 
     /**
      * Get the hardware abstraction layer.
+     *
+     * @return OSHI hardware abstraction layer
      */
     public HardwareAbstractionLayer getHardware() {
         return hardware;
@@ -38,6 +45,8 @@ public class SystemInfoService {
 
     /**
      * Get the central processor.
+     *
+     * @return processor information and counters
      */
     public CentralProcessor getProcessor() {
         return hardware.getProcessor();
@@ -45,6 +54,8 @@ public class SystemInfoService {
 
     /**
      * Get global memory information.
+     *
+     * @return global physical and virtual memory information
      */
     public GlobalMemory getMemory() {
         return hardware.getMemory();
@@ -52,6 +63,8 @@ public class SystemInfoService {
 
     /**
      * Get the list of disk stores (physical disks).
+     *
+     * @return detected physical disks
      */
     public List<HWDiskStore> getDiskStores() {
         return hardware.getDiskStores();
@@ -59,6 +72,8 @@ public class SystemInfoService {
 
     /**
      * Get the list of network interfaces.
+     *
+     * @return detected network interfaces
      */
     public List<NetworkIF> getNetworkInterfaces() {
         return hardware.getNetworkIFs();
@@ -66,6 +81,8 @@ public class SystemInfoService {
 
     /**
      * Get the list of power sources (batteries).
+     *
+     * @return detected power sources
      */
     public List<PowerSource> getPowerSources() {
         return hardware.getPowerSources();
@@ -73,6 +90,8 @@ public class SystemInfoService {
 
     /**
      * Get the list of USB devices.
+     *
+     * @return USB device tree including connected devices
      */
     public List<UsbDevice> getUsbDevices() {
         return hardware.getUsbDevices(true);
@@ -80,6 +99,8 @@ public class SystemInfoService {
 
     /**
      * Get the computer system information.
+     *
+     * @return computer system, firmware, and baseboard information
      */
     public ComputerSystem getComputerSystem() {
         return hardware.getComputerSystem();
@@ -87,6 +108,8 @@ public class SystemInfoService {
 
     /**
      * Get the sensors (CPU temperature, fan speeds, voltage).
+     *
+     * @return sensor readings exposed by the operating system
      */
     public Sensors getSensors() {
         return hardware.getSensors();
@@ -94,6 +117,8 @@ public class SystemInfoService {
 
     /**
      * Get the list of displays.
+     *
+     * @return detected displays
      */
     public List<Display> getDisplays() {
         return hardware.getDisplays();
@@ -101,6 +126,8 @@ public class SystemInfoService {
 
     /**
      * Get the list of graphics cards.
+     *
+     * @return detected graphics cards
      */
     public List<GraphicsCard> getGraphicsCards() {
         return hardware.getGraphicsCards();
@@ -108,6 +135,8 @@ public class SystemInfoService {
 
     /**
      * Get the list of sound cards.
+     *
+     * @return detected sound cards
      */
     public List<SoundCard> getSoundCards() {
         return hardware.getSoundCards();
@@ -115,6 +144,8 @@ public class SystemInfoService {
 
     /**
      * Get OS family name.
+     *
+     * @return operating system family name
      */
     public String getOsFamily() {
         return operatingSystem.getFamily();
@@ -122,6 +153,8 @@ public class SystemInfoService {
 
     /**
      * Get OS version information as a string.
+     *
+     * @return formatted operating system version information
      */
     public String getOsVersionInfo() {
         return operatingSystem.getVersionInfo().toString();
@@ -129,6 +162,8 @@ public class SystemInfoService {
 
     /**
      * Get OS manufacturer.
+     *
+     * @return operating system manufacturer
      */
     public String getOsManufacturer() {
         return operatingSystem.getManufacturer();
@@ -136,6 +171,8 @@ public class SystemInfoService {
 
     /**
      * Get system uptime in seconds.
+     *
+     * @return uptime in seconds
      */
     public long getSystemUptime() {
         return operatingSystem.getSystemUptime();
@@ -143,6 +180,8 @@ public class SystemInfoService {
 
     /**
      * Get the number of running processes.
+     *
+     * @return current process count
      */
     public int getProcessCount() {
         return operatingSystem.getProcessCount();
@@ -150,6 +189,8 @@ public class SystemInfoService {
 
     /**
      * Get the number of running threads.
+     *
+     * @return current thread count
      */
     public int getThreadCount() {
         return operatingSystem.getThreadCount();

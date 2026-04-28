@@ -23,26 +23,25 @@ A cross-platform system information visualizer built with JavaFX and OSHI.
 
 The screenshots below are from the application UI and are stored in `/readme`.
 
-<p align="center">
-  <img src="readme/overview.png" alt="Overview" width="45%" />
-  <img src="readme/detail.png" alt="Detail" width="45%" />
-</p>
-<p align="center">
-  <img src="readme/memory.png" alt="Memory" width="45%" />
-  <img src="readme/cpu.png" alt="CPU" width="45%" />
-</p>
-<p align="center">
-  <img src="readme/storage.png" alt="Storage" width="45%" />
-  <img src="readme/network.png" alt="Network" width="45%" />
-</p>
-<p align="center">
-  <img src="readme/variables.png" alt="Variables" width="45%" />
-  <img src="readme/processes.png" alt="Processes" width="45%" />
-</p>
-<p align="center">
-  <img src="readme/usb.png" alt="USB" width="45%" />
-  <img src="readme/power.png" alt="Power" width="45%" />
-</p>
+| Overview | Detail |
+| --- | --- |
+| ![Overview](readme/overview.png) | ![Detail](readme/detail.png) |
+
+| Memory | CPU |
+| --- | --- |
+| ![Memory](readme/memory.png) | ![CPU](readme/cpu.png) |
+
+| Storage | Network |
+| --- | --- |
+| ![Storage](readme/storage.png) | ![Network](readme/network.png) |
+
+| Variables | Processes |
+| --- | --- |
+| ![Variables](readme/variables.png) | ![Processes](readme/processes.png) |
+
+| USB | Power |
+| --- | --- |
+| ![USB](readme/usb.png) | ![Power](readme/power.png) |
 
 ## Requirements
 

@@ -1,0 +1,33 @@
+/**
+ * @page implementation_principles Implementation Principles
+ * @brief Design rules used by InsightPC.
+ * @tableofcontents
+ *
+ * @section implementation_principles_diagram Data ownership
+ *
+ * @dot
+ * digraph Principles {
+ *   graph [rankdir=TB, bgcolor="transparent", splines=ortho];
+ *   node [shape=box, style="rounded,filled", color="#86b7a4", fillcolor="#effaf5", fontname="Arial"];
+ *   edge [color="#52616f", arrowsize=0.8];
+ *   UI [label="JavaFX controls"];
+ *   Builders [label="Tab builders"];
+ *   Service [label="SystemInfoService"];
+ *   OSHI [label="OSHI hardware and OS APIs"];
+ *   Settings [label="AppSettings / I18N / AppTheme"];
+ *   UI -> Builders;
+ *   Builders -> Service;
+ *   Service -> OSHI;
+ *   UI -> Settings;
+ * }
+ * @enddot
+ *
+ * @section implementation_principles_rules Rules
+ *
+ * - Keep OSHI access behind com.tlcsdm.insightpc.service.SystemInfoService.
+ * - Keep tab construction in com.tlcsdm.insightpc.controller.tab builders so the
+ *   main controller only coordinates lifecycle events.
+ * - Keep user-visible strings in resource bundles and access them through
+ *   com.tlcsdm.insightpc.config.I18N.
+ * - Keep theme and locale persistence in com.tlcsdm.insightpc.config.AppSettings.
+ */

@@ -1,0 +1,11 @@
+/**
+ * @page related_pages Related Pages
+ * @brief Additional guides for maintainers and contributors.
+ *
+ * These pages summarize the project structure, package responsibilities, and
+ * implementation rules used by the InsightPC desktop application.
+ *
+ * - @subpage module_guide
+ * - @subpage package_reference
+ * - @subpage implementation_principles
+ */

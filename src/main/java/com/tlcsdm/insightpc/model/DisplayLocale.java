@@ -18,6 +18,11 @@ public class DisplayLocale {
 
     private final Locale locale;
 
+    /**
+     * Creates a display wrapper for a supported locale.
+     *
+     * @param locale locale to display in language selectors
+     */
     public DisplayLocale(Locale locale) {
         this.locale = Objects.requireNonNull(locale, "Locale cannot be null");
     }
@@ -31,6 +36,9 @@ public class DisplayLocale {
         return locale;
     }
 
+    /**
+     * Returns the language name shown in ComboBox controls.
+     */
     @Override
     public String toString() {
         return DISPLAY_NAMES.getOrDefault(locale.getLanguage(), locale.getDisplayLanguage(locale));
