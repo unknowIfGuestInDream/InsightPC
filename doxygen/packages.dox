@@ -3,8 +3,9 @@
  * @brief Package list and ownership map.
  * @details This file is the source for the package documentation. Doxygen still
  * generates the native Packages menu from @c namespaces.html; @c custom.js
- * points that menu entry back to this file reference so the package list stays
- * under Packages while using this maintained source.
+ * points that menu entry back to the generated @c packages_8dox.html file
+ * reference so the package list stays under Packages while using this
+ * maintained source.
  *
  * @section package_list_overview Overview
  *

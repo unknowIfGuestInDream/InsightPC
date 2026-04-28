@@ -1,5 +1,6 @@
 (function () {
     const PACKAGE_MENU_TEXT = "Packages";
+    // Doxygen renders both the top-level menu item and its generated child entry.
     const PACKAGE_LIST_MENU_TEXT = "Package List";
     const GENERATED_PACKAGE_LIST = "namespaces.html";
     const PACKAGE_DOCS_FILE = "packages_8dox.html";

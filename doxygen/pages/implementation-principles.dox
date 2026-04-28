@@ -13,7 +13,7 @@
  *
  * @dot
  * digraph Principles {
- *   graph [rankdir=LR, bgcolor="transparent", splines=polyline, nodesep=0.6, ranksep=0.85];
+ *   graph [rankdir=TB, bgcolor="transparent", splines=polyline, nodesep=0.6, ranksep=0.85];
  *   node [shape=box, style="rounded,filled", color="#86b7a4", fillcolor="#effaf5", fontname="Arial", margin="0.12,0.08"];
  *   edge [color="#52616f", arrowsize=0.8, fontname="Arial", fontsize=10];
  *
