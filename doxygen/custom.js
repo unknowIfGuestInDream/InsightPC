@@ -1,61 +1,66 @@
 (function () {
-  function sideNav() {
-    return document.getElementById('side-nav') || document.getElementById('nav-tree');
-  }
-
-  function updateNavWidth() {
-    var nav = sideNav();
-    var width = nav ? Math.max(nav.getBoundingClientRect().width, 44) : 44;
-    document.documentElement.style.setProperty('--insight-nav-width', width + 'px');
-  }
-
-  function setCollapsed(collapsed) {
-    document.body.classList.toggle('insight-nav-collapsed', collapsed);
-    var button = document.getElementById('insight-nav-toggle');
-    if (button) {
-      button.textContent = collapsed ? 'Show navigation' : 'Hide navigation';
-      button.setAttribute('aria-expanded', String(!collapsed));
-    }
-    updateNavWidth();
-  }
-
-  function installToggle() {
-    if (document.getElementById('insight-nav-toggle')) {
-      return;
-    }
-    var button = document.createElement('button');
-    button.id = 'insight-nav-toggle';
-    button.type = 'button';
-    button.textContent = 'Hide navigation';
-    button.setAttribute('aria-controls', 'side-nav');
-    button.setAttribute('aria-expanded', 'true');
-    button.addEventListener('click', function () {
-      setCollapsed(!document.body.classList.contains('insight-nav-collapsed'));
-    });
-    document.body.appendChild(button);
-    updateNavWidth();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', installToggle);
-  } else {
-    installToggle();
-  }
-  window.addEventListener('resize', updateNavWidth);
-  if (window.ResizeObserver) {
-    var observer = new ResizeObserver(updateNavWidth);
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function () {
-        var nav = sideNav();
-        if (nav) {
-          observer.observe(nav);
+    function addSidebarToggle() {
+        const sideNav = document.getElementById("side-nav");
+        const docContent = document.getElementById("doc-content");
+        if (!sideNav || !docContent || document.getElementById("sidebar-toggle")) {
+            return;
         }
-      });
-    } else {
-      var nav = sideNav();
-      if (nav) {
-        observer.observe(nav);
-      }
+
+        const button = document.createElement("button");
+        button.id = "sidebar-toggle";
+        button.type = "button";
+
+        const DEFAULT_BUTTON_WIDTH = 140;
+        const BUTTON_GAP = 14;
+        const MINIMUM_LEFT_POSITION = 18;
+        const updatePosition = () => {
+            if (document.body.classList.contains("sidebar-collapsed")) {
+                button.style.left = `${MINIMUM_LEFT_POSITION}px`;
+                return;
+            }
+            const sideNavWidth = sideNav.getBoundingClientRect().width;
+            const buttonWidth = button.getBoundingClientRect().width || DEFAULT_BUTTON_WIDTH;
+            if (sideNavWidth < buttonWidth + (BUTTON_GAP * 2)) {
+                button.style.left = `${MINIMUM_LEFT_POSITION}px`;
+                return;
+            }
+            button.style.left = `${Math.max(MINIMUM_LEFT_POSITION, sideNavWidth - buttonWidth - BUTTON_GAP)}px`;
+        };
+
+        const setState = (collapsed) => {
+            document.body.classList.toggle("sidebar-collapsed", collapsed);
+            button.textContent = collapsed ? "Show navigation" : "Hide navigation";
+            button.setAttribute("aria-expanded", String(!collapsed));
+            window.requestAnimationFrame(updatePosition);
+            try {
+                window.localStorage.setItem("insightpc-doxygen-sidebar-collapsed", collapsed ? "true" : "false");
+            } catch (e) {
+                // Ignore storage restrictions in local file previews.
+            }
+        };
+
+        button.addEventListener("click", () => setState(!document.body.classList.contains("sidebar-collapsed")));
+        document.body.appendChild(button);
+
+        let collapsed = false;
+        try {
+            collapsed = window.localStorage.getItem("insightpc-doxygen-sidebar-collapsed") === "true";
+        } catch (e) {
+            collapsed = false;
+        }
+        setState(collapsed);
+        window.addEventListener("resize", updatePosition);
+
+        if (window.insightPcSidebarToggleObserver) {
+            window.insightPcSidebarToggleObserver.disconnect();
+        }
+        if (typeof ResizeObserver !== "undefined") {
+            window.insightPcSidebarToggleObserver = new ResizeObserver(updatePosition);
+            window.insightPcSidebarToggleObserver.observe(sideNav);
+        }
     }
-  }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        addSidebarToggle();
+    });
 }());

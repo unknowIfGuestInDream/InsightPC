@@ -70,4 +70,4 @@ mvn clean verify
 
 ## License
 
-[MIT License](LICENSE)
+<a href="LICENSE">MIT License</a>

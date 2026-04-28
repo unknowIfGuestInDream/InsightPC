@@ -52,17 +52,24 @@ REFERENCES_LINK_SOURCE = YES
 
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
-HTML_COLORSTYLE        = LIGHT
+HTML_COLORSTYLE        = AUTO_LIGHT
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
 HTML_DYNAMIC_MENUS     = YES
-HTML_DYNAMIC_SECTIONS  = YES
+HTML_DYNAMIC_SECTIONS  = NO
+HTML_CODE_FOLDING      = YES
 HTML_EXTRA_STYLESHEET  = doxygen/custom.css
-HTML_EXTRA_FILES       = doxygen/custom.js
+HTML_EXTRA_FILES       = doxygen/custom.js \
+                         LICENSE
 HTML_FOOTER            = doxygen/footer.html
 GENERATE_TREEVIEW      = YES
-FULL_SIDEBAR           = NO
+FULL_SIDEBAR           = YES
+TREEVIEW_WIDTH         = 280
 DISABLE_INDEX          = NO
 SEARCHENGINE           = YES
 SERVER_BASED_SEARCH    = NO
+GENERATE_LATEX         = NO
 
 # Graph rendering requires Graphviz's dot executable. The GitHub workflow installs
 # graphviz and validates dot before running Doxygen; Jenkins agents should provide
