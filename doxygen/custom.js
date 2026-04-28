@@ -33,7 +33,7 @@
             button.setAttribute("aria-expanded", String(!collapsed));
             window.requestAnimationFrame(updatePosition);
             try {
-                window.localStorage.setItem("insightpc-doxygen-sidebar-collapsed", collapsed ? "true" : "false");
+                window.localStorage.setItem("doxygenSidebarCollapsed", collapsed ? "true" : "false");
             } catch (e) {
                 // Ignore storage restrictions in local file previews.
             }
@@ -44,7 +44,7 @@
 
         let collapsed = false;
         try {
-            collapsed = window.localStorage.getItem("insightpc-doxygen-sidebar-collapsed") === "true";
+            collapsed = window.localStorage.getItem("doxygenSidebarCollapsed") === "true";
         } catch (e) {
             collapsed = false;
         }
