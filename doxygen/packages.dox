@@ -35,31 +35,41 @@
  */
 
 /**
- * @namespace com.tlcsdm.insightpc
+ * @namespace com
+ * @brief Root namespace for InsightPC packages.
+ */
+
+/**
+ * @namespace com::tlcsdm
+ * @brief Organization namespace for InsightPC packages.
+ */
+
+/**
+ * @namespace com::tlcsdm::insightpc
  * @brief JavaFX application entry points for InsightPC.
  */
 
 /**
- * @namespace com.tlcsdm.insightpc.config
+ * @namespace com::tlcsdm::insightpc::config
  * @brief Theme, locale, and preferences configuration.
  */
 
 /**
- * @namespace com.tlcsdm.insightpc.controller
+ * @namespace com::tlcsdm::insightpc::controller
  * @brief FXML controllers that coordinate application windows and user actions.
  */
 
 /**
- * @namespace com.tlcsdm.insightpc.controller.tab
+ * @namespace com::tlcsdm::insightpc::controller::tab
  * @brief Tab builders that render OSHI hardware, operating system, and process views.
  */
 
 /**
- * @namespace com.tlcsdm.insightpc.model
+ * @namespace com::tlcsdm::insightpc::model
  * @brief Small UI-facing domain models.
  */
 
 /**
- * @namespace com.tlcsdm.insightpc.service
+ * @namespace com::tlcsdm::insightpc::service
  * @brief Services that wrap OSHI and format system information for the UI.
  */
