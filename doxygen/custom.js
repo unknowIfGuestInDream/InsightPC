@@ -1,6 +1,7 @@
 (function () {
     const PACKAGE_MENU_TEXT = "Packages";
-    // Doxygen renders both the top-level menu item and its generated child entry.
+    // Doxygen renders "Packages" for the top-level item and "Package List" for
+    // the generated child item when dynamic menus are enabled.
     const PACKAGE_LIST_MENU_TEXT = "Package List";
     const GENERATED_PACKAGE_LIST = "namespaces.html";
     const PACKAGE_DOCS_FILE = "packages_8dox.html";
@@ -67,6 +68,7 @@
     }
 
     function pointPackageMenuToPackageDocs() {
+        // Match both direct hrefs and path-qualified hrefs used from nested pages.
         document
             .querySelectorAll(`a[href="${GENERATED_PACKAGE_LIST}"], a[href$="/${GENERATED_PACKAGE_LIST}"]`)
             .forEach((link) => {
