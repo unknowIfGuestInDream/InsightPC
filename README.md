@@ -70,5 +70,5 @@ mvn clean verify
 
 ## License
 
-<!-- Doxygen keeps the Markdown link literal on the main page here, so use HTML to generate a clickable license link. -->
+<!-- Doxygen does not render this Markdown link in HTML output, so use an HTML anchor tag instead. -->
 <a href="LICENSE">MIT License</a>

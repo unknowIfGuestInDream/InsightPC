@@ -42,7 +42,7 @@
         button.addEventListener("click", () => setState(!document.body.classList.contains("sidebar-collapsed")));
         document.body.appendChild(button);
 
-        let collapsed = false;
+        let collapsed;
         try {
             collapsed = window.localStorage.getItem("doxygenSidebarCollapsed") === "true";
         } catch (e) {
