@@ -8,7 +8,6 @@ module com.tlcsdm.insightpc {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
-    requires javafx.swing;
     requires java.desktop;
     requires java.prefs;
 
