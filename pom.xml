@@ -174,7 +174,7 @@
         <!-- OSHI - Operating System and Hardware Information -->
         <dependency>
             <groupId>com.github.oshi</groupId>
-            <artifactId>oshi-core</artifactId>
+            <artifactId>oshi-core-java11</artifactId>
             <version>${oshi.version}</version>
         </dependency>
 
