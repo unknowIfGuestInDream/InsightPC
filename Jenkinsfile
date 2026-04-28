@@ -150,6 +150,27 @@ pipeline {
             }
         }
 
+        stage('Generate Doxygen Docs') {
+            steps {
+                sh '''
+                    if command -v doxygen >/dev/null 2>&1; then
+                        rm -rf docs-gen doxygen-docs.zip
+                        doxygen doxygen/Doxyfile
+                        if [ -d docs-gen/html ]; then
+                            cd docs-gen && zip -qr ../doxygen-docs.zip html && cd ..
+                        fi
+                    else
+                        echo 'Doxygen is not installed on this agent; skipping documentation generation.'
+                    fi
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'doxygen-docs.zip', allowEmptyArchive: true, fingerprint: true
+                }
+            }
+        }
+
     }
 
     post {

@@ -1,0 +1,32 @@
+/**
+ * @page module_guide Module Guide
+ * @brief Overview of InsightPC runtime modules.
+ * @tableofcontents
+ *
+ * @section module_guide_layers Runtime layers
+ *
+ * @dot
+ * digraph ModuleGuide {
+ *   graph [rankdir=LR, bgcolor="transparent", nodesep=0.45, ranksep=0.65];
+ *   node [shape=box, style="rounded,filled", color="#7aa2ff", fillcolor="#eef4ff", fontname="Arial"];
+ *   edge [color="#5d6b82", arrowsize=0.8];
+ *   Launcher -> InsightApplication -> MainController;
+ *   MainController -> TabBuilders [label="creates"];
+ *   TabBuilders -> SystemInfoService [label="queries"];
+ *   SystemInfoService -> OSHI [label="wraps"];
+ *   AppSettings -> AppTheme;
+ *   AppSettings -> I18N;
+ *   MainController -> AppSettings [label="settings dialog"];
+ * }
+ * @enddot
+ *
+ * @section module_guide_runtime Runtime flow
+ *
+ * 1. com.tlcsdm.insightpc.Launcher delegates to the JavaFX application entry point.
+ * 2. com.tlcsdm.insightpc.InsightApplication loads the FXML shell, applies saved
+ *    preferences, and configures the undecorated stage.
+ * 3. com.tlcsdm.insightpc.controller.MainController creates all tab builders and
+ *    owns the shared refresh scheduler.
+ * 4. com.tlcsdm.insightpc.service.SystemInfoService provides the OSHI facade used
+ *    by tab builders.
+ */

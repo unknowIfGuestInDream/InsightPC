@@ -50,3 +50,6 @@ build/
 
 settings.json
 docs/screenshots/
+
+# Generated documentation
+docs-gen/

@@ -1,0 +1,22 @@
+/**
+ * @page package_reference Package Reference
+ * @brief Maintainer-oriented package map.
+ * @tableofcontents
+ *
+ * @section package_reference_packages Packages
+ *
+ * | Package | Responsibility |
+ * | ------- | -------------- |
+ * | com.tlcsdm.insightpc | Application launcher and JavaFX lifecycle. |
+ * | com.tlcsdm.insightpc.config | Locale, theme, and persisted user settings. |
+ * | com.tlcsdm.insightpc.controller | Main window controller and dialog actions. |
+ * | com.tlcsdm.insightpc.controller.tab | Individual tab builders for system information panels. |
+ * | com.tlcsdm.insightpc.model | UI model helpers such as locale display wrappers. |
+ * | com.tlcsdm.insightpc.service | OSHI integration and common formatting utilities. |
+ *
+ * @section package_reference_navigation Native package list
+ *
+ * Package declarations are documented with @c package-info.java files and
+ * @c @@namespace declarations in @c doxygen/packages.dox. Doxygen uses those
+ * declarations to build the native expandable Package List in the navigation tree.
+ */

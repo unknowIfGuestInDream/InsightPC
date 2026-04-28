@@ -51,6 +51,8 @@ public class AppSettings {
 
     /**
      * Get the singleton instance.
+     *
+     * @return shared settings manager
      */
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -61,6 +63,8 @@ public class AppSettings {
 
     /**
      * Get the language property.
+     *
+     * @return selected display locale property
      */
     public ObjectProperty<DisplayLocale> languageProperty() {
         return languageProperty;
@@ -68,6 +72,8 @@ public class AppSettings {
 
     /**
      * Get the theme property.
+     *
+     * @return selected application theme property
      */
     public ObjectProperty<AppTheme> themeProperty() {
         return themeProperty;
@@ -75,6 +81,8 @@ public class AppSettings {
 
     /**
      * Create and get the PreferencesFx instance.
+     *
+     * @return configured PreferencesFX dialog model
      */
     public PreferencesFx getPreferencesFx() {
         if (preferencesFx == null) {

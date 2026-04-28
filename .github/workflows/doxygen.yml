@@ -1,0 +1,35 @@
+name: Doxygen
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq doxygen graphviz
+
+      - name: Validate documentation tools
+        run: |
+          doxygen --version
+          dot -V
+
+      - name: Generate documentation
+        run: doxygen doxygen/Doxyfile
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: doxygen-docs
+          path: docs-gen/html
+          retention-days: 14

@@ -1,3 +1,9 @@
+/**
+ * InsightPC desktop application module.
+ *
+ * <p>The module exports the JavaFX application, controllers, tab builders,
+ * settings models, and OSHI service facade used by the desktop UI.</p>
+ */
 module com.tlcsdm.insightpc {
     requires javafx.controls;
     requires javafx.fxml;
