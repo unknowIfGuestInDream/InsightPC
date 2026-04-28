@@ -60,7 +60,19 @@
         }
     }
 
+    function pointPackageMenuToPackageDocs() {
+        document
+            .querySelectorAll('a[href="namespaces.html"], a[href$="/namespaces.html"]')
+            .forEach((link) => {
+                const text = link.textContent.trim();
+                if (text === "Packages" || text === "Package List") {
+                    link.setAttribute("href", "packages_8dox.html");
+                }
+            });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+        pointPackageMenuToPackageDocs();
         addSidebarToggle();
     });
 }());

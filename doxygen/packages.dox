@@ -1,7 +1,8 @@
 /**
- * @page package_list Package List
- * @brief Maintainer-facing package map generated from doxygen/packages.dox.
- * @tableofcontents
+ * @file packages.dox
+ * @brief Package list and ownership map.
+ * @details This file is the source for the package documentation that the
+ * generated Packages menu links to.
  *
  * @section package_list_overview Overview
  *

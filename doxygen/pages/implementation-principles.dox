@@ -13,18 +13,55 @@
  *
  * @dot
  * digraph Principles {
- *   graph [rankdir=TB, bgcolor="transparent", splines=ortho];
- *   node [shape=box, style="rounded,filled", color="#86b7a4", fillcolor="#effaf5", fontname="Arial"];
- *   edge [color="#52616f", arrowsize=0.8];
- *   UI [label="JavaFX controls"];
- *   Builders [label="Tab builders"];
- *   Service [label="SystemInfoService"];
- *   OSHI [label="OSHI hardware and OS APIs"];
- *   Settings [label="AppSettings / I18N / AppTheme"];
- *   UI -> Builders;
- *   Builders -> Service;
- *   Service -> OSHI;
- *   UI -> Settings;
+ *   graph [rankdir=LR, bgcolor="transparent", splines=polyline, nodesep=0.6, ranksep=0.85];
+ *   node [shape=box, style="rounded,filled", color="#86b7a4", fillcolor="#effaf5", fontname="Arial", margin="0.12,0.08"];
+ *   edge [color="#52616f", arrowsize=0.8, fontname="Arial", fontsize=10];
+ *
+ *   subgraph cluster_ui {
+ *     label="JavaFX presentation";
+ *     color="#bfdbfe";
+ *     fillcolor="#eff6ff";
+ *     style="rounded,filled";
+ *     Main [label="MainController\nwindow lifecycle\nrefresh actions"];
+ *     Tabs [label="Tab builders\nCPU, memory, storage,\nnetwork, process, power"];
+ *     Controls [label="JavaFX controls\ntables, labels, charts"];
+ *   }
+ *
+ *   subgraph cluster_config {
+ *     label="Configuration";
+ *     color="#ddd6fe";
+ *     fillcolor="#f5f3ff";
+ *     Settings [label="AppSettings\npersisted preferences"];
+ *     I18N [label="I18N\nresource bundles"];
+ *     Theme [label="AppTheme\nAtlantaFX themes"];
+ *   }
+ *
+ *   subgraph cluster_service {
+ *     label="System data";
+ *     color="#bbf7d0";
+ *     fillcolor="#f0fdf4";
+ *     Service [label="SystemInfoService\nOSHI facade\nformatting helpers"];
+ *     OSHI [label="OSHI APIs\nhardware + operating system"];
+ *   }
+ *
+ *   subgraph cluster_docs {
+ *     label="Documentation";
+ *     color="#fed7aa";
+ *     fillcolor="#fff7ed";
+ *     Packages [label="packages.dox\npackage ownership"];
+ *     Pages [label="Doxygen pages\nmaintainer guides"];
+ *   }
+ *
+ *   Main -> Tabs [label="creates"];
+ *   Tabs -> Controls [label="renders"];
+ *   Tabs -> Service [label="queries"];
+ *   Service -> OSHI [label="wraps"];
+ *   Main -> Settings [label="loads/saves"];
+ *   Settings -> I18N [label="locale"];
+ *   Settings -> Theme [label="theme"];
+ *   Controls -> I18N [label="labels"];
+ *   Packages -> Tabs [style=dashed, label="documents"];
+ *   Pages -> Main [style=dashed, label="guides"];
  * }
  * @enddot
  *

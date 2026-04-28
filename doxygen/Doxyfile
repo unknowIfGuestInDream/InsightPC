@@ -53,7 +53,6 @@ REFERENCES_LINK_SOURCE = YES
 
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
-LAYOUT_FILE            = doxygen/DoxygenLayout.xml
 HTML_COLORSTYLE        = LIGHT
 HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
