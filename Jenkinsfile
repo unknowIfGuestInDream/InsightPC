@@ -5,6 +5,7 @@ pipeline {
     }
     environment {
         USER_NAME = 'Jenkins'
+        PLANTUML_JAR_PATH = '/usr/share/plantuml/plantuml.jar'
     }
     tools {
         jdk "jdk21"
@@ -153,15 +154,14 @@ pipeline {
         stage('Generate Doxygen Docs') {
             steps {
                 sh '''
-                    if command -v doxygen >/dev/null 2>&1; then
-                        rm -rf docs-gen doxygen-docs.zip
-                        doxygen doxygen/Doxyfile
-                        if [ -d docs-gen/html ]; then
-                            cd docs-gen && zip -qr ../doxygen-docs.zip html && cd ..
-                        fi
-                    else
-                        echo 'Doxygen is not installed on this agent; skipping documentation generation.'
+                    doxygen --version
+                    rm -rf docs-gen
+                    if [ ! -f "$PLANTUML_JAR_PATH" ]; then
+                        echo "PlantUML jar not found; running Doxygen without PlantUML diagrams."
+                        unset PLANTUML_JAR_PATH
                     fi
+                    doxygen doxygen/Doxyfile
+                    cd docs-gen && zip -qr ../doxygen-docs.zip html
                 '''
             }
             post {
