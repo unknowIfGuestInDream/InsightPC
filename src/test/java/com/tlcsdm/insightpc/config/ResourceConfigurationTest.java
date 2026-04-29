@@ -9,8 +9,13 @@ import java.io.StringReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceConfigurationTest {
@@ -26,6 +31,83 @@ class ResourceConfigurationTest {
         String css = readClasspathResource("/com/tlcsdm/insightpc/style.css");
         assertSelectorHasBlackText(css, ".usage-percent-label");
         assertSelectorHasBlackText(css, ".usage-percent-label.usage-percent-label-low");
+    }
+
+    @Test
+    void doxygenKeepsInsightPcOverridesFromTemplate() throws IOException {
+        Map<String, String> settings = parseDoxygenSettings(readProjectFile("doxygen/Doxyfile"));
+
+        assertEquals("\"InsightPC\"", settings.get("PROJECT_NAME"));
+        assertEquals("\"Cross-platform system information visualizer built with JavaFX and OSHI\"",
+            settings.get("PROJECT_BRIEF"));
+        assertEquals("src/main/java", settings.get("STRIP_FROM_PATH"));
+        assertEquals("README.md\ndoxygen/packages.dox\ndoxygen/pages\nsrc/main/java", settings.get("INPUT"));
+        assertEquals("target\nbuild\ndocs-gen\nsrc/test\nreadme\n.git", settings.get("EXCLUDE"));
+        assertEquals("readme doxygen/pages", settings.get("IMAGE_PATH"));
+        assertEquals("0", settings.get("TOC_INCLUDE_HEADINGS"));
+        assertEquals("LIGHT", settings.get("HTML_COLORSTYLE"));
+        assertEquals("doxygen/custom.js\nLICENSE", settings.get("HTML_EXTRA_FILES"));
+    }
+
+    @Test
+    void doxygenSupportsPlantUmlConfiguration() throws IOException {
+        Map<String, String> settings = parseDoxygenSettings(readProjectFile("doxygen/Doxyfile"));
+
+        assertEquals("YES", settings.get("HAVE_DOT"));
+        assertEquals("svg", settings.get("DOT_IMAGE_FORMAT"));
+        assertEquals("YES", settings.get("INTERACTIVE_SVG"));
+        assertEquals("$(PLANTUML_JAR_PATH)", settings.get("PLANTUML_JAR_PATH"));
+    }
+
+    private static String readProjectFile(String path) throws IOException {
+        return Files.readString(Path.of(System.getProperty("user.dir")).resolve(path), StandardCharsets.UTF_8);
+    }
+
+    private static Map<String, String> parseDoxygenSettings(String text) {
+        Map<String, String> settings = new LinkedHashMap<>();
+        String currentKey = null;
+        StringBuilder currentValue = new StringBuilder();
+
+        for (String line : text.split("\\R")) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                continue;
+            }
+
+            if (currentKey == null) {
+                int equalsIndex = line.indexOf('=');
+                if (equalsIndex < 0) {
+                    continue;
+                }
+                currentKey = line.substring(0, equalsIndex).trim();
+                appendDoxygenValue(currentValue, line.substring(equalsIndex + 1).trim(), false);
+                if (!trimmed.endsWith("\\")) {
+                    settings.put(currentKey, currentValue.toString());
+                    currentKey = null;
+                    currentValue.setLength(0);
+                }
+                continue;
+            }
+
+            appendDoxygenValue(currentValue, trimmed, true);
+            if (!trimmed.endsWith("\\")) {
+                settings.put(currentKey, currentValue.toString());
+                currentKey = null;
+                currentValue.setLength(0);
+            }
+        }
+
+        return settings;
+    }
+
+    private static void appendDoxygenValue(StringBuilder value, String rawLine, boolean continuation) {
+        String normalized = rawLine.endsWith("\\")
+            ? rawLine.substring(0, rawLine.length() - 1).trim()
+            : rawLine;
+        if (value.length() > 0 && continuation) {
+            value.append('\n');
+        }
+        value.append(normalized);
     }
 
     private static String readClasspathResource(String path) throws IOException {
