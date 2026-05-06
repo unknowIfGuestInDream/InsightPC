@@ -46,6 +46,18 @@ class ProcessTabBuilderTest {
     }
 
     @Test
+    void testSelectResidentMemory() {
+        assertEquals(1024, ProcessTabBuilder.selectResidentMemory("Linux", 1024, 512));
+        assertEquals(1024, ProcessTabBuilder.selectResidentMemory("Mac OS X", 1024, 512));
+        assertEquals(1024, ProcessTabBuilder.selectResidentMemory("AIX", 1024, 512));
+        assertEquals(512, ProcessTabBuilder.selectResidentMemory("Windows", 1024, 512));
+        assertEquals(512, ProcessTabBuilder.selectResidentMemory("Windows 11", 1024, 512));
+        assertEquals(512, ProcessTabBuilder.selectResidentMemory("windows", 1024, 512));
+        assertEquals(1024, ProcessTabBuilder.selectResidentMemory("", 1024, 512));
+        assertEquals(1024, ProcessTabBuilder.selectResidentMemory(null, 1024, 512));
+    }
+
+    @Test
     void testFormatPercentValue() {
         assertEquals("0.0%", ProcessTabBuilder.formatPercentValue(0));
         assertEquals("12.3%", ProcessTabBuilder.formatPercentValue(12.34));

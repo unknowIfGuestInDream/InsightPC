@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -282,7 +283,8 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
                     double cpuPercent = calculateCpuPercent(cpuLoad, cpuPercentScope, logicalProcessorCount);
                     double cumulativeCpuPercent =
                         calculateCpuPercent(process.getProcessCpuLoadCumulative(), cpuPercentScope, logicalProcessorCount);
-                    double memoryPercent = calculateMemoryPercent(process.getResidentSetSize(), totalMemory);
+                    long residentMemory = getDisplayedProcessMemory(os, process);
+                    double memoryPercent = calculateMemoryPercent(residentMemory, totalMemory);
 
                     String iconKey = createProcessIconCacheKey(process.getPath(), process.getName());
                     Image processIcon = iconCache.computeIfAbsent(iconKey, key -> loadProcessIcon(process.getPath()));
@@ -296,7 +298,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
                         cumulativeCpuPercent,
                         memoryPercent,
                         SystemInfoService.formatBytes(process.getVirtualSize()),
-                        SystemInfoService.formatBytes(process.getResidentSetSize()),
+                        SystemInfoService.formatBytes(residentMemory),
                         process.getName()));
                     currentProcessMap.put(pid, process);
                 }
@@ -326,6 +328,20 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
 
     static String formatPercentValue(double value) {
         return String.format("%.1f%%", value);
+    }
+
+    static long selectResidentMemory(String osFamily, long residentMemory, long privateResidentMemory) {
+        return osFamily != null && osFamily.toLowerCase(Locale.ROOT).startsWith("windows")
+            ? privateResidentMemory
+            : residentMemory;
+    }
+
+    /**
+     * OSHI 7 removed getResidentSetSize(); the migration guide maps Windows to private resident
+     * memory and other platforms to resident memory to preserve the previous display semantics.
+     */
+    private static long getDisplayedProcessMemory(OperatingSystem os, OSProcess process) {
+        return selectResidentMemory(os.getFamily(), process.getResidentMemory(), process.getPrivateResidentMemory());
     }
 
     static String createSummaryItemText(String label, int value) {
