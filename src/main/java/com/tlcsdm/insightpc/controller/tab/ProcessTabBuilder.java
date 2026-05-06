@@ -283,7 +283,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
                     double cpuPercent = calculateCpuPercent(cpuLoad, cpuPercentScope, logicalProcessorCount);
                     double cumulativeCpuPercent =
                         calculateCpuPercent(process.getProcessCpuLoadCumulative(), cpuPercentScope, logicalProcessorCount);
-                    long residentMemory = getResidentMemory(os, process);
+                    long residentMemory = getDisplayedProcessMemory(os, process);
                     double memoryPercent = calculateMemoryPercent(residentMemory, totalMemory);
 
                     String iconKey = createProcessIconCacheKey(process.getPath(), process.getName());
@@ -336,7 +336,11 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
             : residentMemory;
     }
 
-    private static long getResidentMemory(OperatingSystem os, OSProcess process) {
+    /**
+     * OSHI 7 removed getResidentSetSize(); the migration guide maps Windows to private resident
+     * memory and other platforms to resident memory to preserve the previous display semantics.
+     */
+    private static long getDisplayedProcessMemory(OperatingSystem os, OSProcess process) {
         return selectResidentMemory(os.getFamily(), process.getResidentMemory(), process.getPrivateResidentMemory());
     }
 
