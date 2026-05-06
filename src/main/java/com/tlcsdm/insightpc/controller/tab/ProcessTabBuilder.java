@@ -331,7 +331,7 @@ public class ProcessTabBuilder extends AbstractTabBuilder {
     }
 
     static long selectResidentMemory(String osFamily, long residentMemory, long privateResidentMemory) {
-        return osFamily != null && osFamily.toLowerCase(Locale.ROOT).contains("windows")
+        return osFamily != null && osFamily.toLowerCase(Locale.ROOT).startsWith("windows")
             ? privateResidentMemory
             : residentMemory;
     }
