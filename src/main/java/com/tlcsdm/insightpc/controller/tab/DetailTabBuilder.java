@@ -184,6 +184,7 @@ public class DetailTabBuilder extends AbstractTabBuilder {
             row = 0;
             addGridRow(diskGrid, row++, I18N.get("storage.name"), diskStore.getName());
             addGridRow(diskGrid, row++, I18N.get("storage.model"), diskStore.getModel());
+            addGridRow(diskGrid, row++, I18N.get("storage.diskType"), formatDiskType(diskStore.getDiskType()));
             addGridRow(diskGrid, row++, I18N.get("storage.serial"), diskStore.getSerial());
             addGridRow(diskGrid, row++, I18N.get("storage.size"), SystemInfoService.formatBytes(diskStore.getSize()));
             int partitionIndex = 0;

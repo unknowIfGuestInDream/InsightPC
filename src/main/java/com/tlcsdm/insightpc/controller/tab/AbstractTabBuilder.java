@@ -127,6 +127,13 @@ public abstract class AbstractTabBuilder {
     }
 
     /**
+     * Normalize a disk type value for display.
+     */
+    static String formatDiskType(String diskType) {
+        return normalizeFieldValue(diskType);
+    }
+
+    /**
      * Calculate a usage ratio (0.0 to 1.0) from used and total values.
      */
     static double calculateUsage(long used, long total) {

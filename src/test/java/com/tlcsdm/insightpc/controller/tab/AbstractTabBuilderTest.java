@@ -24,6 +24,18 @@ class AbstractTabBuilderTest {
     }
 
     @Test
+    void testFormatDiskTypeNullOrBlank() {
+        assertEquals(I18N.get("power.notAvailable"), AbstractTabBuilder.formatDiskType(null));
+        assertEquals(I18N.get("power.notAvailable"), AbstractTabBuilder.formatDiskType("   "));
+    }
+
+    @Test
+    void testFormatDiskTypeTrimsWhitespace() {
+        assertEquals("SSD", AbstractTabBuilder.formatDiskType("  SSD  "));
+        assertEquals("Unknown", AbstractTabBuilder.formatDiskType("Unknown"));
+    }
+
+    @Test
     void testCalculateUsageZeroTotal() {
         assertEquals(0.0, AbstractTabBuilder.calculateUsage(100, 0));
         assertEquals(0.0, AbstractTabBuilder.calculateUsage(100, -1));
