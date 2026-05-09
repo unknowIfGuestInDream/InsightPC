@@ -6,10 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Bumped the project version to 1.1.0.
+- Upgraded OSHI from 6.x.x to 7.x.x.
 
 ### Added
 
+- Added Doxygen support for project documentation generation.
 - Added this changelog to track release history.
 
 ## [1.0.0] - 2026-04-13
