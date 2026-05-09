@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Upgraded OSHI from 6.x.x to 7.x.x.
+- Migrated OSHI from `oshi-core-java11` 6.12.0 to `oshi-core` 7.1.0.
 
 ### Added
 
