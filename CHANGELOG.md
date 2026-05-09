@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 - Added this changelog to track release history.
 
-## [1.0.0]
+## [1.0.0] - Initial release
 
 Initial release with support for:
 
