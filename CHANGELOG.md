@@ -1,7 +1,5 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
 ## [1.1.0] - 2026-05-09
 
 ### Changed
@@ -11,7 +9,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Added Doxygen support for project documentation generation.
-- Added this changelog to track release history.
 
 ## [1.0.0] - 2026-04-13
 
