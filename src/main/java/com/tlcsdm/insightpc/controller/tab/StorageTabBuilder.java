@@ -48,6 +48,7 @@ public class StorageTabBuilder extends AbstractTabBuilder {
             int row = 0;
             addGridRow(grid, row++, I18N.get("storage.name"), disk.getName());
             addGridRow(grid, row++, I18N.get("storage.model"), disk.getModel());
+            addGridRow(grid, row++, I18N.get("storage.diskType"), formatDiskType(disk.getDiskType()));
             addGridRow(grid, row++, I18N.get("storage.serial"), disk.getSerial());
             addGridRow(grid, row++, I18N.get("storage.size"),
                 SystemInfoService.formatBytes(disk.getSize()));

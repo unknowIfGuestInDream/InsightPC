@@ -193,4 +193,14 @@ class I18NEnhancedTest {
             }
         }
     }
+
+    @Test
+    void testStorageDiskTypeKeyExistsInAllLocales() {
+        for (Locale locale : I18N.getSupportedLocales()) {
+            ResourceBundle bundle = ResourceBundle.getBundle("com.tlcsdm.insightpc.i18n.messages", locale);
+            assertTrue(bundle.containsKey("storage.diskType"), "Missing key storage.diskType for locale " + locale);
+            assertFalse(bundle.getString("storage.diskType").isBlank(),
+                "Value must not be blank for key storage.diskType locale " + locale);
+        }
+    }
 }
