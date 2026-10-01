@@ -2,9 +2,9 @@
 
 ## Repository Overview
 
-**InsightPC** is a Maven-based JavaFX 21 desktop application that provides a visual interface for system hardware and operating system information using OSHI (Operating System and Hardware Information). It features a tabbed UI for CPU, memory, disk, network, and process monitoring with support for internationalization (i18n), theme management (AtlantaFX), and user preferences (PreferencesFX). The project targets Java 21 on Ubuntu, Windows, and macOS.
+**InsightPC** is a Maven-based JavaFX 25 desktop application that provides a visual interface for system hardware and operating system information using OSHI (Operating System and Hardware Information). It features a tabbed UI for CPU, memory, disk, network, and process monitoring with support for internationalization (i18n), theme management (AtlantaFX), and user preferences (PreferencesFX). The project targets Java 25 on Ubuntu, Windows, and macOS.
 
-- **Language:** Java 21
+- **Language:** Java 25
 - **Build tool:** Maven 3.9+
 
 ## Commit Message Convention
@@ -29,7 +29,7 @@ Examples:
 
 ## Build & Validation
 
-Always use Java 21 (Temurin recommended). Set `JAVA_HOME` if needed.
+Always use Java 25 (Temurin recommended). Set `JAVA_HOME` if needed.
 
 ```bash
 # Build and run all tests (required before any PR)
@@ -62,7 +62,7 @@ mvn test
     release.yml    # On release created: packages per-OS ZIP and uploads to GitHub release
 
 scripts/
-  jre.sh           # Linux: downloads JDK 21, builds custom JRE via jlink
+  jre.sh           # Linux: downloads JDK 25, builds custom JRE via jlink
   jre_mac.sh       # macOS: same as jre.sh for macOS
   jre.ps1          # Windows: same as jre.sh for Windows (PowerShell)
   linux/start.sh   # Linux launcher script (bundled in staging)
@@ -112,7 +112,7 @@ src/test/java/com/tlcsdm/insightpc/
 The **Test** workflow (`.github/workflows/test.yml`) runs on every push and pull request to `master`:
 
 1. Checks out the code
-2. Sets up Temurin JDK 21
+2. Sets up Temurin JDK 25
 3. Caches `~/.m2/repository`
 4. Runs `mvn -B clean verify --no-transfer-progress`
 
