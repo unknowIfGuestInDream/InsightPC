@@ -5,7 +5,7 @@
 .DESCRIPTION
     Builds a native application image from the staging directory using jpackage.
     This produces a self-contained application with a native .exe launcher.
-    Requires Java 21 with jpackage support.
+    Requires Java 25 with jpackage support.
 
 .PARAMETER StagingDir
     Path to the staging directory containing the application jar and lib.
@@ -56,7 +56,7 @@ if (-not (Test-Path $StagingDir)) {
 }
 Write-Host "  Staging dir: $StagingDir" -ForegroundColor Gray
 
-# Step 1: Locate JDK 21
+# Step 1: Locate JDK 25
 $jdkDir = $null
 try {
     $savedEAP = $ErrorActionPreference
@@ -66,7 +66,7 @@ try {
     $versionLine = ($javaVerOutput | Select-Object -First 1).ToString()
     if ($versionLine -match '"(\d+)[.+]') {
         $majorVersion = [int]$Matches[1]
-        if ($majorVersion -eq 21) {
+        if ($majorVersion -eq 25) {
             if ($env:JAVA_HOME -and (Test-Path (Join-Path $env:JAVA_HOME 'bin'))) {
                 $jdkDir = $env:JAVA_HOME
             } else {
@@ -84,11 +84,11 @@ try {
 } catch { }
 
 if (-not $jdkDir) {
-    throw "Java 21 with jpackage is required but not found. Set JAVA_HOME to a JDK 21 installation."
+    throw "Java 25 with jpackage is required but not found. Set JAVA_HOME to a JDK 25 installation."
 }
 
 $jpackageCmd = Join-Path (Join-Path $jdkDir 'bin') 'jpackage.exe'
-Write-Host "`n[1/4] Using Java 21 from: $jdkDir" -ForegroundColor Cyan
+Write-Host "`n[1/4] Using Java 25 from: $jdkDir" -ForegroundColor Cyan
 
 # Step 2: Resolve version
 Write-Host "`n[2/4] Resolving version..." -ForegroundColor Cyan

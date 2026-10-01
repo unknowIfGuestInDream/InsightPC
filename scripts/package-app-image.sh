@@ -5,7 +5,7 @@
 #
 # Builds a native application image from the staging directory using jpackage.
 # This produces a self-contained application with a native launcher.
-# Requires Java 21 with jpackage support.
+# Requires Java 25 with jpackage support.
 #
 # Usage: package-app-image.sh [staging_dir]
 #   staging_dir: Path to the staging directory containing the application jar and lib.
@@ -55,12 +55,12 @@ if [ ! -d "$STAGING_DIR" ]; then
 fi
 echo "  Staging dir: $STAGING_DIR"
 
-# Step 1: Locate JDK 21
+# Step 1: Locate JDK 25
 jdk_dir=""
 if command -v java >/dev/null 2>&1; then
     java_ver=$(java -version 2>&1 | head -1)
     major_ver=$(echo "$java_ver" | sed -n 's/.*"\([0-9]*\)[.+].*/\1/p')
-    if [ "$major_ver" = "21" ]; then
+    if [ "$major_ver" = "25" ]; then
         if [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME/bin" ] && [ -x "$JAVA_HOME/bin/jpackage" ]; then
             jdk_dir="$JAVA_HOME"
         else
@@ -75,14 +75,14 @@ if command -v java >/dev/null 2>&1; then
 fi
 
 if [ -z "$jdk_dir" ]; then
-    echo "Java 21 with jpackage is required but not found." >&2
-    echo "Set JAVA_HOME to a JDK 21 installation." >&2
+    echo "Java 25 with jpackage is required but not found." >&2
+    echo "Set JAVA_HOME to a JDK 25 installation." >&2
     exit 1
 fi
 
 jpackage_cmd="$jdk_dir/bin/jpackage"
 echo ""
-echo "[1/4] Using Java 21 from: $jdk_dir"
+echo "[1/4] Using Java 25 from: $jdk_dir"
 
 # Step 2: Resolve version
 echo ""

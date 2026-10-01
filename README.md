@@ -45,7 +45,7 @@ The screenshots below are from the application UI and are stored in `/readme`.
 
 ## Requirements
 
-- Java 21 or later
+- Java 25 or later
 - Maven 3.9+
 
 ## Getting Started
