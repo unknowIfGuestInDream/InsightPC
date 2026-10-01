@@ -3,7 +3,7 @@
 #
 # Create a minimal custom JRE using jlink.
 #
-# If the current environment already has Java 21, uses it directly.
+# If the current environment already has Java 25, uses it directly.
 # Otherwise downloads the Amazon Corretto JDK.
 # Uses jdeps to analyze the application jar for required JDK modules, then creates
 # a custom runtime image with jlink containing only those modules.
@@ -59,15 +59,15 @@ echo "  Staging dir: $STAGING_DIR"
 
 cd "$STAGING_DIR"
 
-# Step 1: Locate JDK 21
+# Step 1: Locate JDK 25
 downloaded_jdk=false
 jdk_dir=""
 
-# Check if current environment already has Java 21
+# Check if current environment already has Java 25
 if command -v java >/dev/null 2>&1; then
     java_ver=$(java -version 2>&1 | head -1)
     major_ver=$(echo "$java_ver" | sed -n 's/.*"\([0-9]*\)[.+].*/\1/p')
-    if [ "$major_ver" = "21" ]; then
+    if [ "$major_ver" = "25" ]; then
         if [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME/bin" ] && [ -x "$JAVA_HOME/bin/jlink" ]; then
             jdk_dir="$JAVA_HOME"
         else
@@ -83,11 +83,11 @@ fi
 
 if [ -n "$jdk_dir" ]; then
     echo ""
-    echo "[1/4] Using existing Java 21 from environment"
+    echo "[1/4] Using existing Java 25 from environment"
     echo "  JDK directory: $jdk_dir"
 else
-    # see https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html
-    linux_api='https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz'
+    # see https://docs.aws.amazon.com/corretto/latest/corretto-25-ug/downloads-list.html
+    linux_api='https://corretto.aws/downloads/latest/amazon-corretto-25-x64-linux-jdk.tar.gz'
 
     echo ""
     echo "[1/4] Downloading Amazon Corretto JDK..."
@@ -103,9 +103,9 @@ else
     rm -f jdk.tar.gz
 
     # Find the extracted JDK directory (name varies by Corretto version)
-    jdk_dir=$(find . -maxdepth 1 -type d -name 'jdk*' | head -1)
+    jdk_dir=$(find . -maxdepth 1 -type d \( -name 'amazon-corretto-*' -o -name 'jdk*' \) | head -1)
     if [ -z "$jdk_dir" ]; then
-        echo "No directory matching 'jdk*' found after extraction." >&2
+        echo "No JDK directory found after extraction." >&2
         exit 1
     fi
     echo "  JDK directory: $jdk_dir"
@@ -132,10 +132,10 @@ echo "  Jar: $jar_name (${jar_size} MB)"
 # Include lib directory in module path for accurate dependency analysis
 modules=""
 if [ -d "lib" ]; then
-    modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 21 --module-path lib --add-modules ALL-MODULE-PATH --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
+    modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 25 --module-path lib --add-modules ALL-MODULE-PATH --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
 fi
 if [ -z "$modules" ] || [ "$(echo "$modules" | tr -d '[:space:]')" = "" ]; then
-    modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 21 --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
+    modules=$("$jdeps_cmd" --ignore-missing-deps --multi-release 25 --print-module-deps "$jar_name" 2>/dev/null | tail -1) || true
 fi
 
 if [ -z "$modules" ] || [ "$(echo "$modules" | tr -d '[:space:]')" = "" ]; then

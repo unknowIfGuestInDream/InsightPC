@@ -3,7 +3,7 @@
     Create a minimal custom JRE using jlink.
 
 .DESCRIPTION
-    If the current environment already has Java 21, uses it directly.
+    If the current environment already has Java 25, uses it directly.
     Otherwise downloads the Amazon Corretto JDK.
     Uses jdeps to analyze the application jar for required JDK modules, then creates
     a custom runtime image with jlink containing only those modules.
@@ -61,11 +61,11 @@ Write-Host "  Staging dir: $StagingDir" -ForegroundColor Gray
 Push-Location $StagingDir
 try {
 
-# Step 1: Locate JDK 21
+# Step 1: Locate JDK 25
 $downloadedJdk = $false
 $jdkDir = $null
 
-# Check if current environment already has Java 21
+# Check if current environment already has Java 25
 try {
     $savedEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
@@ -74,7 +74,7 @@ try {
     $versionLine = ($javaVerOutput | Select-Object -First 1).ToString()
     if ($versionLine -match '"(\d+)[.+]') {
         $majorVersion = [int]$Matches[1]
-        if ($majorVersion -eq 21) {
+        if ($majorVersion -eq 25) {
             if ($env:JAVA_HOME -and (Test-Path (Join-Path $env:JAVA_HOME 'bin'))) {
                 $jdkDir = $env:JAVA_HOME
             } else {
@@ -93,11 +93,11 @@ try {
 } catch { }
 
 if ($jdkDir) {
-    Write-Host "`n[1/4] Using existing Java 21 from environment" -ForegroundColor Cyan
+    Write-Host "`n[1/4] Using existing Java 25 from environment" -ForegroundColor Cyan
     Write-Host "  JDK directory: $jdkDir" -ForegroundColor Gray
 } else {
-    # see https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html
-    $winApi = 'https://corretto.aws/downloads/latest/amazon-corretto-21-x64-windows-jdk.zip'
+    # see https://docs.aws.amazon.com/corretto/latest/corretto-25-ug/downloads-list.html
+    $winApi = 'https://corretto.aws/downloads/latest/amazon-corretto-25-x64-windows-jdk.zip'
 
     Write-Host "`n[1/4] Downloading Amazon Corretto JDK..." -ForegroundColor Cyan
     Write-Host "  URL: $winApi" -ForegroundColor Gray
@@ -114,8 +114,11 @@ if ($jdkDir) {
     Remove-Item -Path 'jdk.zip' -Force
 
     # Find the extracted JDK directory (name varies by Corretto version)
-    $jdkDirItem = Get-ChildItem -Directory -Filter 'jdk*' | Select-Object -First 1
-    if ($null -eq $jdkDirItem) { throw "No directory matching 'jdk*' found after extraction. Verify the downloaded archive contains a valid JDK." }
+    $jdkDirItem = Get-ChildItem -Directory -Filter 'amazon-corretto-*' | Select-Object -First 1
+    if ($null -eq $jdkDirItem) {
+        $jdkDirItem = Get-ChildItem -Directory -Filter 'jdk*' | Select-Object -First 1
+    }
+    if ($null -eq $jdkDirItem) { throw "No JDK directory found after extraction. Verify the downloaded archive contains a valid JDK." }
     $jdkDir = $jdkDirItem.FullName
     Write-Host "  JDK directory: $jdkDir" -ForegroundColor Gray
     $downloadedJdk = $true
@@ -139,12 +142,12 @@ try {
     $savedEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     if (Test-Path 'lib') {
-        $modules = & $jdepsCmd --ignore-missing-deps --multi-release 21 --module-path lib --add-modules ALL-MODULE-PATH --print-module-deps $jar.Name 2>&1 |
+        $modules = & $jdepsCmd --ignore-missing-deps --multi-release 25 --module-path lib --add-modules ALL-MODULE-PATH --print-module-deps $jar.Name 2>&1 |
             Where-Object { $_ -is [string] } | Select-Object -Last 1
         if ($LASTEXITCODE -ne 0) { $modules = $null }
     }
     if (-not $modules -or $modules.Trim() -eq '') {
-        $modules = & $jdepsCmd --ignore-missing-deps --multi-release 21 --print-module-deps $jar.Name 2>&1 |
+        $modules = & $jdepsCmd --ignore-missing-deps --multi-release 25 --print-module-deps $jar.Name 2>&1 |
             Where-Object { $_ -is [string] } | Select-Object -Last 1
         if ($LASTEXITCODE -ne 0) { $modules = $null }
     }
