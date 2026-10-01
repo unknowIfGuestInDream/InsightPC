@@ -39,7 +39,7 @@
         <javafx.version>21.0.12</javafx.version>
         <controlsfx.version>11.2.5</controlsfx.version>
         <preferencesfx.version>11.19.0</preferencesfx.version>
-        <atlantafx.version>2.1.0</atlantafx.version>
+        <atlantafx.version>3.0.0</atlantafx.version>
         <ikonli.version>12.4.0</ikonli.version>
         <slf4j-api.version>2.0.20</slf4j-api.version>
         <logback-classic.version>1.6.4</logback-classic.version>
